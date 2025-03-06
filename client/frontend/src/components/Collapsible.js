@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 export default function Collapsible({ className, name, imgsrc, children, startOpen }){
 	startOpen = startOpen !== undefined ? startOpen : true //default true
-	console.log("startOpen:",startOpen)
 	const [open, setOpen] = useState(startOpen);
 	
 	const toggleOpen = () => {
