@@ -1,6 +1,7 @@
 import React from 'react'
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
+import Collapsible from '../components/Collapsible'
 
 const LotSelection = () => {
   return (
@@ -50,6 +51,9 @@ function Sidebar() {
         <span className='hover-black'>Lot</span>
       </div>
       <input id='building-lot-search'/>
+      <Collapsible className='filter' name='Filter'>
+        hello
+      </Collapsible>
       </section>
     </section>
   )
