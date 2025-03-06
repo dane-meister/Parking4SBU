@@ -8,7 +8,7 @@
   display: flex;
   height: calc(100vh - 105px); /*Full height minus header/footer*/
   flex: 1;
-  font-size: 18px;
+  font-size: 16px;
 }
   
 .map-container {
@@ -73,4 +73,22 @@ hr{
   padding: 5px 10px 3px 35px;
   font-size: 17px;
   cursor: pointer;
+}
+
+.filter{
+  background-color: #f0f0f0;
+  font-size: 16px;
+  padding: 2px;
+  margin-top: 3px;
+  border-radius: 5px;
+}
+.filter-name{
+  color: var(--gray);
+}
+
+.filter-img{
+  height: 20px;
+}
+.filter-img:hover{
+  opacity: 80%;
 }
