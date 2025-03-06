@@ -1,0 +1,46 @@
+.header {
+    background-color: #a00; /* Red background */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 20px;
+  }
+  
+  .header-title {
+    font-weight: bold;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .tickets-btn {
+    background-color: white;
+    color: #a00;
+    border: none;
+    padding: 8px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .tickets-btn:hover {
+    background-color: #ddd;
+  }
+  
+  .profile-icon {
+    background-color: white;
+    color: #a00;
+    font-size: 18px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+  }
