@@ -3,7 +3,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import NoPage from "./pages/NoPage";
 import Header from "./components/Header";
-import LotSelection from "./components/LotSelection";
+import LotSelection from "./pages/LotSelection";
 import Footer from "./components/Footer";
 import "./stylesheets/App.css"; // Styles for layout
 import "./stylesheets/index.css"; // Global styles

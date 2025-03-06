@@ -1,6 +1,6 @@
 .main-container {
     display: flex;
-    height: calc(100vh - 50px); /* Full height minus header */
+    height: calc(100vh - 100px); /* Full height minus header/footer */
   }
   
   .map-container {
