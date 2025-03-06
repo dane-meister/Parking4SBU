@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 
-export default function Collapsible({ className, name, imgsrc, children }){
-	const [open, setOpen] = useState(true);
+export default function Collapsible({ className, name, imgsrc, children, startOpen }){
+	startOpen = startOpen !== undefined ? startOpen : true //default true
+	console.log("startOpen:",startOpen)
+	const [open, setOpen] = useState(startOpen);
 	
 	const toggleOpen = () => {
 		setOpen(!open);
@@ -20,7 +22,7 @@ export default function Collapsible({ className, name, imgsrc, children }){
 				<span style={{flex: 1}}/>
 				<img 
 					className={name.toLowerCase() + '-img'} 
-					src={!!imgsrc ? imgsrc : '/images/chevron.webp'}
+					src={imgsrc ? imgsrc : '/images/chevron.webp'}
 					style={imgStyle}
 					onClick={toggleOpen}
 				/>
