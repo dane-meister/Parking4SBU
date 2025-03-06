@@ -12,9 +12,8 @@ export default function App() {
   return (
     <BrowserRouter>
         <Header />
-        <LotSelection />
         <Routes>
-            <Route index element={<Home />} />          {/* "/" Route */}
+            <Route index element={<LotSelection />} />          {/* "/" Route */}
             <Route path="/profile" element={<Profile />} />  {/* "/profile" Route */}
             <Route path="*" element={<NoPage />} />     {/* Catch-all for 404 pages */}
         </Routes>
