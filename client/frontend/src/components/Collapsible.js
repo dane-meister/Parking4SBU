@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function Collapsible({ className, name, imgsrc, children, startOpen }){
+export default function Collapsible({ className, name, imgsrc, children, startOpen, tag }){
 	startOpen = startOpen !== undefined ? startOpen : true //default true
 	const [open, setOpen] = useState(startOpen);
 	
@@ -18,6 +18,7 @@ export default function Collapsible({ className, name, imgsrc, children, startOp
 		<div className={className}>
 			<div style={{display: 'flex'}}>
 				<span className={className+'-name'}>{name}</span>
+				{tag !== undefined && tag}
 				<span style={{flex: 1}}/>
 				<img 
 					className={name.toLowerCase() + '-img'} 

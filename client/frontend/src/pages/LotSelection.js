@@ -99,6 +99,19 @@ function Sidebar() {
       </section>
       
       <hr/>  
+      <section>
+        <header id='results-header' className='hbox'>
+          Results
+          <span className='flex'/>
+          <Collapsible
+            name='sort' 
+            className='results-type'
+            startOpen={false}
+            tag={<span className='results-tag'>Relevance</span>}
+          >
+          </Collapsible>
+        </header>
+      </section>
     </section>
   )
 }
