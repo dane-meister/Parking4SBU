@@ -33,6 +33,10 @@ function Sidebar() {
   const [rateType, setRateType] = useState('hourly');
   const [buildingLotType, setBuildingLotType] = useState('building');
   const [showFilter, setShowFilter] = useState(false);
+  const [filterUncovered, setFilterUncovered] = useState(true);
+  const [filterCovered, setFilterCovered] = useState(true);
+  const [filterEVCharging, setFilterEVCharging] = useState(false);
+  const [filterDisability, setFilterDisability] = useState(true);
 
   return (
     <section className='sidebar'>
@@ -82,7 +86,16 @@ function Sidebar() {
       </section>
       <div className='hbox' style={{margin: "3px 15px 0px 15px"}}>
         <span className='flex'/>
-        <Filter showFilter={showFilter} setShowFilter={setShowFilter}/>
+        <Filter 
+          showFilter={showFilter} 
+          setShowFilter={setShowFilter}
+          filters={[
+            filterCovered, setFilterCovered,
+            filterUncovered, setFilterUncovered,
+            filterEVCharging, setFilterEVCharging,
+            filterDisability, setFilterDisability
+          ]}
+        />
       </div>
       
       <hr/>  
@@ -90,12 +103,18 @@ function Sidebar() {
   )
 }
 
-function Filter({ showFilter, setShowFilter }) {
+function Filter({ showFilter, setShowFilter, filters}) {
   const [showFullLots, setShowFullLots] = useState(false);
   const [onlyShowEVChargerAvailable, setOnlyShowEVChargerAvailable] = useState(false);
   const [showCoveredLots, setShowCoveredLots] = useState(true);
   const [showUncoveredLots, setShowUncoveredLots] = useState(true);
-  
+  const [
+    filterCovered, setFilterCovered,
+    filterUncovered, setFilterUncovered,
+    filterEVCharging, setFilterEVCharging,
+    filterDisability, setFilterDisability
+  ] = filters;
+
   const handleShowFullLotsChange = (event) => {
     setShowFullLots(event.target.checked);
   };
@@ -115,6 +134,51 @@ function Filter({ showFilter, setShowFilter }) {
       />
       Filter
     </button>
-    {showFilter && <Popup close={() => setShowFilter(false)}/>}
+    {showFilter && <Popup close={() => setShowFilter(false)}>
+      <div className='filter-row hbox'>
+        <label>
+          <input 
+            className='filter-check' 
+            type='checkbox'
+            defaultChecked={filterUncovered}
+            onClick={() => setFilterUncovered(!filterUncovered) }          
+          />
+          Lot — Uncovered
+        </label>
+      </div>
+      <div className='filter-row hbox'>
+        <label>
+          <input 
+            className='filter-check' 
+            type='checkbox'
+            defaultChecked={filterCovered}
+            onClick={() => setFilterCovered(!filterCovered) } 
+          />
+          Lot — Covered
+        </label>
+      </div>
+      <div className='filter-row hbox'>
+        <label>
+          <input 
+            className='filter-check' 
+            type='checkbox'
+            defaultChecked={filterEVCharging}
+            onClick={() => setFilterEVCharging(!filterEVCharging) } 
+          />
+          EV Charging
+        </label>
+      </div>
+      <div className='filter-row hbox'>
+        <label>
+          <input 
+            className='filter-check' 
+            type='checkbox'
+            defaultChecked={filterDisability}
+            onClick={() => setFilterDisability(!filterDisability) } 
+          />
+          Disability Accessible
+        </label>
+      </div>
+    </Popup>}
   </>);
 }
