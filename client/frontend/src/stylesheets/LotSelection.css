@@ -77,3 +77,9 @@ hr{
   padding: 3px 10px 4px 10px;
   align-items: center;
 }
+.filter-row{
+  align-items: center;
+}
+.filter-row > label > input{
+  height: 16px;
+}
