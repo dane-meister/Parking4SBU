@@ -51,29 +51,20 @@ hr{
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 30px;
-  border: solid black 2px;
-  border-radius: 6px;
+  border: solid black 1px;
+  border-radius: 6px 0px 0px 6px;
   padding: 5px 10px 3px 35px;
   font-size: 17px;
   cursor: pointer;
 }
 
-.filter{
-  background-color: #f0f0f0;
-  font-size: 16px;
-  padding: 5px;
-  margin: 3px 0px 10px 0px;
-  border-radius: 5px;
-}
-.filter{
-  color: var(--gray);
-}
 .filter-btn{
   cursor: pointer;
   display: flex;
   font-size: 16px;
-  border: solid black 2px;
-  border-radius: 7px;
+  border: solid black 1px;
+  border-left: none;
+  border-radius: 0px 7px 7px 0px;
   padding: 3px 10px 4px 10px;
   align-items: center;
 }

@@ -81,11 +81,10 @@ function Sidebar() {
           onClick={() => setBuildingLotType('lot')}
         >Lot</span>
       </div>
-      <input id='building-lot-search'/>
-      
-      </section>
-      <div className='hbox' style={{margin: "3px 15px 0px 15px"}}>
-        <span className='flex'/>
+      <div className='hbox'>
+        <input id='building-lot-search'
+          placeholder={`Search for a ${buildingLotType}`}
+        />
         <Filter 
           showFilter={showFilter} 
           setShowFilter={setShowFilter}
@@ -97,6 +96,7 @@ function Sidebar() {
           ]}
         />
       </div>
+      </section>
       
       <hr/>  
     </section>
