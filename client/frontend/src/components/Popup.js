@@ -4,10 +4,8 @@ import '../stylesheets/Popup.css';
 export default function Popup({ children, close }){
 	const [visible, setVisible] = useState(false);
 	
-
-
 	return (<section className='popup-container'>
-		<section className='dim' />
+		<section className='dim' onClick={close}/>
 		<section className='popup'>
 			<div className='hbox'>
 				<span><b>Filters</b></span>
