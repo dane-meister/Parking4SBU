@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../stylesheets/Popup.css';
 
-export default function Popup({ children }){
+export default function Popup({ children, close }){
 	const [visible, setVisible] = useState(false);
 	
 
@@ -12,8 +12,14 @@ export default function Popup({ children }){
 			<div className='hbox'>
 				<span><b>Filters</b></span>
 				<span className='flex'/>
-				<img className='popup-x' src='/images/x.png' alt='close'/>
+				<img 
+					className='popup-x' 
+					src='/images/x.png' 
+					alt='close'
+					onClick={close}
+				/>
 			</div>
+			{children}
 		</section>
 
 	</section>); 
