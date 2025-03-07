@@ -31,7 +31,8 @@ function Map() {
 
 function Sidebar() {
   const [rateType, setRateType] = useState('hourly');
-  const [showFilter, setShowFilter] = useState(true);
+  const [buildingLotType, setBuildingLotType] = useState('building');
+  const [showFilter, setShowFilter] = useState(false);
 
   return (
     <section className='sidebar'>
@@ -66,23 +67,30 @@ function Sidebar() {
 
       <section className='margin-wrapper' style={{margin: "0px 15px"}}>
       <div className='hbox selection' id='building-lot-selection'>
-        <span className='selected hover-black'>Building</span>
+        <span 
+          className={'hover-black '+((buildingLotType==='building') && 'selected')}
+          onClick={() => setBuildingLotType('building')}   
+        >Building</span>
         <span>/</span>
-        <span className='hover-black'>Lot</span>
+        <span 
+          className={'hover-black '+((buildingLotType==='lot') && 'selected')}
+          onClick={() => setBuildingLotType('lot')}
+        >Lot</span>
       </div>
       <input id='building-lot-search'/>
-      <Filter />
-
+      
       </section>
-
-      <hr/>
-
-      {showFilter && <Popup />}
+      <div className='hbox' style={{margin: "3px 15px 0px 15px"}}>
+        <span className='flex'/>
+        <Filter showFilter={showFilter} setShowFilter={setShowFilter}/>
+      </div>
+      
+      <hr/>  
     </section>
   )
 }
 
-function Filter() {
+function Filter({ showFilter, setShowFilter }) {
   const [showFullLots, setShowFullLots] = useState(false);
   const [onlyShowEVChargerAvailable, setOnlyShowEVChargerAvailable] = useState(false);
   const [showCoveredLots, setShowCoveredLots] = useState(true);
@@ -95,45 +103,18 @@ function Filter() {
     setShowFullLots(event.target.checked);
   };
 
-  return (
-    <Collapsible 
-        className='filter' 
-        name='Filter'
+  return (<>
+    <button 
+      className='filter-btn'
+      onClick={() => setShowFilter(true)}
     >
-      <div>
-        <label className='' style={{display: 'flex', gap: '10px'}}>
-          Show Full Lots: 
-          <input 
-            className='pointer'
-            type='checkbox' 
-            id='show-full-lots'
-            defaultChecked={showFullLots}
-            onChange={setShowFullLots}
-          />
-        </label>
-      </div>
-      <div className='hbox' style={{gap: '10px'}}>
-        <span>
-          <label htmlFor='show-covered-lots'>Only Show Uncovered Lots</label>
-          <input 
-            className='pointer'
-            type='checkbox' 
-            id='only-show-uncovered-lots' 
-            defaultChecked={showUncoveredLots}
-            onChange={setShowUncoveredLots}
-          />  
-        </span>
-      </div>
-      <label className='' style={{display: 'flex', gap: '10px'}}>
-        EV charger available: 
-        <input 
-          className='pointer'
-          type='checkbox' 
-          id='show-full-lots'
-          defaultChecked={showFullLots}
-          onChange={setShowFullLots}
-        />
-      </label>
-    </Collapsible>
-  );
+      <img 
+        src='/images/filter.png' 
+        alt='filter icon' 
+        style={{height: '16px', marginRight: '10px'}}
+      />
+      Filter
+    </button>
+    {showFilter && <Popup close={() => setShowFilter(false)}/>}
+  </>);
 }
