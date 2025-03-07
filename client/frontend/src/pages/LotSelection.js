@@ -31,7 +31,12 @@ function Map() {
 
 function Sidebar() {
   const [rateType, setRateType] = useState('hourly');
-  const [showFilter, setShowFilter] = useState(true);
+  const [buildingLotType, setBuildingLotType] = useState('building');
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterUncovered, setFilterUncovered] = useState(true);
+  const [filterCovered, setFilterCovered] = useState(true);
+  const [filterEVCharging, setFilterEVCharging] = useState(false);
+  const [filterDisability, setFilterDisability] = useState(true);
 
   return (
     <section className='sidebar'>
@@ -66,28 +71,50 @@ function Sidebar() {
 
       <section className='margin-wrapper' style={{margin: "0px 15px"}}>
       <div className='hbox selection' id='building-lot-selection'>
-        <span className='selected hover-black'>Building</span>
+        <span 
+          className={'hover-black '+((buildingLotType==='building') && 'selected')}
+          onClick={() => setBuildingLotType('building')}   
+        >Building</span>
         <span>/</span>
-        <span className='hover-black'>Lot</span>
+        <span 
+          className={'hover-black '+((buildingLotType==='lot') && 'selected')}
+          onClick={() => setBuildingLotType('lot')}
+        >Lot</span>
       </div>
       <input id='building-lot-search'/>
-      <Filter />
-
+      
       </section>
-
-      <hr/>
-
-      {showFilter && <Popup />}
+      <div className='hbox' style={{margin: "3px 15px 0px 15px"}}>
+        <span className='flex'/>
+        <Filter 
+          showFilter={showFilter} 
+          setShowFilter={setShowFilter}
+          filters={[
+            filterCovered, setFilterCovered,
+            filterUncovered, setFilterUncovered,
+            filterEVCharging, setFilterEVCharging,
+            filterDisability, setFilterDisability
+          ]}
+        />
+      </div>
+      
+      <hr/>  
     </section>
   )
 }
 
-function Filter() {
+function Filter({ showFilter, setShowFilter, filters}) {
   const [showFullLots, setShowFullLots] = useState(false);
   const [onlyShowEVChargerAvailable, setOnlyShowEVChargerAvailable] = useState(false);
   const [showCoveredLots, setShowCoveredLots] = useState(true);
   const [showUncoveredLots, setShowUncoveredLots] = useState(true);
-  
+  const [
+    filterCovered, setFilterCovered,
+    filterUncovered, setFilterUncovered,
+    filterEVCharging, setFilterEVCharging,
+    filterDisability, setFilterDisability
+  ] = filters;
+
   const handleShowFullLotsChange = (event) => {
     setShowFullLots(event.target.checked);
   };
@@ -95,45 +122,86 @@ function Filter() {
     setShowFullLots(event.target.checked);
   };
 
+  const anyFilterEnabled = filterCovered || filterUncovered || filterEVCharging || filterDisability;
+
+  // Clear all checkboxes
+  const handleClearAll = () => {
+    setFilterCovered(false);
+    setFilterUncovered(false);
+    setFilterEVCharging(false);
+    setFilterDisability(false);
+  };
+
   return (
-    <Collapsible 
-        className='filter' 
-        name='Filter'
-    >
-      <div>
-        <label className='' style={{display: 'flex', gap: '10px'}}>
-          Show Full Lots: 
-          <input 
-            className='pointer'
-            type='checkbox' 
-            id='show-full-lots'
-            defaultChecked={showFullLots}
-            onChange={setShowFullLots}
-          />
-        </label>
-      </div>
-      <div className='hbox' style={{gap: '10px'}}>
-        <span>
-          <label htmlFor='show-covered-lots'>Only Show Uncovered Lots</label>
-          <input 
-            className='pointer'
-            type='checkbox' 
-            id='only-show-uncovered-lots' 
-            defaultChecked={showUncoveredLots}
-            onChange={setShowUncoveredLots}
-          />  
-        </span>
-      </div>
-      <label className='' style={{display: 'flex', gap: '10px'}}>
-        EV charger available: 
-        <input 
-          className='pointer'
-          type='checkbox' 
-          id='show-full-lots'
-          defaultChecked={showFullLots}
-          onChange={setShowFullLots}
+    <>
+      <button 
+        className='filter-btn'
+        onClick={() => setShowFilter(true)}
+      >
+        <img 
+          src='/images/filter.png' 
+          alt='filter icon' 
+          style={{height: '16px', marginRight: '10px'}}
         />
-      </label>
-    </Collapsible>
+        Filter
+      </button>
+
+      {showFilter && (
+        <Popup 
+          close={() => setShowFilter(false)}
+          onClearAll={handleClearAll}  
+          anyFilterEnabled={anyFilterEnabled}
+        >
+          {/* Checkboxes inside the popup body */}
+          <div className='filter-row hbox'>
+            <label>
+              <input 
+                className='filter-check' 
+                type='checkbox'
+                checked={filterUncovered}
+                onChange={() => setFilterUncovered(!filterUncovered)}
+              />
+              Lot — Uncovered
+            </label>
+          </div>
+
+          <div className='filter-row hbox'>
+            <label>
+              <input 
+                className='filter-check' 
+                type='checkbox'
+                checked={filterCovered}
+                onChange={() => setFilterCovered(!filterCovered)}
+              />
+              Lot — Covered
+            </label>
+          </div>
+
+          <div className='filter-row hbox'>
+            <label>
+              <input 
+                className='filter-check' 
+                type='checkbox'
+                checked={filterEVCharging}
+                onChange={() => setFilterEVCharging(!filterEVCharging)}
+              />
+              EV Charging
+            </label>
+          </div>
+
+          <div className='filter-row hbox'>
+            <label>
+              <input 
+                className='filter-check' 
+                type='checkbox'
+                checked={filterDisability}
+                onChange={() => setFilterDisability(!filterDisability)}
+              />
+              Disability Accessible
+            </label>
+          </div>
+        </Popup>
+      )}
+    </>
   );
 }
