@@ -27,14 +27,23 @@
 	display: flex;
 	flex-direction: column; /* so the header, body, footer stack vertically */
 	position: relative;     /* for positioning elements inside if needed */
+	
+	overflow: hidden;
+  	animation: fadeIn 0.2s ease-in-out;
   }
   
   .popup-header {
-	display: flex;
+	background-color: var(--royal-blue);
+    color: #fff;
+  	padding: 16px;
+  	display: flex;
+  	justify-content: space-between;
+  	align-items: center;
+	/* display: flex;
 	align-items: center;
 	justify-content: space-between;
 	padding: 16px;
-	border-bottom: 1px solid #e5e5e5;  /* subtle divider if you like */
+	border-bottom: 1px solid #e5e5e5;  subtle divider if you like */
   }
   
   .popup-header h2 {
