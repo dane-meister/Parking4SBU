@@ -12,7 +12,7 @@ const Header = () => {
       <div className="header-right">
         <button className="tickets-btn">Tickets</button>
         <Link to='/profile'>
-          <div className="profile-icon">👤</div>
+          <img className="profile-icon" src='/images/profile.png' alt='profile icon'/>
         </Link>
       </div>
     </header>

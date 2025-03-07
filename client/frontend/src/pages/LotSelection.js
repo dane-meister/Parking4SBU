@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import Collapsible from '../components/Collapsible'
+import Popup from '../components/Popup.js'
+
 
 const LotSelection = () => {
   return (
@@ -28,7 +30,9 @@ function Map() {
 }
 
 function Sidebar() {
-  const [rateType, setRateType] = useState('hourly')
+  const [rateType, setRateType] = useState('hourly');
+  const [showFilter, setShowFilter] = useState(true);
+
   return (
     <section className='sidebar'>
       <div className="hbox selection" id="rate-selection">
@@ -68,16 +72,19 @@ function Sidebar() {
       </div>
       <input id='building-lot-search'/>
       <Filter />
+
       </section>
 
       <hr/>
+
+      {showFilter && <Popup />}
     </section>
   )
 }
 
 function Filter() {
   const [showFullLots, setShowFullLots] = useState(false);
-  // const [evChargerAvailable, setEVChargerAvailable] = useState(true);
+  const [onlyShowEVChargerAvailable, setOnlyShowEVChargerAvailable] = useState(false);
   const [showCoveredLots, setShowCoveredLots] = useState(true);
   const [showUncoveredLots, setShowUncoveredLots] = useState(true);
   
@@ -85,9 +92,6 @@ function Filter() {
     setShowFullLots(event.target.checked);
   };
   const handleShowCoveredLotsChange = (event) => {
-    setShowFullLots(event.target.checked);
-  };
-  const handleShowUncoveredLotsChange = (event) => {
     setShowFullLots(event.target.checked);
   };
 
@@ -99,7 +103,6 @@ function Filter() {
       <div>
         <label className='' style={{display: 'flex', gap: '10px'}}>
           Show Full Lots: 
-          {/* <span style={{width: '100px'}}> </span> */}
           <input 
             className='pointer'
             type='checkbox' 
@@ -110,39 +113,27 @@ function Filter() {
         </label>
       </div>
       <div className='hbox' style={{gap: '10px'}}>
-        <span className='no-margin'>Covered Lots:</span>
-        <span className='flex'></span>
         <span>
-          <label htmlFor='show-covered-lots'>Show Covered</label>
+          <label htmlFor='show-covered-lots'>Only Show Uncovered Lots</label>
           <input 
             className='pointer'
             type='checkbox' 
-            id='show-covered-lots' 
-            defaultChecked={showCoveredLots}
-            onChange={setShowCoveredLots}
-          />            
-        </span>
-        <span>
-          <label htmlFor='show-covered-lots'>Show Uncovered</label>
-          <input 
-            className='pointer'
-            type='checkbox' 
-            id='show-uncovered-lots' 
+            id='only-show-uncovered-lots' 
             defaultChecked={showUncoveredLots}
             onChange={setShowUncoveredLots}
           />  
         </span>
       </div>
-      {/* <label className='' style={{display: 'flex', gap: '10px'}}> */}
-      {/*     EV charger available:  */}
-      {/*     <input  */}
-      {/*       className='pointer' */}
-      {/*       type='checkbox'  */}
-      {/*       id='show-full-lots' */}
-      {/*       defaultChecked={showFullLots} */}
-      {/*       onChange={setShowFullLots} */}
-      {/*     /> */}
-      {/*   </label> */}
+      <label className='' style={{display: 'flex', gap: '10px'}}>
+        EV charger available: 
+        <input 
+          className='pointer'
+          type='checkbox' 
+          id='show-full-lots'
+          defaultChecked={showFullLots}
+          onChange={setShowFullLots}
+        />
+      </label>
     </Collapsible>
   );
 }
