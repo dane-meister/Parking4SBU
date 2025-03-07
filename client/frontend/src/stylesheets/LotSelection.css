@@ -81,18 +81,3 @@ hr{
   padding: 0px 15px;
   align-items: center;
 }
-.results-type{
-  background-color: #f0f0f0;
-  padding: 0px 5px 3px 5px;
-  border-radius: 3px;
-}
-.results-type-name{
-  color: var(--medium-gray);
-  margin-right: 5px;
-}
-.results-tag{
-  margin-right: 5px;
-}
-.results-type > div{
-  align-items: center;
-}
