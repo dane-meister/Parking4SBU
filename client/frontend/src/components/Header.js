@@ -10,7 +10,9 @@ const Header = () => {
         <div className="header-title">P4SBU</div>
       </Link>
       <div className="header-right">
-        <button className="tickets-btn">Tickets</button>
+        <Link to='/tickets'>
+          <button className="tickets-btn">Tickets</button>
+        </Link>
         <Link to='/profile'>
           <img className="profile-icon" src='/images/profile.png' alt='profile icon'/>
         </Link>
