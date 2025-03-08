@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import Collapsible from '../components/Collapsible'
@@ -26,14 +26,17 @@ export default LotSelection
 
 
 function Sidebar() {
-  const [rateType, setRateType] = useState('hourly');
-  const [buildingLotType, setBuildingLotType] = useState('building');
-  const [showFilter, setShowFilter] = useState(false);
-  const [filterUncovered, setFilterUncovered] = useState(true);
-  const [filterCovered, setFilterCovered] = useState(true);
-  const [filterEVCharging, setFilterEVCharging] = useState(false);
-  const [filterDisability, setFilterDisability] = useState(true);
+  const [ rateType, setRateType ] = useState('hourly');
+  const [ buildingLotType, setBuildingLotType ] = useState('building');
+  
+  const [ showFilter, setShowFilter ] = useState(false);
+  const [ filterUncovered, setFilterUncovered ] = useState(true);
+  const [ filterCovered, setFilterCovered ] = useState(true);
+  const [ filterEVCharging, setFilterEVCharging ] = useState(false);
+  const [ filterDisability, setFilterDisability ] = useState(true);
 
+  const [ resultType, setResultType ] = useState('Relevance');
+  
   return (
     <section className='sidebar'>
       <div className="hbox selection" id="rate-selection">
@@ -99,13 +102,7 @@ function Sidebar() {
         <header id='results-header' className='hbox'>
           Results
           <span className='flex'/>
-          <Collapsible
-            name='sort' 
-            className='results-type'
-            startOpen={false}
-            tag={<span className='results-tag'>Relevance</span>}
-          >
-          </Collapsible>
+          sort by
         </header>
       </section>
     </section>
