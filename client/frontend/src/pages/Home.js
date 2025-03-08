@@ -1,8 +1,8 @@
 export default function Home() {
   return (
     <section className="fullscreen">
-      <Map />
-      <Sidebar />
+      {/* <Map />
+      <Sidebar /> */}
     </section>
   )
 }

@@ -1,20 +1,27 @@
+import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import NoPage from "./pages/NoPage";
-import Profile from "./pages/Profile";
+import App from "./App";
+import "./stylesheets/index.css"; // Global styles
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<NoPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+
+window.addEventListener('scroll', () => {
+  const header = document.querySelector('.header');
+  const navBanner = document.querySelector('.nav-banner');
+  
+  // Set threshold – e.g., once scrolling past 100px, collapse header
+  if (window.scrollY > 100) {
+    header.classList.add('collapsed');
+    navBanner.classList.add('fixed');
+  } else {
+    header.classList.remove('collapsed');
+    navBanner.classList.remove('fixed');
+  }
+});
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
