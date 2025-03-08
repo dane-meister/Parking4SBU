@@ -32,7 +32,7 @@
   margin: 15px 0px;
   color: var(--gray)
 }
-.selected{
+#selected{
   text-decoration: underline;
   color: black;
 }
@@ -115,16 +115,24 @@ hr{
   justify-content: space-around;
 }
 
-.hbox.selection span {
+.hbox.selection > * {
   padding: 5px 10px;
-  cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.2s;
+  user-select: none;
 }
 
-.hbox.selection span:hover {
+.type-hover{ 
+  cursor: pointer;
+  color: var(--gray);
+}
+.type-hover:active{ 
+  background-color: #efefef; 
+}
+.type-hover:hover:not(:active) {
   background-color: var(--light-gray);
-  color: var(--dark-gray);
+  /*  color: var(--dark-gray);*/
+  color: black;
 }
 
 .sort-img{
