@@ -1,10 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
-import NoPage from "./pages/NoPage";
-import Header from "./components/Header";
-import LotSelection from "./pages/LotSelection";
-import Footer from "./components/Footer";
+import { Profile, NoPage, LotSelection, Tickets} from './pages'
+import { Header, Footer } from './components'
 import "./stylesheets/App.css"; // Styles for layout
 import "./stylesheets/index.css"; // Global styles
 
@@ -15,6 +11,7 @@ export default function App() {
         <Routes>
             <Route index element={<LotSelection />} />          {/* "/" Route */}
             <Route path="/profile" element={<Profile />} />  {/* "/profile" Route */}
+            <Route path="/tickets" element={<Tickets />} />  {/* "/tickets" Route */}
             <Route path="*" element={<NoPage />} />     {/* Catch-all for 404 pages */}
         </Routes>
         <Footer />
