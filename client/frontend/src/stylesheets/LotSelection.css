@@ -32,7 +32,7 @@
   margin: 15px 0px;
   color: var(--gray)
 }
-#selected{
+.hbox.selection .selected{
   text-decoration: underline;
   color: black;
 }
