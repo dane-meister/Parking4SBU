@@ -5,19 +5,26 @@ import '../stylesheets/Header.css';
 
 const Header = () => {
   return (
+    <>
     <header className="header">
-      <Link to='/' style={{textDecoration: 'none', color: 'white'}}>
-        <div className="header-title">P4SBU</div>
-      </Link>
-      <div className="header-right">
-        <Link to='/tickets'>
-          <button className="tickets-btn">Tickets</button>
-        </Link>
-        <Link to='/profile'>
-          <img className="profile-icon" src='/images/profile.png' alt='profile icon'/>
-        </Link>
-      </div>
-    </header>
+        <div className="header-left">
+          <img className="logo" src="/images/sbu-logo.png" alt="Stony Brook Logo" />
+          <div className="header-title">P4SBU</div>
+        </div>
+        <div className="header-right">
+          <Link to="/profile">
+            <img className="profile-icon" src="/images/profile.png" alt="Profile Icon" />
+          </Link>
+        </div>
+      </header>
+      <nav className="nav-banner">
+        <Link to="/">Home</Link>
+        <Link to="/tickets">Tickets</Link>
+        <Link to="/reservations">Reservations</Link>
+      </nav>
+    
+    </>
+
   );
 };
 

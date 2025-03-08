@@ -24,6 +24,28 @@ body {
   overflow: hidden;
 } */
 
+@font-face {
+  font-family: 'Alumni Sans Bold';
+  src: url('../fonts/static/AlumniSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Alumni Sans Medium';
+  src: url('../fonts/static/AlumniSans-Medium.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Barlow Medium';
+  src: url('../fonts/Barlow_Semi_Condensed/BarlowSemiCondensed-Medium.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+
 *{
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
   -moz-box-sizing: border-box;    /* Firefox, other Gecko */
@@ -51,3 +73,4 @@ code {
 }
 .hover-black{ cursor: pointer; }
 .hover-black:hover{ color: black; }
+
