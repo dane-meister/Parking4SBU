@@ -41,32 +41,27 @@ function Sidebar() {
     <section className='sidebar'>
       <div className="hbox selection" id="rate-selection">
         <span 
-          id={(rateType==='hourly' ? 'selected' : '')}
-          className={'type-hover'}
+          className={'type-hover '+(rateType==='hourly' ? 'selected' : '')}
           onClick={() => setRateType('hourly')}
         >Hourly</span>
         <span>/</span>
         <span 
-          id={(rateType==='daily' ? 'selected' : '')}
-          className={'type-hover'}
+          className={'type-hover '+(rateType==='daily' ? 'selected' : '')} 
           onClick={() => setRateType('daily')}
         >Daily</span>
         <span>/</span>
         <span 
-          id={(rateType==='monthly' ? 'selected' : '')}
-          className={'type-hover'}
+          className={'type-hover '+(rateType==='monthly' ? 'selected' : '')}
           onClick={() => setRateType('monthly')}
         >Monthly</span>
         <span>/</span>
         <span 
-          id={(rateType==='semesterly' ? 'selected' : '')}
-          className={'type-hover'}
+          className={'type-hover '+(rateType==='semesterly' ? 'selected' : '')}
           onClick={() => setRateType('semesterly')}
         >Semesterly</span>
         <span>/</span>
         <span 
-          id={(rateType==='yearly' ? 'selected' : '')}
-          className={'type-hover'}
+          className={'type-hover '+(rateType==='yearly' ? 'selected' : '')}
           onClick={() => setRateType('yearly')}
         >Yearly</span>
       </div>
@@ -76,14 +71,12 @@ function Sidebar() {
       <section className='margin-wrapper' style={{margin: "0px 15px"}}>
       <div className='hbox selection' id='building-lot-selection'>
         <span 
-          id={((buildingLotType==='building') && 'selected')}
-          className={'type-hover'}
+          className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
           onClick={() => setBuildingLotType('building')}   
         >Building</span>
         <span>/</span>
         <span 
-          id={((buildingLotType==='lot') && 'selected')}
-          className={'type-hover'}
+          className={'type-hover '+((buildingLotType==='lot') ? 'selected' : '')}
           onClick={() => setBuildingLotType('lot')}
         >Lot</span>
       </div>
