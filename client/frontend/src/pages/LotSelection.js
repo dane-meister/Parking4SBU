@@ -3,6 +3,7 @@ import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import Collapsible from '../components/Collapsible'
 import Popup from '../components/Popup.js'
+import Map from '../components/Map.js'
 
 
 const LotSelection = () => {
@@ -23,11 +24,6 @@ const LotSelection = () => {
 
 export default LotSelection
 
-function Map() {
-  return (
-    <div>Map</div>
-  )
-}
 
 function Sidebar() {
   const [rateType, setRateType] = useState('hourly');
