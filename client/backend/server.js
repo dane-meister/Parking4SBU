@@ -12,6 +12,15 @@ app.use(express.json()); // Parse JSON requests
 
 // API Routes
 
+// Test PostgreSQL connection
+pool.query("SELECT NOW()", (err, res) => {
+  if (err) {
+    console.error("Error connecting to the database:", err.stack);
+  } else {
+    console.log("Database connected! Server time:", res.rows[0].now);
+  }
+});
+
 // Fetch all buildings
 app.get("/api/buildings", async (req, res) => {
     try {
