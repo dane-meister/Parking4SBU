@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
-import Collapsible from '../components/Collapsible'
+import Collapsible from '../components/Collapsible.js'
 import Popup from '../components/Popup.js'
 import Map from '../components/Map.js'
 
