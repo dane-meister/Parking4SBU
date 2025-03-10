@@ -2,7 +2,7 @@ Name,Location,Capacity,Faculty Capacity,Faculty Availibility,Commuter Perimeter 
 Lot 1 (Admin Overflow),MULTIPOINT ((40.916332 -73.116904)),676,138,138,0,0,0,0,0,0,0,0,524,524,5.0,14,14,0,0,False
 Lot 2 (M & H),MULTIPOINT ((40.917838 -73.118383)),432,303,303,0,0,121,121,0,0,0,0,0,0,NULL,8,8,0,0,False
 Lot 3 (Stadium),MULTIPOINT ((40.918698 -73.122297)),913,445,445,0,0,456,456,0,0,0,0,0,0,NULL,10,10,2,2,False
-Lot 4 (Union Metered Lot),"MULTIPOINT ((40.917800, -73.122199))",68,0,0,0,0,0,0,0,0,60,60,0,0,NULL,8,8,0,0,False
+Lot 4 (Union Metered Lot),"MULTIPOINT ((40.917800 -73.122199))",68,0,0,0,0,0,0,0,0,60,60,0,0,NULL,8,8,0,0,False
 Staller/East Side Dining Service Areas,MULTIPOINT ((40.916158 -73.118867)),14,12,12,0,0,0,0,0,0,0,0,0,0,NULL,2,2,0,0,False
 Lot 5A (North P),MULTIPOINT ((40.923252 -73.125659)),126,0,0,126,126,0,0,0,0,0,0,0,0,NULL,0,0,0,0,False
 Lot 5B (North P),MULTIPOINT ((40.922064 -73.126946)),275,0,0,237,237,0,0,0,0,30,30,0,0,NULL,8,8,0,0,False
