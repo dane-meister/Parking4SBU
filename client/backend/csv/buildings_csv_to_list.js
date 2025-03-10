@@ -38,6 +38,9 @@ function writeCleanBuildingsToCSV(buildings){
       value = value.replace('”', "");
       value = value.replace('"', "");
 
+      if(key === 'building_name')
+        return `"${value}"`
+
       return value;
     });
     csvRows.push(values.join(','));
