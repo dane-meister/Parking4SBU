@@ -179,6 +179,7 @@ hr{
   flex-direction: column;
   overflow: hidden; /* Prevent parent from scrolling */
   margin-right: -15px; /* undo sidebar padding */
+  margin-left: -15px;
   margin-bottom: -15px;
 }
 .lot-results{
