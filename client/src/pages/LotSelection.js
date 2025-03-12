@@ -4,6 +4,7 @@ import '../stylesheets/index.css'
 import Collapsible from '../components/Collapsible'
 import Popup from '../components/Popup.js'
 import Map from '../components/Map.js'
+import LotResult from '../components/LotResult.js'
 
 
 const LotSelection = () => {
@@ -104,6 +105,9 @@ function Sidebar() {
           <span className='flex'/>
           sort by
         </header>
+        {(new Array(7).fill(0)).map(elem => {
+          return <LotResult/>
+        })}
       </section>
     </section>
   )
