@@ -73,4 +73,6 @@ code {
 }
 .hover-black{ cursor: pointer; }
 .hover-black:hover{ color: black; }
+.wide{ width: 100% }
+.tall{ height: 100% }
 

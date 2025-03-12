@@ -4,6 +4,7 @@ import '../stylesheets/index.css'
 import Collapsible from '../components/Collapsible'
 import Popup from '../components/Popup.js'
 import Map from '../components/Map.js'
+import LotResult from '../components/LotResult.js'
 
 
 const LotSelection = () => {
@@ -98,12 +99,25 @@ function Sidebar() {
       </section>
       
       <hr/>  
-      <section>
+      <section className='results'>
         <header id='results-header' className='hbox'>
           Results
-          <span className='flex'/>
+          <span className='flex' key={1}/>
           sort by
         </header>
+        <section className='lot-results'>
+          <LotResult
+            lot_name='Lot 40'
+            distance='40ft'
+            available_capacity='50 spots available'
+            has_disability={true}
+            lot_img_src='images/lots/lot_40.png'
+          />
+          {Array.from({length: 10}, (_, n) => n).map(elem => {
+            return <LotResult key={elem}/>
+          })}
+        </section>
+        
       </section>
     </section>
   )

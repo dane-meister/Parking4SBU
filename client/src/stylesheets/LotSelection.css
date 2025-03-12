@@ -21,6 +21,8 @@
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  height: calc(100% - 105px -120px);
+  /* overflow-y: hidden; */
   /* align-items: center;
   justify-content: center; */
   /* padding: 20px;  */
@@ -107,6 +109,9 @@ hr{
   padding: 15px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .hbox.selection {
@@ -166,4 +171,21 @@ hr{
   align-items: center;
   justify-content: center;
   border-right: 2px solid #ccc;
+}
+.results{ 
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent parent from scrolling */
+  margin-right: -15px; /* undo sidebar padding */
+  margin-left: -15px;
+  margin-bottom: -15px;
+}
+.lot-results{
+  flex: 1;
+  overflow-y: scroll;
+}
+.lot-result-info{
+  padding-right: 10px;
 }
