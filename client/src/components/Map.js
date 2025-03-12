@@ -5,7 +5,6 @@ import '../stylesheets/Map.css';
 
 const Map = () => {
     useEffect(() => {
-      // Define campus center and bounds
       const campusCenter = [40.911117, -73.122142]; 
       const campusBounds = [
         [40.889973, -73.147639], // Southwest corner
@@ -15,14 +14,13 @@ const Map = () => {
       if (L.DomUtil.get('map')._leaflet_id) {
         return;
       }
-  
       // Initialize the map in the "map" div
       const map = L.map('map', {
         center: campusCenter,
-        zoom: 20,
-        minZoom: 16,
-        maxBounds: campusBounds,         // Restrict the map's view to these bounds
-        maxBoundsViscosity: 1.0            // Fully restrict panning outside bounds
+        zoom: 5,
+        minZoom: 15,
+        maxBounds: campusBounds,          
+        maxBoundsViscosity: 1.0           
       });
 
       map.on('zoomend', function() {
@@ -34,8 +32,6 @@ const Map = () => {
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map);
   
-      // Optionally, add a marker at the campus center
-      // L.marker(campusCenter).addTo(map);
     }, []);
   
     return (
