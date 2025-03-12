@@ -1,17 +1,14 @@
+import '../stylesheets/LotResult.css'
+
 export default function LotResult(){
-  const image_style ={
-    height: '100px',
-  }
-  const result_style = {
-    height: '120px',
-    borderTop: 'black solid 1px',
-    alignItems: 'center'
-  }
-  return (<section className="hbox" style={result_style}>
-    <img src='/images/placeholder_lot.png' style={image_style}/>
+  return (<section className="lot-result hbox" >
+    <img 
+      className='result-img' 
+      src='/images/lots/placeholder_lot.png'
+    />
     
-    <section className="hbox" style={{width:'100%'}}>
-      <div>
+    <section className="lot-result-info-container hbox wide tall">
+      <div className='lot-result-info vbox'>
         <div className='result-name-row'>Lot 19</div>
         <div className="result-dist-row">500 ft</div>
         <div className="result-price-time-row">
@@ -21,12 +18,13 @@ export default function LotResult(){
         <div className="result-available-row">20 spots available</div>
       </div>
       <div className="flex"/>
-      <div className="vbox">
+      <div className="lot-result-info vbox">
         <div className="result-dummy-row flex"/>
         <div className="result-dummy-row flex"/>
         <div className="result-covered-row">uncovered</div>
-        <div className="results-icon-row">
-          
+        <div className="result-icon-row">
+          <img src='/images/disability_icon.png'/>
+          <img src='/images/ev_icon.png'/>
         </div>
       </div>
     </section>

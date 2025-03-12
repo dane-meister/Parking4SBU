@@ -99,15 +99,18 @@ function Sidebar() {
       </section>
       
       <hr/>  
-      <section>
+      <section className='results'>
         <header id='results-header' className='hbox'>
           Results
           <span className='flex'/>
           sort by
         </header>
-        {(new Array(7).fill(0)).map(elem => {
-          return <LotResult/>
-        })}
+        <section className='lot-results'>
+          {(new Array(20).fill(0)).map(elem => {
+            return <LotResult/>
+          })}
+        </section>
+        
       </section>
     </section>
   )
