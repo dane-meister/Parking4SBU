@@ -102,12 +102,19 @@ function Sidebar() {
       <section className='results'>
         <header id='results-header' className='hbox'>
           Results
-          <span className='flex'/>
+          <span className='flex' key={1}/>
           sort by
         </header>
         <section className='lot-results'>
-          {(new Array(20).fill(0)).map(elem => {
-            return <LotResult/>
+          <LotResult
+            lot_name='Lot 40'
+            distance='40ft'
+            available_capacity='50 spots available'
+            has_disability={true}
+            lot_img_src='images/lots/lot_40.png'
+          />
+          {Array.from({length: 10}, (_, n) => n).map(elem => {
+            return <LotResult key={elem}/>
           })}
         </section>
         
