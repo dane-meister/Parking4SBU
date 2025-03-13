@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import '../stylesheets/Header.css';
 
 
-const Header = () => {
+const Header = ({selectedLot, setSelectedLot}) => {
   return (
     <>
     <header className="header">
@@ -18,7 +18,7 @@ const Header = () => {
         </div>
       </header>
       <nav className="nav-banner">
-        <Link to="/">Home</Link>
+        <Link to="/" onClick={() => setSelectedLot(null)}>Home</Link>
         <Link to="/tickets">Tickets</Link>
         <Link to="/reservations">Reservations</Link>
       </nav>

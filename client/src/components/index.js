@@ -2,3 +2,8 @@ export { default as Collapsible } from './Collapsible';
 export { default as Footer } from './Footer';
 export { default as Header } from './Header';
 export { default as Popup } from './Popup';
+export { default as Sidebar } from './Sidebar';
+export { default as Filter } from './Filter';
+export { default as LotResult } from './LotResult'; 
+export { default as Map } from './Map';
+export { default as InformationSystems } from './InformationSystems';
