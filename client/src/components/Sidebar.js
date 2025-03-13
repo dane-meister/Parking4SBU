@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Filter, LotResult, InformationSystems, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   const [ rateType, setRateType ] = useState('hourly');
   const [ buildingLotType, setBuildingLotType ] = useState('building');
   
@@ -12,7 +12,7 @@ function Sidebar({ selectedLot, setSelectedLot }) {
   const [ filterDisability, setFilterDisability ] = useState(true);
 
   const [ resultType, setResultType ] = useState('Relevance');
-  const [value, setValue] = useState('');
+  const [ value, setValue ] = useState('');
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -80,6 +80,8 @@ function Sidebar({ selectedLot, setSelectedLot }) {
             {/* /> */}
             <Search 
               searchType={buildingLotType}
+              buildings={buildings}
+              parkingLots={parkingLots}
               value={value}
               setValue={setValue}
             />
