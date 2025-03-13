@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const sequelize = require("./db");
+
+// Import models
 const Building = require("./models/Building");
 const ParkingLot = require("./models/ParkingLot");
 
