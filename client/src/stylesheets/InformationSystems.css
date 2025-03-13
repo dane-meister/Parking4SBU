@@ -59,3 +59,18 @@
 .selected-lot-book-btn:active{
 	background-color: var(--red);
 }
+.back-arrow{
+	height: 30px;
+	width: 30px;
+	opacity: 50%;
+	cursor: pointer;
+}
+.back-arrow:hover{ opacity: 1;}
+.back-arrow:active{ opacity: .6;}
+.arrow-wrapper{
+	width: 35px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}

@@ -6,6 +6,7 @@ export default function InformationSystems(props){
 	return (<section className='information-systems'>
 		<section className='selected-lot-info hbox wide'>
 			<div className='selected-lot-text flex'>
+				
 				<div className='selected-lot-name'>Lot 36B</div>
 				<div className='selected-lot-price-time'>
 					<span className='selected-lot-price'>$2.25 / hr</span>
@@ -15,6 +16,7 @@ export default function InformationSystems(props){
 					<img 
 						className='selected-lot-icon' 
 						src='/images/disability_icon.png'
+						alt='disability parking icon'
 					/>
 					<span>Disability parking</span>
 				</div>
@@ -22,6 +24,7 @@ export default function InformationSystems(props){
 					<img 
 						className='selected-lot-icon' 
 						src='/images/ev_icon.png'
+						alt='available ev chergers icon'
 					/>
 					<span>Disability parking</span>
 				</div>
@@ -30,6 +33,7 @@ export default function InformationSystems(props){
 			<img 
 				src={lotImgSrc ?? '/images/lots/placeholder_lot.png'} 
 				className='selected-lot-img'
+				alt='lot'
 			/>
 		</section>
 		<hr />
