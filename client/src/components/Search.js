@@ -3,26 +3,17 @@ import React, { useState } from 'react';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
-const AutocompleteSearch = ({ value, setValue, searchType }) => {
-  const [suggestions, setSuggestions] = useState([]);
-
+const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots }) => {
+  const [ suggestions, setSuggestions ] = useState([]);
+  console.log(buildings[0])
   // Mock data for suggestions
-  const languages = [
-    'React',
-    'Angular',
-    'Vue.js',
-    'Ember.js',
-    'Backbone.js',
-    'Svelte',
-    'Express.js',
-    'Meteor.js',
-    'Next.js',
-    'Nuxt.js'
-  ];
+  const building_names = buildings.map(bldg => bldg.building_name);
 
   const getSuggestions = (inputValue) => {
     const regex = new RegExp(inputValue.trim(), 'i');
-    return languages.filter((language) => regex.test(language));
+    const suggestions = building_names.filter((elem) => regex.test(elem));
+    const MAX_RETURN = 5;
+    return suggestions.slice(0, MAX_RETURN);
   };
 
   const onSuggestionsFetchRequested = ({ value }) => {

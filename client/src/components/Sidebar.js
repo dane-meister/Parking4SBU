@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Filter, LotResult, InformationSystems, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   const [ rateType, setRateType ] = useState('hourly');
   const [ buildingLotType, setBuildingLotType ] = useState('building');
   
@@ -12,7 +12,7 @@ function Sidebar({ selectedLot, setSelectedLot }) {
   const [ filterDisability, setFilterDisability ] = useState(true);
 
   const [ resultType, setResultType ] = useState('Relevance');
-  const [value, setValue] = useState('');
+  const [ value, setValue ] = useState('');
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -51,7 +51,15 @@ function Sidebar({ selectedLot, setSelectedLot }) {
 
       <hr style={{margin: "0px 15px"}}/>
       { selectedLot 
-        ? <InformationSystems />
+        ? <InformationSystems 
+            lotObj={{
+              lotName: 'Lot 40',
+              distance: '40ft',
+              availableCapacity: '50 spots available',
+              hasDisability: false,
+              lotImgSrc: 'images/lots/lot_40.png'
+            }}
+          />
         : (<>
     
           <div className='hbox selection' id='building-lot-selection'>
@@ -72,6 +80,8 @@ function Sidebar({ selectedLot, setSelectedLot }) {
             {/* /> */}
             <Search 
               searchType={buildingLotType}
+              buildings={buildings}
+              parkingLots={parkingLots}
               value={value}
               setValue={setValue}
             />

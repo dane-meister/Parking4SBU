@@ -49,11 +49,11 @@ const LotSelection = ({ selectedLot, setSelectedLot }) => {
           <p>{error}</p>
         ) : (
           <>
-              <Sidebar 
-                selectedLot={selectedLot} 
-                setSelectedLot={setSelectedLot} 
-                buildings={buildings}
-                parkingLots={parkingLots}
+            <Sidebar 
+              selectedLot={selectedLot} 
+              setSelectedLot={setSelectedLot} 
+              buildings={buildings}
+              parkingLots={parkingLots}
             />
           </>
         )}
