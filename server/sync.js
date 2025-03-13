@@ -4,7 +4,7 @@ const ParkingLot = require("./models/ParkingLot");
 
 (async () => {
   try {
-    await sequelize.sync({ alter: true }); 
+    await sequelize.sync({ force: true }); 
     console.log("Tables created successfully!");
     process.exit();
   } catch (error) {
