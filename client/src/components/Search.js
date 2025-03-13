@@ -40,7 +40,6 @@ const AutocompleteSearch = ({ value, setValue, searchType }) => {
   const getSuggestionValue = (suggestion) => suggestion;
 
   const renderSuggestion = (suggestion) => {
-    console.log(suggestion);
     return <div>{suggestion}</div>;
   }
 
