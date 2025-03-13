@@ -6,6 +6,7 @@ export default function InformationSystems(props){
 	return (<section className='information-systems'>
 		<section className='selected-lot-info hbox wide'>
 			<div className='selected-lot-text flex'>
+				
 				<div className='selected-lot-name'>Lot 36B</div>
 				<div className='selected-lot-price-time'>
 					<span className='selected-lot-price'>$2.25 / hr</span>

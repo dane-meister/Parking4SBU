@@ -14,7 +14,13 @@ function Sidebar({ selectedLot, setSelectedLot }) {
   const [ resultType, setResultType ] = useState('Relevance');
   return (
     <section className='sidebar'>
-      <div className="hbox selection" id="rate-selection">
+      <div className='hbox'>
+      {selectedLot && 
+        <div className='arrow-wrapper'>
+          <img src='/images/arrow.png' alt='back' className='back-arrow' onClick={()=>setSelectedLot(null)}/>
+        </div>
+      }
+      <div className="hbox selection" id="rate-selection" style={selectedLot ? {marginRight:'35px'} : {}}>
         <span 
           className={'type-hover '+(rateType==='hourly' ? 'selected' : '')}
           onClick={() => setRateType('hourly')}
@@ -39,6 +45,7 @@ function Sidebar({ selectedLot, setSelectedLot }) {
           className={'type-hover '+(rateType==='yearly' ? 'selected' : '')}
           onClick={() => setRateType('yearly')}
         >Yearly</span>
+      </div>
       </div>
 
       <hr style={{margin: "0px 15px"}}/>
