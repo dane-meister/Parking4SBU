@@ -80,7 +80,7 @@ hr{
 .filter-btn{
   background-color: var(--light-gray);
   color: var(--dark-gray);
-  margin-top: 10px;
+/*  margin-top: 10px;*/
   font-size: 16px;
   border: none;
   border-radius: 6%;
