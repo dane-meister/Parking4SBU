@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Filter, LotResult, InformationSystems } from '.'
+import { Filter, LotResult, InformationSystems, Search } from '.'
 
 function Sidebar({ selectedLot, setSelectedLot }) {
   const [ rateType, setRateType ] = useState('hourly');
@@ -12,6 +12,7 @@ function Sidebar({ selectedLot, setSelectedLot }) {
   const [ filterDisability, setFilterDisability ] = useState(true);
 
   const [ resultType, setResultType ] = useState('Relevance');
+  const [value, setValue] = useState('');
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -49,11 +50,10 @@ function Sidebar({ selectedLot, setSelectedLot }) {
       </div>
 
       <hr style={{margin: "0px 15px"}}/>
-      {console.log('selectedLot:',selectedLot)}
       { selectedLot 
         ? <InformationSystems />
         : (<>
-          <section className='margin-wrapper' style={{margin: "0px 15px"}}>
+    
           <div className='hbox selection' id='building-lot-selection'>
             <span 
               className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
@@ -67,8 +67,13 @@ function Sidebar({ selectedLot, setSelectedLot }) {
           </div>
 
           <div className='hbox'>
-            <input id='building-lot-search'
-              placeholder={`Search for a ${buildingLotType}`}
+            {/* <input id='building-lot-search' */}
+            {/*   placeholder={`Search for a ${buildingLotType}`} */}
+            {/* /> */}
+            <Search 
+              searchType={buildingLotType}
+              value={value}
+              setValue={setValue}
             />
             <Filter 
               showFilter={showFilter} 
@@ -81,7 +86,6 @@ function Sidebar({ selectedLot, setSelectedLot }) {
               ]}
             />
           </div>
-          </section>
           
           <hr/>  
 
@@ -104,7 +108,6 @@ function Sidebar({ selectedLot, setSelectedLot }) {
                 return <LotResult key={elem}/>
               })}
             </section>
-            
           </section>
         </>)
       }
