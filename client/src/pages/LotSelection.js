@@ -1,10 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
-// import Collapsible from '../components/Collapsible'
-// import Popup from '../components/Popup.js'
-// import Map from '../components/Map.js'
-// import LotResult from '../components/LotResult.js'
 
 import { Sidebar, Map } from '../components'
 
