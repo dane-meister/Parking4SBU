@@ -30,7 +30,7 @@
 
 .selection{
   justify-content: center;
-  gap: 10px;
+/*  gap: 5px;*/
   margin: 15px 0px;
   color: var(--gray)
 }
@@ -112,19 +112,25 @@ hr{
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
 }
 
 .hbox.selection {
   font-size: 16px;
   color: var(--gray);
-  justify-content: space-around;
+/*  justify-content: space-around;*/
+  justify-content: center;
+  gap: 15px;
 }
 
 .hbox.selection > * {
-  padding: 5px 10px;
+  padding: 5px 0px;
   border-radius: 5px;
   transition: background-color 0.2s;
   user-select: none;
+}
+.hbox.selection > .type-hover{
+  padding: 5px 10px;
 }
 
 .type-hover{ 
