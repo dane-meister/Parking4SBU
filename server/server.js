@@ -6,6 +6,7 @@ const sequelize = require("./db");
 // Import models
 const Building = require("./models/Building");
 const ParkingLot = require("./models/ParkingLot");
+const { getSortedParkingLots } = require("./services/wayfindingService");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -30,6 +31,17 @@ app.get("/api/parking-lots", async (req, res) => {
     res.json(parkingLots);
   } catch (error) {
     res.status(500).json({ message: "Error fetching parking lots", error: error.message });
+  }
+});
+
+// Wayfinding endpoint
+app.get("/api/wayfinding/:buildingId", async (req, res) => {
+  try {
+      const { buildingId } = req.params;
+      const sortedLots = await getSortedParkingLots(buildingId);
+      res.json(sortedLots);
+  } catch (error) {
+      res.status(500).json({ message: "Error computing wayfinding distances", error: error.message });
   }
 });
   
