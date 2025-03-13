@@ -5,7 +5,6 @@ import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
 const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots }) => {
   const [ suggestions, setSuggestions ] = useState([]);
-  console.log(buildings[0])
   // Mock data for suggestions
   const building_names = buildings.map(bldg => bldg.building_name);
 
