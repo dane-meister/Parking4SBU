@@ -25,6 +25,7 @@ export default function Collapsible({ className, name, imgsrc, children, startOp
 					src={imgsrc ? imgsrc : '/images/chevron.webp'}
 					style={imgStyle}
 					onClick={toggleOpen}
+					alt='collapse section'
 				/>
 			</div>
 			{open && <div>{children}</div>}

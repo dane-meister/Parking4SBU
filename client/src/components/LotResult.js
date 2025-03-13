@@ -19,6 +19,7 @@ export default function LotResult(props){
       className='result-img' 
       src={lotImgSrc ?? '/images/lots/placeholder_lot.png'}
       style={lotImgSrc ? {height: '120px'} : {margin: '0px 25px 0px 10px'}}
+      alt='lot'
     />
     
     <section className="lot-result-info-container hbox wide tall">
@@ -37,8 +38,8 @@ export default function LotResult(props){
         <div className="result-dummy-row flex"/>
         <div className="result-covered-row">{!!isCovered ? 'covered' : 'uncovered'}</div>
         <div className="result-icon-row">
-          {hasDisability && <img src='/images/disability_icon.png'/>}
-          {hasEvCharger && <img src='/images/ev_icon.png'/>}
+          {hasDisability && <img src='/images/disability_icon.png' alt='has disability parking icon'/>}
+          {hasEvCharger && <img src='/images/ev_icon.png' alt='has ev charger icon'/>}
         </div>
       </div>
     </section>
