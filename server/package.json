@@ -21,7 +21,8 @@
     "fs": "^0.0.1-security",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.13.3",
+    "nodemon": "^3.1.9",
+    "pg": "^8.14.0",
     "pg-hstore": "^2.3.4",
     "redis": "^4.7.0",
     "sequelize": "^6.37.6"
