@@ -52,13 +52,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
       <hr style={{margin: "0px 15px"}}/>
       { selectedLot 
         ? <InformationSystems 
-            lotObj={{
-              lotName: 'Lot 40',
-              distance: '40ft',
-              availableCapacity: '50 spots available',
-              hasDisability: false,
-              lotImgSrc: 'images/lots/lot_40.png'
-            }}
+            lotObj={selectedLot}
           />
         : (<>
     
@@ -106,16 +100,13 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               sort by
             </header>
             <section className='lot-results'>
-              <LotResult
-                lotName='Lot 40'
-                distance='40ft'
-                availableCapacity='50 spots available'
-                hasDisability={true}
-                lotImgSrc='images/lots/lot_40.png'
-                setSelectedLot={() => setSelectedLot('Lot 40')}
-              />
-              {Array.from({length: 10}, (_, n) => n).map(elem => {
-                return <LotResult key={elem}/>
+              {console.log(parkingLots[0])}
+              {parkingLots.map(lot => {
+                return <LotResult 
+                  lotObj={lot}
+                  setSelectedLot={setSelectedLot}
+                  distance={null}
+                />
               })}
             </section>
           </section>
