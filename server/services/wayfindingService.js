@@ -6,7 +6,7 @@ function manhattanDistance(coord1, coord2) {
         console.error("Invalid coordinates for Manhattan Distance:", coord1, coord2);
         return Infinity; // Return large value so it doesn't interfere with min distance logic
     }
-    console.log("Calculating distance between:", coord1, coord2);
+    
     let dx = Math.abs(coord2[1] - coord1[1]); // Absolute X difference
     let dy = Math.abs(coord2[0] - coord1[0]); // Absolute Y difference
     return dx + dy; // Manhattan Distance
@@ -19,9 +19,7 @@ function metersToMiles(meters) {
 
 // Get sorted parking lots by Manhattan distance
 async function getSortedParkingLots(buildingId) {
-    try {
-        console.log("Received buildingId:", buildingId);
-        
+    try {        
         // Get selected building's Mercator coordinates
         const building = await Building.findByPk(buildingId);
 
@@ -35,8 +33,6 @@ async function getSortedParkingLots(buildingId) {
             throw new Error("Invalid building coordinates");
         }
 
-        console.log(`Building has ${buildingCoords.length} coordinate(s)`, buildingCoords);
-
         // Get all parking lots and compute distances
         const parkingLots = await ParkingLot.findAll();
         const lotDistances = parkingLots.map(lot => {
@@ -46,8 +42,6 @@ async function getSortedParkingLots(buildingId) {
             }
 
             const lotCoords = lot.mercator_coordinates.coordinates; // MULTIPOINT array
-            console.log(`Lot ${lot.name} has ${lotCoords.length} coordinate(s)`, lotCoords);
-            console.log("Building coordinates:", buildingCoords);
 
             let minDistance = Infinity;
 
