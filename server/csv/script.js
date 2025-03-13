@@ -19,14 +19,14 @@ function extractLatLonMulti(locationStr) {
 }
 
 // Read and process CSV
-const inputCsv = "parking_lot_data.csv"; // Update filename for building data
-const outputCsv = "parking_lots_with_mercator.csv"; // Output file with Mercator coordinates
+const inputCsv = "buildings_data.csv"; // Update filename for building data
+const outputCsv = "buildings_with_mercator.csv"; // Output file with Mercator coordinates
 
 let data = [];
 fs.createReadStream(inputCsv)
     .pipe(csv())
     .on("data", (row) => {
-        const locationStr = row["Location"]; // Extract location column
+        const locationStr = row["location"]; // Extract location column
         const latLonList = extractLatLonMulti(locationStr);
 
         if (latLonList.length > 0) {
