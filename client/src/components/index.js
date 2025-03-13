@@ -7,3 +7,4 @@ export { default as Filter } from './Filter';
 export { default as LotResult } from './LotResult'; 
 export { default as Map } from './Map';
 export { default as InformationSystems } from './InformationSystems';
+export { default as Search } from './Search'

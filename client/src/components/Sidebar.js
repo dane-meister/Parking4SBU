@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Filter, LotResult, InformationSystems } from '.'
+import { Filter, LotResult, InformationSystems, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   const [ rateType, setRateType ] = useState('hourly');
   const [ buildingLotType, setBuildingLotType ] = useState('building');
   
@@ -12,6 +12,7 @@ function Sidebar({ selectedLot, setSelectedLot }) {
   const [ filterDisability, setFilterDisability ] = useState(true);
 
   const [ resultType, setResultType ] = useState('Relevance');
+  const [ value, setValue ] = useState('');
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -49,11 +50,18 @@ function Sidebar({ selectedLot, setSelectedLot }) {
       </div>
 
       <hr style={{margin: "0px 15px"}}/>
-      {console.log('selectedLot:',selectedLot)}
       { selectedLot 
-        ? <InformationSystems />
+        ? <InformationSystems 
+            lotObj={{
+              lotName: 'Lot 40',
+              distance: '40ft',
+              availableCapacity: '50 spots available',
+              hasDisability: false,
+              lotImgSrc: 'images/lots/lot_40.png'
+            }}
+          />
         : (<>
-          <section className='margin-wrapper' style={{margin: "0px 15px"}}>
+    
           <div className='hbox selection' id='building-lot-selection'>
             <span 
               className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
@@ -67,8 +75,15 @@ function Sidebar({ selectedLot, setSelectedLot }) {
           </div>
 
           <div className='hbox'>
-            <input id='building-lot-search'
-              placeholder={`Search for a ${buildingLotType}`}
+            {/* <input id='building-lot-search' */}
+            {/*   placeholder={`Search for a ${buildingLotType}`} */}
+            {/* /> */}
+            <Search 
+              searchType={buildingLotType}
+              buildings={buildings}
+              parkingLots={parkingLots}
+              value={value}
+              setValue={setValue}
             />
             <Filter 
               showFilter={showFilter} 
@@ -81,7 +96,6 @@ function Sidebar({ selectedLot, setSelectedLot }) {
               ]}
             />
           </div>
-          </section>
           
           <hr/>  
 
@@ -104,7 +118,6 @@ function Sidebar({ selectedLot, setSelectedLot }) {
                 return <LotResult key={elem}/>
               })}
             </section>
-            
           </section>
         </>)
       }
