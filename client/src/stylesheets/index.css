@@ -44,6 +44,13 @@ body {
   font-weight: bold;
   font-style: normal;
 }
+@font-face {
+  font-family: 'Barlow Bold';
+  src: url('../fonts/Barlow_Semi_Condensed/BarlowSemiCondensed-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 
 
 *{
