@@ -120,7 +120,7 @@ hr{
   color: var(--gray);
 /*  justify-content: space-around;*/
   justify-content: center;
-  gap: 15px;
+  gap: 10px;
 }
 
 .hbox.selection > * {
@@ -194,4 +194,7 @@ hr{
 }
 .lot-result-info{
   padding-right: 10px;
+}
+#rate-selection{
+  flex: 1;
 }

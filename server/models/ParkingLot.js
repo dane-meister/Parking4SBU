@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../db.js");
+const sequelize = require("../db");
 
 const ParkingLot = sequelize.define("ParkingLot", {
   id: {
@@ -12,11 +12,11 @@ const ParkingLot = sequelize.define("ParkingLot", {
     allowNull: false,
   },
   location: {
-    type: DataTypes.GEOMETRY("MULTIPOINTZ", 4326),
+    type: DataTypes.GEOMETRY("MULTIPOINT", 4326),
     allowNull: false,
   },
   mercator_coordinates: {
-    type: DataTypes.GEOMETRY("MULTIPOINTZ", 3857),
+    type: DataTypes.GEOMETRY("MULTIPOINT", 3857),
     allowNull: false,
   },
   
