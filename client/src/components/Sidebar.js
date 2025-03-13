@@ -51,7 +51,15 @@ function Sidebar({ selectedLot, setSelectedLot }) {
 
       <hr style={{margin: "0px 15px"}}/>
       { selectedLot 
-        ? <InformationSystems />
+        ? <InformationSystems 
+            lotObj={{
+              lotName: 'Lot 40',
+              distance: '40ft',
+              availableCapacity: '50 spots available',
+              hasDisability: false,
+              lotImgSrc: 'images/lots/lot_40.png'
+            }}
+          />
         : (<>
     
           <div className='hbox selection' id='building-lot-selection'>

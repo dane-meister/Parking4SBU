@@ -1,34 +1,46 @@
 import '../stylesheets/InformationSystems.css'
 
 export default function InformationSystems(props){
-	const { lotImgSrc } = props;
+	const { lotImgSrc, lotObj } = props;
+	const {
+		lotName,
+		rate,
+		time,
+		hasDisability,
+		hasEvCharger,
+		isCovered
+	} = lotObj;
 
 	return (<section className='information-systems'>
 		<section className='selected-lot-info hbox wide'>
 			<div className='selected-lot-text flex'>
 				
-				<div className='selected-lot-name'>Lot 36B</div>
+				<div className='selected-lot-name'>{lotName ?? 'Unknown Lot'}</div>
 				<div className='selected-lot-price-time'>
-					<span className='selected-lot-price'>$2.25 / hr</span>
-					<span className='selected-lot-time'>6am-4pm</span>
+					<span className='selected-lot-price'>{rate ?? 'Rate'}</span>
+					<span className='selected-lot-time'>{time ?? 'Time'}</span>
 				</div>
-				<div className='selected-lot-disability'>
-					<img 
-						className='selected-lot-icon' 
-						src='/images/disability_icon.png'
-						alt='disability parking icon'
-					/>
-					<span>Disability parking</span>
-				</div>
-				<div className='selected-lot-ev'>
-					<img 
-						className='selected-lot-icon' 
-						src='/images/ev_icon.png'
-						alt='available ev chergers icon'
-					/>
-					<span>Disability parking</span>
-				</div>
-				<div className='selected-lot-covered'>Uncovered Lot</div>
+				{ hasDisability &&
+					<div className='selected-lot-disability'>
+						<img 
+							className='selected-lot-icon' 
+							src='/images/disability_icon.png'
+							alt='disability parking icon'
+						/>
+						<span>Disability parking</span>
+					</div>
+				}
+				{ hasEvCharger && 
+					<div className='selected-lot-ev'>
+						<img 
+							className='selected-lot-icon' 
+							src='/images/ev_icon.png'
+							alt='available ev chergers icon'
+						/>
+						<span>EV charger</span>
+					</div>
+				}
+				<div className='selected-lot-covered'>{(!!isCovered ? 'Covered' : 'Uncovered') + ' Lot'}</div>
 			</div>
 			<img 
 				src={lotImgSrc ?? '/images/lots/placeholder_lot.png'} 
