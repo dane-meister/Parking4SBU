@@ -1,10 +1,9 @@
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 
-import { Sidebar, Map } from '../components'
+import { Sidebar, Map } from '../components';
 
-
-const LotSelection = () => {
+const LotSelection = ({ selectedLot, setSelectedLot }) => {
   return (
     <div className="main-container">
         {/* Left: Map container */}
@@ -14,7 +13,7 @@ const LotSelection = () => {
 
         {/* Right: Results & selections container */}
         <div className="results-container">
-          <Sidebar />
+          <Sidebar selectedLot={selectedLot} setSelectedLot={setSelectedLot} />
         </div>
     </div>
   )

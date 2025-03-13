@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Filter, LotResult } from '.'
+import { Filter, LotResult, InformationSystems } from '.'
 
-function Sidebar() {
+function Sidebar({ selectedLot, setSelectedLot }) {
   const [ rateType, setRateType ] = useState('hourly');
   const [ buildingLotType, setBuildingLotType ] = useState('building');
   
@@ -12,8 +12,6 @@ function Sidebar() {
   const [ filterDisability, setFilterDisability ] = useState(true);
 
   const [ resultType, setResultType ] = useState('Relevance');
-  
-  const [ selectedLot, setSelectedLot ] = useState(null);
   return (
     <section className='sidebar'>
       <div className="hbox selection" id="rate-selection">
@@ -46,7 +44,7 @@ function Sidebar() {
       <hr style={{margin: "0px 15px"}}/>
       {console.log('selectedLot:',selectedLot)}
       { selectedLot 
-        ? <div>{'Selected Lot!!! '+selectedLot}</div>
+        ? <InformationSystems />
         : (<>
           <section className='margin-wrapper' style={{margin: "0px 15px"}}>
           <div className='hbox selection' id='building-lot-selection'>
