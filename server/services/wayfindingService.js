@@ -7,9 +7,9 @@ function manhattanDistance(coord1, coord2) {
         return Infinity; // Return large value so it doesn't interfere with min distance logic
     }
     console.log("Calculating distance between:", coord1, coord2);
-    let dx = Math.abs(coord2[1] - coord1[0]); // Absolute X difference
-    let dy = Math.abs(coord2[0] - coord1[1]); // Absolute Y difference
-    return dx + dy; // Manhattan Distance (L1 norm)
+    let dx = Math.abs(coord2[1] - coord1[1]); // Absolute X difference
+    let dy = Math.abs(coord2[0] - coord1[0]); // Absolute Y difference
+    return dx + dy; // Manhattan Distance
 }
 
 // Convert meters to miles
@@ -46,6 +46,8 @@ async function getSortedParkingLots(buildingId) {
             }
 
             const lotCoords = lot.mercator_coordinates.coordinates; // MULTIPOINT array
+            console.log(`Lot ${lot.name} has ${lotCoords.length} coordinate(s)`, lotCoords);
+            console.log("Building coordinates:", buildingCoords);
 
             let minDistance = Infinity;
 
@@ -53,7 +55,7 @@ async function getSortedParkingLots(buildingId) {
             for (const bCoord of buildingCoords) {
                 for (const lCoord of lotCoords) {
                     if (bCoord.length >= 2 && lCoord.length >= 2) {
-                        const distance = manhattanDistance(bCoord.slice(0, 2), lCoord.slice(0, 2)); // Use only [x, y]
+                        const distance = manhattanDistance(bCoord.slice(0, 2), lCoord.slice(0, 2)); 
                         if (distance < minDistance) {
                             minDistance = distance;
                         }
@@ -71,7 +73,6 @@ async function getSortedParkingLots(buildingId) {
 
         // Sort by distance (ascending)
         lotDistances.sort((a, b) => a.distance_meters - b.distance_meters);
-        //console.log("Distances sorted:", lotDistances);
 
         return lotDistances;
     } catch (error) {
