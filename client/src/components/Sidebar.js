@@ -4,7 +4,8 @@ import { Filter, LotResult, InformationSystems, Search } from '.'
 function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   const [ rateType, setRateType ] = useState('hourly');
   const [ buildingLotType, setBuildingLotType ] = useState('building');
-  
+  const [ selectedBuilding, setSelectedBuilding ] = useState(null);
+
   const [ showFilter, setShowFilter ] = useState(false);
   const [ filterUncovered, setFilterUncovered ] = useState(true);
   const [ filterCovered, setFilterCovered ] = useState(true);
@@ -13,6 +14,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
 
   const [ resultType, setResultType ] = useState('Relevance');
   const [ value, setValue ] = useState('');
+
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -78,6 +80,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               parkingLots={parkingLots}
               value={value}
               setValue={setValue}
+              setSelectedBuilding={setSelectedBuilding} 
             />
             <Filter 
               showFilter={showFilter} 
@@ -100,7 +103,6 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               sort by
             </header>
             <section className='lot-results'>
-              {console.log(parkingLots[0])}
               {parkingLots.map(lot => {
                 return <LotResult 
                   lotObj={lot}

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
-const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots }) => {
+const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding }) => {
   const [ suggestions, setSuggestions ] = useState([]);
   // Mock data for suggestions
   const building_names = buildings.map(bldg => bldg.building_name);
@@ -45,10 +45,22 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
     return <div>{suggestion}</div>;
   }
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent the default form submission behavior
+      if(building_names.includes(value)){
+        setSelectedBuilding(buildings.filter(bldg => bldg.name===value)[0]);
+      }else{
+        alert('INVALID bldg');
+      }
+    }
+  };
+
   const inputProps = {
     placeholder: `Search for a ${searchType}`,
     value,
-    onChange
+    onChange,
+    onKeyDown: handleKeyDown
   };
 
   // Custom theme for styling
