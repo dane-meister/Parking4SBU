@@ -5,4 +5,5 @@ export { default as Popup } from './Popup';
 export { default as Sidebar } from './Sidebar';
 export { default as Filter } from './Filter';
 export { default as LotResult } from './LotResult'; 
-export { default as Map } from './Map'
+export { default as Map } from './Map';
+export { default as InformationSystems } from './InformationSystems';
