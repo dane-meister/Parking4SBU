@@ -38,8 +38,10 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
     setValue(newValue);
   };
 
-  const getSuggestionValue = (suggestion) => suggestion;
-
+  const getSuggestionValue = (suggestion) => {
+    return suggestion === "No results found" ? "" : suggestion;
+  };
+  
   const renderSuggestion = (suggestion) => {
     return <div>{suggestion}</div>;
   }
