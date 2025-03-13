@@ -100,7 +100,6 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               sort by
             </header>
             <section className='lot-results'>
-              {console.log(parkingLots[0])}
               {parkingLots.map(lot => {
                 return <LotResult 
                   lotObj={lot}
