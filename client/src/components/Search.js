@@ -1,9 +1,10 @@
 // AutocompleteSearch.js
 import React, { useState } from 'react';
+import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
-const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding }) => {
+const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding, selectedBuilding, setLotResults }) => {
   const [ suggestions, setSuggestions ] = useState([]);
   // Mock data for suggestions
   const building_names = buildings.map(bldg => bldg.building_name);
@@ -45,11 +46,19 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
     return <div>{suggestion}</div>;
   }
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = async (event) => {
     if (event.key === 'Enter') {
       event.preventDefault(); // Prevent the default form submission behavior
       if(building_names.includes(value)){
-        setSelectedBuilding(buildings.filter(bldg => bldg.name===value)[0]);
+        const bldg = buildings.filter(bldg => bldg.building_name===value)[0];
+        setSelectedBuilding(bldg);
+        try{
+          const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`);
+          setLotResults(response.data);
+        }catch(err){
+          console.error("Error fetching lot results:", err);
+          alert('Error fetching lot results');
+        }
       }else{
         alert('INVALID bldg');
       }

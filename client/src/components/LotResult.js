@@ -41,12 +41,12 @@ export default function LotResult({ lotObj, setSelectedLot, distance }){
     <section className="lot-result-info-container hbox wide tall">
       <div className='lot-result-info vbox'>
         <div className='result-name-row'>{name ?? 'Unknown Lot'}</div>
-        <div className="result-dist-row">{distance ?? 'unknown distance'}</div>
+        <div className="result-dist-row">{!!distance ? `${distance.toFixed(3)} mi` : ''}</div>
         <div className="result-price-time-row">
-          <span className='result-price'>{rate ?? 'Free'}</span>
+          <span className='result-price'>{rate ?? 'unknown rate'}</span>
           <span className="result-time">{time ?? ''}</span>
         </div>
-        <div className="result-available-row">{availableCapacity ?? 'unknown capacity'}</div>
+        <div className="result-available-row">{!!availableCapacity ? `${availableCapacity} spots available` : 'unknown capacity'}</div>
       </div>
       <div className="flex"/>
       <div className="lot-result-info vbox">
