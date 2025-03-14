@@ -84,6 +84,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               setValue={setValue}
               setSelectedBuilding={setSelectedBuilding} 
               setLotResults={setLotResults}
+              setSelectedLot={setSelectedLot}
             />
             <Filter 
               showFilter={showFilter} 
