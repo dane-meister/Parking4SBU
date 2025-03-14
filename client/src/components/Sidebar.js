@@ -15,6 +15,8 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   const [ resultType, setResultType ] = useState('Relevance');
   const [ value, setValue ] = useState('');
 
+  const [ lotResults, setLotResults ] = useState(parkingLots);
+
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -81,6 +83,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               value={value}
               setValue={setValue}
               setSelectedBuilding={setSelectedBuilding} 
+              setLotResults={setLotResults}
             />
             <Filter 
               showFilter={showFilter} 
@@ -103,11 +106,11 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               sort by
             </header>
             <section className='lot-results'>
-              {parkingLots.map(lot => {
+              {lotResults.map(lot => {
                 return <LotResult 
                   lotObj={lot}
                   setSelectedLot={setSelectedLot}
-                  distance={null}
+                  distance={!!selectedBuilding ? lot.distance_miles : '' }
                 />
               })}
             </section>
