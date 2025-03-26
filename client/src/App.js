@@ -24,7 +24,7 @@ export default function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route index element={<LotSelectionPage />} />
+          <Route index element={<LotSelectionPage selectedLot={selectedLot} setSelectedLot={setSelectedLot} />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/tickets" element={<TicketsPage />} />
           <Route path="/reservations" element={<CurrentReservationsPage />} />
