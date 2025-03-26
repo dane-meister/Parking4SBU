@@ -1,7 +1,6 @@
 /* General container */
 .main-container-profile {
 	display: flex;
-	/* padding: 20px; */
 	font-family: 'Barlow', sans-serif;
 	height: auto;
   }
@@ -66,6 +65,8 @@
   .profile-form {
 	flex: 1;
 	padding: 0 40px;
+	padding-bottom: 20px;
+	
   }
   
   .profile-form h2 {
