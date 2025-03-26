@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import '../stylesheets/Header.css';
 
 
-const Header = ({selectedLot, setSelectedLot}) => {
+const Header = ({ selectedLot, setSelectedLot }) => {
   return (
     <>
     <header className="header">

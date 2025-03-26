@@ -1,8 +1,6 @@
-.main-container {
+.main-container-lot-selection {
   display: flex;
-  height: calc(100vh - 105px); /* Existing calculation might need adjustment */
-  margin-top: 190px; /* Add margin to push content below fixed header and nav */
-  flex: 1;
+  height: calc(100vh); 
   font-size: 16px;
   font-family: 'Barlow Medium', sans-serif;
 }

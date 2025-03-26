@@ -1,5 +1,6 @@
-export { default as Home } from './Home';
-export { default as Profile } from './Profile';
+export { default as HomePage } from './HomePage';
+export { default as ProfilePage } from './ProfilePage';
 export { default as NoPage } from './NoPage';
-export { default as LotSelection } from './LotSelection';
-export { default as Tickets } from './Tickets';
+export { default as LotSelectionPage } from './LotSelectionPage';
+export { default as TicketsPage } from './TicketsPage';
+export { default as CurrentReservationsPage } from './CurrentReservationsPage';

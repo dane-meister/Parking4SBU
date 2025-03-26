@@ -15,14 +15,11 @@
   --light-grey: #BEBEBE;
 }
 
-/* html,
-body {
-  margin: 0;
-  padding: 0px;
-  width: 100%;
+html,
+body,
+#root {
   height: 100%;
-  overflow: hidden;
-} */
+}
 
 @font-face {
   font-family: 'Alumni Sans Bold';
@@ -82,4 +79,5 @@ code {
 .hover-black:hover{ color: black; }
 .wide{ width: 100% }
 .tall{ height: 100% }
+
 

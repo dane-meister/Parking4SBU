@@ -1,3 +1,152 @@
-.main-container{
-	height: calc(100% - 105px);
-}
+/* General container */
+.main-container-profile {
+	display: flex;
+	/* padding: 20px; */
+	font-family: 'Barlow', sans-serif;
+	height: auto;
+  }
+  
+  /* Sidebar styles */
+  .account-sidebar {
+	width: 250px;
+	background-color: #f9f9f9;
+	padding: 20px;
+	border-right: 2px solid #ccc;
+  }
+  
+  .account-sidebar h2 {
+	font-size: 28px;
+	margin-bottom: 10px;
+  }
+  
+  .account-sidebar p {
+	font-weight: bold;
+	margin-bottom: 20px;
+  }
+  
+  .sidebar-section {
+	margin-bottom: 30px;
+  }
+  
+  .section-title {
+	font-size: 14px;
+	color: #666;
+	font-weight: bold;
+	margin-bottom: 10px;
+  }
+  
+  .sidebar-section ul {
+	list-style: none;
+	padding: 0;
+  }
+  
+  .sidebar-section li {
+	padding: 8px 0;
+	cursor: pointer;
+	color: #333;
+  }
+  
+  .sidebar-section li.active {
+	color: #b31b20;
+	font-weight: bold;
+  }
+  
+  .sign-out {
+	background-color: #b31b20;
+	color: #fff;
+	border: none;
+	padding: 10px 15px;
+	width: 100%;
+	cursor: pointer;
+	border-radius: 4px;
+	font-weight: bold;
+  }
+  
+  /* Profile Form Styles */
+  .profile-form {
+	flex: 1;
+	padding: 0 40px;
+  }
+  
+  .profile-form h2 {
+	font-size: 28px;
+	margin-bottom: 20px;
+  }
+  
+  .profile-form form {
+	display: flex;
+	flex-direction: column;
+	height: auto;
+  }
+  
+  .profile-form label {
+	font-size: 14px;
+	margin-bottom: 5px;
+	font-weight: bold;
+  }
+  
+  .profile-form input {
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	margin-bottom: 20px;
+	font-size: 14px;
+	background-color: #fdfdfd;
+  }
+  
+  .form-row {
+	display: flex;
+	gap: 20px;
+  }
+  
+  .form-row > div {
+	flex: 1;
+  }
+  
+  .account-sidebar .sidebar-btn {
+	padding: 10px;
+	cursor: pointer;
+  }
+  
+  .account-sidebar .sidebar-btn.active {
+	background-color: #990000;
+	color: #fff;
+	border-radius: 5px;
+  }
+
+  .vehicle-card {
+	background-color: #f9f9f9;
+	padding: 15px;
+	margin-bottom: 15px;
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  
+  .add-vehicle {
+	margin-top: 20px;
+  }
+  
+  .add-vehicle-btn {
+	background-color: #990000;
+	color: #fff;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+  }
+  
+  .add-vehicle-btn:hover {
+	background-color: #b31b20;
+  }
+
+  #sign-out {
+	color: #c00;
+	cursor: pointer;
+	font-weight: bold;
+  }
+  
+  #sign-out:hover {
+	text-decoration: underline;
+  }
+  
+  

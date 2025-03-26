@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Profile, NoPage, LotSelection, Tickets} from './pages'
+import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage } from './pages'
 import { Header, Footer } from './components'
 import { useState } from 'react';
 import "./stylesheets/App.css"; // Styles for layout
@@ -8,16 +8,29 @@ import "./stylesheets/index.css"; // Global styles
 export default function App() {
   const [ selectedLot, setSelectedLot ] = useState(null);
 
+  function Layout({ children }) {
+    return (
+      <div className="app-wrapper">
+        <Header />
+        <main className="page-content">
+          {children}
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+  
   return (
     <BrowserRouter>
-      <Header selectedLot={selectedLot} setSelectedLot={setSelectedLot} />
-      <Routes>
-        <Route index element={<LotSelection selectedLot={selectedLot} setSelectedLot={setSelectedLot}/>} />          {/* "/" Route */}
-        <Route path="/profile" element={<Profile />} />  {/* "/profile" Route */}
-        <Route path="/tickets" element={<Tickets />} />  {/* "/tickets" Route */}
-        <Route path="*" element={<NoPage />} />     {/* Catch-all for 404 pages */}
-      </Routes>
-      <Footer />
+      <Layout>
+        <Routes>
+          <Route index element={<LotSelectionPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/tickets" element={<TicketsPage />} />
+          <Route path="/reservations" element={<CurrentReservationsPage />} />
+          <Route path="*" element={<NoPage />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }

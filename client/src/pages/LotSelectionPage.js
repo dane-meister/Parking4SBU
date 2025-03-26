@@ -4,7 +4,7 @@ import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import { Sidebar, Map } from '../components';
 
-const LotSelection = ({ selectedLot, setSelectedLot }) => {
+const LotSelectionPage = ({ selectedLot, setSelectedLot }) => {
   // State to store buildings and parking lots
   const [buildings, setBuildings] = useState([]);
   const [parkingLots, setParkingLots] = useState([]);
@@ -35,7 +35,7 @@ const LotSelection = ({ selectedLot, setSelectedLot }) => {
     }, []);
 
   return (
-    <div className="main-container">
+    <div className="main-container-lot-selection">
         {/* Left: Map container */}
         <div className="map-container">
           <Map />
@@ -62,4 +62,4 @@ const LotSelection = ({ selectedLot, setSelectedLot }) => {
   )
 }
 
-export default LotSelection;
+export default LotSelectionPage;
