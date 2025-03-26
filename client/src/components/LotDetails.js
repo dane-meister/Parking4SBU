@@ -1,4 +1,4 @@
-import '../stylesheets/InformationSystems.css'
+import '../stylesheets/LotDetails.css'
 
 export default function InformationSystems(props){
 	const { lotImgSrc, lotObj } = props;
@@ -28,7 +28,7 @@ export default function InformationSystems(props){
 		time
 	} = lotObj;
 
-	return (<section className='information-systems'>
+	return (<section className='lot-details'>
 		<section className='selected-lot-info hbox wide'>
 			<div className='selected-lot-text flex'>
 				
@@ -59,11 +59,11 @@ export default function InformationSystems(props){
 				}
 				<div className='selected-lot-covered'>{(covered ? 'Covered' : 'Uncovered') + ' Lot'}</div>
 			</div>
-			<img 
+			{/* <img 
 				src={lotImgSrc ?? '/images/lots/placeholder_lot.png'} 
 				className='selected-lot-img'
 				alt='lot'
-			/>
+			/> */}
 		</section>
 		<hr />
 		<section className='selected-lot-extended-info'>

@@ -1,7 +1,11 @@
-.information-systems{
+.lot-details{
 	font-size: 25px;
+	display: flex;
+	flex-direction: column;
+	height: auto;
+	gap: 20px;
 }
-.information-systems > hr{
+.lot-details > hr{
 	margin-top: 5px;
 }
 .selected-lot-img{
@@ -15,8 +19,9 @@
 	gap: 10px;
 }
 .selected-lot-name{
-	font-size: 65px;
+	font-size: 50px;
 	height: 70px;
+	height: auto;
 /*	margin-bottom: 15px;*/
 }
 .selected-lot-icon{

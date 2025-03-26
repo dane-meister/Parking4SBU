@@ -31,12 +31,12 @@ export default function LotResult({ lotObj, setSelectedLot, distance }){
   const availableCapacity = 0;
 
   return (<section className="lot-result hbox" onClick={() => setSelectedLot(lotObj)}>
-    <img 
+    {/* <img 
       className='result-img' 
       src={lotImgSrc ?? '/images/lots/placeholder_lot.png'}
       style={lotImgSrc ? {height: '120px'} : {margin: '0px 25px 0px 10px'}}
       alt='lot'
-    />
+    /> */}
     
     <section className="lot-result-info-container hbox wide tall">
       <div className='lot-result-info vbox'>
