@@ -7,14 +7,14 @@ export default function HomePage() {
   )
 }
 
-function Map() {
-  return (
-    <div>Map</div>
-  )
-}
+// function Map() {
+//   return (
+//     <div>Map</div>
+//   )
+// }
 
-function Sidebar() {
-  return (
-    <div>Sidebar</div>
-  )
-}
+// function Sidebar() {
+//   return (
+//     <div>Sidebar</div>
+//   )
+// }
