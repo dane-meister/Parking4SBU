@@ -21,12 +21,21 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+"eslintConfig": {
+  "extends": [
+    "react-app",
+    "react-app/jest",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "rules": {
+    "no-unused-vars": "warn",
+    "react/prop-types": "off", 
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off" 
+  }
+},
   "browserslist": {
     "production": [
       ">0.2%",
