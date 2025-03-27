@@ -1,8 +1,7 @@
-.main-container {
+/* Lot Selection Page Styles */
+.main-container-lot-selection {
   display: flex;
-  height: calc(100vh - 105px); /* Existing calculation might need adjustment */
-  margin-top: 190px; /* Add margin to push content below fixed header and nav */
-  flex: 1;
+  height: calc(100vh); 
   font-size: 16px;
   font-family: 'Barlow Medium', sans-serif;
 }
@@ -64,7 +63,6 @@ hr{
 
 }
 
-
 .filter{
   background-color: #f0f0f0;
   font-size: 16px;
@@ -76,11 +74,9 @@ hr{
   color: var(--gray);
 }
 
-
 .filter-btn{
   background-color: var(--light-gray);
   color: var(--dark-gray);
-/*  margin-top: 10px;*/
   font-size: 16px;
   border: none;
   border-radius: 6%;
@@ -92,9 +88,11 @@ hr{
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
+
 .filter-row{
   align-items: center;
 }
+
 .filter-row > label > input{
   height: 12px;
 }
@@ -118,7 +116,6 @@ hr{
 .hbox.selection {
   font-size: 16px;
   color: var(--gray);
-/*  justify-content: space-around;*/
   justify-content: center;
   gap: 10px;
 }
@@ -137,9 +134,11 @@ hr{
   cursor: pointer;
   color: var(--gray);
 }
+
 .type-hover:active{ 
   background-color: #efefef; 
 }
+
 .type-hover:hover:not(:active) {
   background-color: var(--light-gray);
   /*  color: var(--dark-gray);*/
@@ -149,26 +148,30 @@ hr{
 .sort-img{
   height: 16px;
 }
+
 #results-header{
   padding: 0px 15px;
   align-items: center;
 }
+
 .results-type{
   background-color: #f0f0f0;
   padding: 0px 5px 3px 5px;
   border-radius: 3px;
 }
+
 .results-type-name{
   color: var(--medium-gray);
   margin-right: 5px;
 }
+
 .results-tag{
   margin-right: 5px;
 }
+
 .results-type > div{
   align-items: center;
 }
-
 
 .map-container {
   flex: 1;
@@ -178,6 +181,7 @@ hr{
   justify-content: center;
   border-right: 2px solid #ccc;
 }
+
 .results{ 
   overflow: hidden;
   flex: 1;
@@ -188,13 +192,16 @@ hr{
   margin-left: -15px;
   margin-bottom: -15px;
 }
+
 .lot-results{
   flex: 1;
   overflow-y: scroll;
 }
+
 .lot-result-info{
   padding-right: 10px;
 }
+
 #rate-selection{
   flex: 1;
 }

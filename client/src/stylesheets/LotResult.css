@@ -1,27 +1,35 @@
+/* This file contains the styles for the LotResult component */
 .result-img{
     height: 100px;
     margin-right: 15px;
 }
+
 .lot-result{
     height: 120px;
     border-top: black solid 1px;
     align-items: center;
 }
+
 .lot-result-info > div{
     flex: 1;
     font-size: 1.2em;
 }
+
 .lot-result-info-container{
     padding: 10px 0px;
 }
+
 .result-price-time-row{
     display: flex;
     gap: 10px
 }
+
 .result-time{ color: var(--medium-gray)}
+
 .result-covered-row{
     text-align: right;
 }
+
 .result-icon-row > img{
     height: 1.2em;
 }

@@ -1,0 +1,8 @@
+/* This file contains the styles for the main page content layout */
+.page-content {
+    padding-top: 200px;
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    max-height: 500vh;
+  }

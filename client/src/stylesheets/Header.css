@@ -1,3 +1,4 @@
+/* This CSS file styles the header and navigation banner for a website. */
    .header {
     background-color: #ffffff;  /* white */
     color: #000;
@@ -56,45 +57,41 @@
     cursor: pointer;
   }
 
+  .nav-banner {
+    background-color: #990000; /* Stony Brook Red */
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 100px; 
+    width: 100%;
+    z-index: 999;
+    height: 100px; 
+    transition: height 0.3s ease;
+  }
 
+  .nav-banner.fixed {
+    top: 0;
+  }
 
-.nav-banner {
-  background-color: #990000; /* Stony Brook Red */
-  display: flex;
-  align-items: center;
-  position: fixed;
-  top: 100px; 
-  width: 100%;
-  z-index: 999;
-  height: 100px; 
-  transition: height 0.3s ease;
-}
-.nav-banner.fixed {
-  top: 0;
-}
+  .nav-banner a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 20px;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Alumni Sans Bold', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: border 0.2s ease;
+    font-size: 20px;
+  }
 
-.nav-banner a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 0 20px;
-  color: #fff;
-  text-decoration: none;
-  font-family: 'Alumni Sans Bold', sans-serif;
-  font-weight: bold;
-  text-transform: uppercase;
-  transition: border 0.2s ease;
-  font-size: 20px;
-}
+  .nav-banner a:hover {
+    background-color: #b31b20; /* Lighter red for hover */
+  }
 
-
-.nav-banner a:hover {
-  background-color: #b31b20; /* Lighter red for hover */
-}
-
-
-  
   .profile-icon {
     background-color: white;
     color: #a00;

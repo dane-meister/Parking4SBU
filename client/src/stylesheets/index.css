@@ -1,3 +1,5 @@
+/* This file is used to import all the stylesheets for the application. */
+/* It includes global styles, header, footer, and main page content styles. */
 :root{
   --grey: #6C6C6C;
   --gray: #6C6C6C;
@@ -15,14 +17,11 @@
   --light-grey: #BEBEBE;
 }
 
-/* html,
-body {
-  margin: 0;
-  padding: 0px;
-  width: 100%;
+html,
+body,
+#root {
   height: 100%;
-  overflow: hidden;
-} */
+}
 
 @font-face {
   font-family: 'Alumni Sans Bold';
@@ -50,8 +49,6 @@ body {
   font-weight: bold;
   font-style: normal;
 }
-
-
 
 *{
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -82,4 +79,5 @@ code {
 .hover-black:hover{ color: black; }
 .wide{ width: 100% }
 .tall{ height: 100% }
+
 

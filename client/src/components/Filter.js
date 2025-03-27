@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Popup } from '.';
 
-function Filter({ showFilter, setShowFilter, filters}) {
+// Filter component to manage and display filtering options
+function Filter({ showFilter, setShowFilter, filters }) {
+  // Local state for additional filter options
   const [showFullLots, setShowFullLots] = useState(false);
   const [onlyShowEVChargerAvailable, setOnlyShowEVChargerAvailable] = useState(false);
   const [showCoveredLots, setShowCoveredLots] = useState(true);
   const [showUncoveredLots, setShowUncoveredLots] = useState(true);
+
+  // Destructure filter states passed as props
   const [
     filterCovered, setFilterCovered,
     filterUncovered, setFilterUncovered,
@@ -13,16 +17,20 @@ function Filter({ showFilter, setShowFilter, filters}) {
     filterDisability, setFilterDisability
   ] = filters;
 
+  // Handler for toggling the "Show Full Lots" checkbox
   const handleShowFullLotsChange = (event) => {
     setShowFullLots(event.target.checked);
   };
+
+  // Handler for toggling the "Show Covered Lots" checkbox
   const handleShowCoveredLotsChange = (event) => {
     setShowFullLots(event.target.checked);
   };
 
+  // Determine if any filter is currently enabled
   const anyFilterEnabled = filterCovered || filterUncovered || filterEVCharging || filterDisability;
 
-  // Clear all checkboxes
+  // Clear all filter checkboxes
   const handleClearAll = () => {
     setFilterCovered(false);
     setFilterUncovered(false);
@@ -32,6 +40,7 @@ function Filter({ showFilter, setShowFilter, filters}) {
 
   return (
     <>
+      {/* Button to open the filter popup */}
       <button 
         className='filter-btn'
         onClick={() => setShowFilter(true)}
@@ -44,20 +53,21 @@ function Filter({ showFilter, setShowFilter, filters}) {
         Filter
       </button>
 
+      {/* Popup for filter options */}
       {showFilter && (
         <Popup 
-          close={() => setShowFilter(false)}
-          onClearAll={handleClearAll}  
-          anyFilterEnabled={anyFilterEnabled}
+          close={() => setShowFilter(false)} // Close the popup
+          onClearAll={handleClearAll}       // Clear all filters
+          anyFilterEnabled={anyFilterEnabled} // Indicate if any filter is active
         >
-          {/* Checkboxes inside the popup body */}
+          {/* Checkboxes for each filter option */}
           <div className='filter-row hbox'>
             <label>
               <input 
                 className='filter-check' 
                 type='checkbox'
                 checked={filterUncovered}
-                onChange={() => setFilterUncovered(!filterUncovered)}
+                onChange={() => setFilterUncovered(!filterUncovered)} // Toggle uncovered lots filter
               />
               Lot — Uncovered
             </label>
@@ -69,7 +79,7 @@ function Filter({ showFilter, setShowFilter, filters}) {
                 className='filter-check' 
                 type='checkbox'
                 checked={filterCovered}
-                onChange={() => setFilterCovered(!filterCovered)}
+                onChange={() => setFilterCovered(!filterCovered)} // Toggle covered lots filter
               />
               Lot — Covered
             </label>
@@ -81,7 +91,7 @@ function Filter({ showFilter, setShowFilter, filters}) {
                 className='filter-check' 
                 type='checkbox'
                 checked={filterEVCharging}
-                onChange={() => setFilterEVCharging(!filterEVCharging)}
+                onChange={() => setFilterEVCharging(!filterEVCharging)} // Toggle EV charging filter
               />
               EV Charging
             </label>
@@ -93,7 +103,7 @@ function Filter({ showFilter, setShowFilter, filters}) {
                 className='filter-check' 
                 type='checkbox'
                 checked={filterDisability}
-                onChange={() => setFilterDisability(!filterDisability)}
+                onChange={() => setFilterDisability(!filterDisability)} // Toggle disability accessibility filter
               />
               Disability Accessible
             </label>
