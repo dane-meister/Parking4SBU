@@ -1,5 +1,6 @@
+/* Footer styles for the application */
 .footer {
-  background-color: #a00; /* Red background */
+  background-color: #a00; 
   color: white;
   display: flex;
   justify-content: space-between;

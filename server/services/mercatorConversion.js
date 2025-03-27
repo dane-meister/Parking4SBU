@@ -39,4 +39,3 @@ const distanceMiles = metersToMiles(distanceMeters);
 
 console.log(`Manhattan Distance: ${distanceMeters.toFixed(2)} meters`);
 console.log(`Manhattan Distance: ${distanceMiles.toFixed(4)} miles`);
-

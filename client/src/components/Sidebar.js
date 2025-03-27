@@ -2,64 +2,88 @@ import { useState } from 'react';
 import { Filter, LotResult, InformationSystems, Search } from '.'
 
 function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
+  // State for rate type selection (hourly, daily, etc.)
   const [ rateType, setRateType ] = useState('hourly');
+  
+  // State for toggling between building and lot selection
   const [ buildingLotType, setBuildingLotType ] = useState('building');
+  
+  // State for the currently selected building
   const [ selectedBuilding, setSelectedBuilding ] = useState(null);
 
+  // States for filter visibility and individual filter options
   const [ showFilter, setShowFilter ] = useState(false);
   const [ filterUncovered, setFilterUncovered ] = useState(true);
   const [ filterCovered, setFilterCovered ] = useState(true);
   const [ filterEVCharging, setFilterEVCharging ] = useState(false);
   const [ filterDisability, setFilterDisability ] = useState(true);
 
+  // State for result sorting type
   const [ resultType, setResultType ] = useState('Relevance');
+  
+  // State for search input value
   const [ value, setValue ] = useState('');
 
+  // State for the list of parking lot results
   const [ lotResults, setLotResults ] = useState(parkingLots);
 
   return (
     <section className='sidebar'>
       <div className='hbox'>
-      {selectedLot && 
-        <div className='arrow-wrapper'>
-          <img src='/images/arrow.png' alt='back' className='back-arrow' onClick={()=>setSelectedLot(null)}/>
+        {/* Back arrow to deselect a lot */}
+        {selectedLot && 
+          <div className='arrow-wrapper'>
+            <img 
+              src='/images/arrow.png' 
+              alt='back' 
+              className='back-arrow' 
+              onClick={() => setSelectedLot(null)}
+            />
+          </div>
+        }
+
+        {/* Rate type selection (hourly, daily, etc.) */}
+        <div 
+          className="hbox selection" 
+          id="rate-selection" 
+          style={selectedLot ? {marginRight:'35px'} : {}}
+        >
+          <span 
+            className={'type-hover '+(rateType==='hourly' ? 'selected' : '')}
+            onClick={() => setRateType('hourly')}
+          >Hourly</span>
+          <span>/</span>
+          <span 
+            className={'type-hover '+(rateType==='daily' ? 'selected' : '')} 
+            onClick={() => setRateType('daily')}
+          >Daily</span>
+          <span>/</span>
+          <span 
+            className={'type-hover '+(rateType==='monthly' ? 'selected' : '')}
+            onClick={() => setRateType('monthly')}
+          >Monthly</span>
+          <span>/</span>
+          <span 
+            className={'type-hover '+(rateType==='semesterly' ? 'selected' : '')}
+            onClick={() => setRateType('semesterly')}
+          >Semesterly</span>
+          <span>/</span>
+          <span 
+            className={'type-hover '+(rateType==='yearly' ? 'selected' : '')}
+            onClick={() => setRateType('yearly')}
+          >Yearly</span>
         </div>
-      }
-      <div className="hbox selection" id="rate-selection" style={selectedLot ? {marginRight:'35px'} : {}}>
-        <span 
-          className={'type-hover '+(rateType==='hourly' ? 'selected' : '')}
-          onClick={() => setRateType('hourly')}
-        >Hourly</span>
-        <span>/</span>
-        <span 
-          className={'type-hover '+(rateType==='daily' ? 'selected' : '')} 
-          onClick={() => setRateType('daily')}
-        >Daily</span>
-        <span>/</span>
-        <span 
-          className={'type-hover '+(rateType==='monthly' ? 'selected' : '')}
-          onClick={() => setRateType('monthly')}
-        >Monthly</span>
-        <span>/</span>
-        <span 
-          className={'type-hover '+(rateType==='semesterly' ? 'selected' : '')}
-          onClick={() => setRateType('semesterly')}
-        >Semesterly</span>
-        <span>/</span>
-        <span 
-          className={'type-hover '+(rateType==='yearly' ? 'selected' : '')}
-          onClick={() => setRateType('yearly')}
-        >Yearly</span>
-      </div>
       </div>
 
       <hr style={{margin: "0px 15px"}}/>
+
+      {/* Display detailed information if a lot is selected */}
       { selectedLot 
         ? <InformationSystems 
             lotObj={selectedLot}
           />
         : (<>
-    
+          {/* Toggle between building and lot search */}
           <div className='hbox selection' id='building-lot-selection'>
             <span 
               className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
@@ -73,9 +97,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
           </div>
 
           <div className='hbox'>
-            {/* <input id='building-lot-search' */}
-            {/*   placeholder={`Search for a ${buildingLotType}`} */}
-            {/* /> */}
+            {/* Search component for buildings or lots */}
             <Search 
               searchType={buildingLotType}
               buildings={buildings}
@@ -86,6 +108,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               setLotResults={setLotResults}
               setSelectedLot={setSelectedLot}
             />
+            {/* Filter component for additional filtering options */}
             <Filter 
               showFilter={showFilter} 
               setShowFilter={setShowFilter}
@@ -100,6 +123,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
           
           <hr/>  
 
+          {/* Display search results */}
           <section className='results'>
             <header id='results-header' className='hbox'>
               Results

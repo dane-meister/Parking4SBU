@@ -1,3 +1,5 @@
+/* This file is used to import all the stylesheets for the application. */
+/* It includes global styles, header, footer, and main page content styles. */
 :root{
   --grey: #6C6C6C;
   --gray: #6C6C6C;
@@ -47,8 +49,6 @@ body,
   font-weight: bold;
   font-style: normal;
 }
-
-
 
 *{
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
