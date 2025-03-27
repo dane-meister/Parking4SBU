@@ -1,0 +1,97 @@
+/* This file contains the styles for the LotDetails component */
+	.lot-details{
+		font-size: 25px;
+		display: flex;
+		flex-direction: column;
+		height: auto;
+		gap: 20px;
+	}
+
+	.lot-details > hr{
+		margin-top: 5px;
+	}
+
+	.selected-lot-img{
+		width: 230px;
+		height: 230px;
+		padding: 15px;
+	}
+
+	.selected-lot-text{
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.selected-lot-name{
+		font-size: 50px;
+		height: 70px;
+		height: auto;
+	}
+
+	.selected-lot-icon{
+		height: 30px;
+	}
+
+	.selected-lot-price-time{
+		display: flex;
+		gap: 30px;
+	}
+
+	.selected-lot-time{
+		color: var(--medium-gray);
+	}
+
+	.selected-lot-price-time, .selected-lot-disability, .selected-lot-ev, .selected-lot-covered{
+		display: flex;
+		height: 30px;
+		align-items: center;
+	}
+
+	.selected-lot-extended-info{
+		display: flex;
+		flex-direction: column;
+	}
+
+	.selected-lots-available{
+		margin-bottom: 25px;
+	}
+
+	.selected-lot-book-btn{
+		width: 90%;
+		align-self: center;
+		height: 50px;
+		font-size: 30px;
+		border-radius: 15px;
+		border: solid black 3px;
+		background-color: var(--red);
+		color: white;
+		margin-bottom: 5px
+	}
+	
+	.selected-lot-book-btn:hover{
+		background-color: var(--bright-red);
+	}
+
+	.selected-lot-book-btn:active{
+		background-color: var(--red);
+	}
+
+	.back-arrow{
+		height: 30px;
+		width: 30px;
+		opacity: 50%;
+		cursor: pointer;
+	}
+
+	.back-arrow:hover{ opacity: 1;}
+	
+	.back-arrow:active{ opacity: .6;}
+
+	.arrow-wrapper{
+		width: 35px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+	}

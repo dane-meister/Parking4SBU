@@ -6,95 +6,113 @@ import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
 const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding, selectedBuilding, setLotResults, setSelectedLot }) => {
   const [ suggestions, setSuggestions ] = useState([]);
-  // Mock data for suggestions
+
+  // Extract building names from the buildings array
   const building_names = buildings.map(bldg => bldg.building_name);
+
+  // Extract lot names from parkingLots array, filtering only lots with capacity > 0
   const lot_names = parkingLots
     .filter(lot => lot.capacity > 0)
     .map(lot => lot.name);
 
-
+  // Function to get suggestions based on user input
   const getSuggestions = (inputValue) => {
-    const escapeRegex = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); // Escape special characters
-  
-    const words = inputValue.trim().split(/\s+/).map(escapeRegex); // Escape each word
-    const regexes = words.map(word => new RegExp(word, 'i')); // Create regex for each word
-    
+    // Escape special characters in the input string
+    const escapeRegex = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    // Split input into words and escape each word
+    const words = inputValue.trim().split(/\s+/).map(escapeRegex);
+
+    // Create regex for each word
+    const regexes = words.map(word => new RegExp(word, 'i'));
+
     let suggestions;
-    if(searchType==='building'){
+    if (searchType === 'building') {
+      // Filter building names based on regex match
       suggestions = building_names.filter(building =>
-        regexes.every(regex => regex.test(building)) // Check if all words appear somewhere
+        regexes.every(regex => regex.test(building))
       );
-    }else{ //lot
+    } else { // For parking lots
+      // Filter lot names based on regex match
       suggestions = lot_names.filter(lot =>
-        regexes.every(regex => regex.test(lot)) // Check if all words appear somewhere
+        regexes.every(regex => regex.test(lot))
       );
     }
-  
-    const MAX_RETURN = 5;
+
+    const MAX_RETURN = 5; // Limit the number of suggestions returned
     if (suggestions.length === 0) {
-      return ['No results found'];
+      return ['No results found']; // Return a default message if no matches
     }
     return suggestions.slice(0, MAX_RETURN);
   };
-    
+
+  // Fetch suggestions when the input value changes
   const onSuggestionsFetchRequested = ({ value }) => {
     setSuggestions(getSuggestions(value));
   };
 
+  // Clear suggestions when needed
   const onSuggestionsClearRequested = () => {
     setSuggestions([]);
   };
 
+  // Update the input value when it changes
   const onChange = (event, { newValue }) => {
     setValue(newValue);
   };
 
+  // Get the value of a suggestion
   const getSuggestionValue = (suggestion) => {
     return suggestion === "No results found" ? "" : suggestion;
   };
-  
+
+  // Render a single suggestion
   const renderSuggestion = (suggestion) => {
     return <div>{suggestion}</div>;
-  }
+  };
 
+  // Handle the Enter key press for search
   const handleKeyDown = async (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent the default form submission behavior
-      
-      if(searchType==='building'){
-        if(building_names.includes(value)){
-          const bldg = buildings.filter(bldg => bldg.building_name===value)[0];
+      event.preventDefault(); // Prevent default form submission behavior
+
+      if (searchType === 'building') {
+        // Handle building search
+        if (building_names.includes(value)) {
+          const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
           setSelectedBuilding(bldg);
-          try{
+          try {
+            // Fetch lot results for the selected building
             const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`);
             setLotResults(response.data);
-          }catch(err){
+          } catch (err) {
             console.error("Error fetching lot results:", err);
             alert('Error fetching lot results');
           }
-        }else{
-          alert('INVALID bldg');
+        } else {
+          alert('INVALID bldg'); // Alert if the building is invalid
         }
-      }else{ //lot
-        if(lot_names.includes(value)){
-          const lot = parkingLots.filter(lot => lot.name===value)[0];
+      } else { // Handle parking lot search
+        if (lot_names.includes(value)) {
+          const lot = parkingLots.filter(lot => lot.name === value)[0];
           console.log(lot);
           setSelectedLot(lot);
-        }else{
-          alert('INVALID lot');
+        } else {
+          alert('INVALID lot'); // Alert if the lot is invalid
         }
       }
     }
   };
 
+  // Input properties for the Autosuggest component
   const inputProps = {
-    placeholder: `Search for a ${searchType}`,
+    placeholder: `Search for a ${searchType}`, // Dynamic placeholder based on search type
     value,
     onChange,
     onKeyDown: handleKeyDown
   };
 
-  // Custom theme for styling
+  // Custom theme for styling the Autosuggest component
   const theme = {
     container: 'autocomplete-container',
     suggestionsContainer: 'suggestions-container',

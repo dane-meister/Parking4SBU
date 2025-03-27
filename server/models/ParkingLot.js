@@ -1,50 +1,52 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../db");
+const { DataTypes } = require("sequelize"); // Import DataTypes from Sequelize for defining model attributes
+const sequelize = require("../db"); // Import the Sequelize instance for database connection
 
+// Define the ParkingLot model
 const ParkingLot = sequelize.define("ParkingLot", {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
+    type: DataTypes.INTEGER, // Integer type for the primary key
+    autoIncrement: true, // Auto-incrementing ID
+    primaryKey: true, // Set as the primary key
   },
   name: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: DataTypes.STRING, // String type for the parking lot name
+    allowNull: false, // Name is required
   },
   location: {
-    type: DataTypes.GEOMETRY("MULTIPOINT", 4326),
-    allowNull: false,
+    type: DataTypes.GEOMETRY("MULTIPOINT", 4326), // Geographic coordinates in WGS 84 format
+    allowNull: false, // Location is required
   },
   mercator_coordinates: {
-    type: DataTypes.GEOMETRY("MULTIPOINT", 3857),
-    allowNull: false,
+    type: DataTypes.GEOMETRY("MULTIPOINT", 3857), // Coordinates in Web Mercator projection
+    allowNull: false, // Mercator coordinates are required
   },
   
-  capacity: DataTypes.INTEGER,
-  faculty_capacity: DataTypes.INTEGER,
-  faculty_availability: DataTypes.INTEGER,
-  commuter_perimeter_capacity: DataTypes.INTEGER,
-  commuter_perimeter_availability: DataTypes.INTEGER,
-  commuter_core_capacity: DataTypes.INTEGER,
-  commuter_core_availability: DataTypes.INTEGER,
-  commuter_satellite_capacity: DataTypes.INTEGER,
-  commuter_satellite_availability: DataTypes.INTEGER,
-  metered_capacity: DataTypes.INTEGER,
-  metered_availability: DataTypes.INTEGER,
-  resident_capacity: DataTypes.INTEGER,
-  resident_availability: DataTypes.INTEGER,
+  // Capacity and availability for different types of parking spaces
+  capacity: DataTypes.INTEGER, // Total capacity of the parking lot
+  faculty_capacity: DataTypes.INTEGER, // Capacity for faculty parking
+  faculty_availability: DataTypes.INTEGER, // Available spaces for faculty parking
+  commuter_perimeter_capacity: DataTypes.INTEGER, // Capacity for commuter perimeter parking
+  commuter_perimeter_availability: DataTypes.INTEGER, // Available spaces for commuter perimeter parking
+  commuter_core_capacity: DataTypes.INTEGER, // Capacity for commuter core parking
+  commuter_core_availability: DataTypes.INTEGER, // Available spaces for commuter core parking
+  commuter_satellite_capacity: DataTypes.INTEGER, // Capacity for commuter satellite parking
+  commuter_satellite_availability: DataTypes.INTEGER, // Available spaces for commuter satellite parking
+  metered_capacity: DataTypes.INTEGER, // Capacity for metered parking
+  metered_availability: DataTypes.INTEGER, // Available spaces for metered parking
+  resident_capacity: DataTypes.INTEGER, // Capacity for resident parking
+  resident_availability: DataTypes.INTEGER, // Available spaces for resident parking
   resident_zone: {
-    type: DataTypes.STRING,
-    allowNull: true, 
+    type: DataTypes.STRING, // Zone designation for resident parking
+    allowNull: true, // Resident zone is optional
   },
-  ada_capacity: DataTypes.INTEGER,
-  ada_availability: DataTypes.INTEGER,
-  ev_charging_capacity: DataTypes.INTEGER,
-  ev_charging_availability: DataTypes.INTEGER,
+  ada_capacity: DataTypes.INTEGER, // Capacity for ADA (accessible) parking
+  ada_availability: DataTypes.INTEGER, // Available spaces for ADA parking
+  ev_charging_capacity: DataTypes.INTEGER, // Capacity for EV charging stations
+  ev_charging_availability: DataTypes.INTEGER, // Available EV charging stations
   covered: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
+    type: DataTypes.BOOLEAN, // Boolean indicating if the parking lot is covered
+    allowNull: false, // Covered status is required
   },
 });
 
-module.exports = ParkingLot;
+module.exports = ParkingLot; // Export the ParkingLot model

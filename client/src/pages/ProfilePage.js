@@ -6,8 +6,10 @@ import ProfileForm from '../components/ProfileForm';
 import VehiclesForm from '../components/VehiclesForm';
 
 export default function ProfilePage() {
+  // State to manage the currently active tab ('profile' or 'vehicles')
   const [activeTab, setActiveTab] = useState('profile');
 
+  // Dummy user data to populate the ProfileForm
   const dummyUserData = {
     email: 'michelle.lieberwoman@stonybrook.edu',
     firstName: 'Michelle',
@@ -23,6 +25,7 @@ export default function ProfilePage() {
     country: 'United States'
   };
 
+  // Dummy vehicle data to populate the VehiclesForm
   const dummyVehiclesData = [
     {
       make: 'Chevrolet',
@@ -35,13 +38,17 @@ export default function ProfilePage() {
 
   return (
     <section className='main-container-profile'>
+      {/* Sidebar component to display account options and manage active tab */}
       <AccountSidebar
         username={dummyUserData.username}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
 
+      {/* Render ProfileForm if the active tab is 'profile' */}
       {activeTab === 'profile' && <ProfileForm userData={dummyUserData} />}
+      
+      {/* Render VehiclesForm if the active tab is 'vehicles' */}
       {activeTab === 'vehicles' && <VehiclesForm vehicles={dummyVehiclesData} />}
     </section>
   );
