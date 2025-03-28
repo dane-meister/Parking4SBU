@@ -1,0 +1,29 @@
+.reservation-page{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	gap: 20px
+}
+
+.reservation-left, .reservation-right{
+	width: 100%;
+	height: 100%;
+	border-radius: 5px;
+}
+
+.reservation-left{
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+/*	margin: 0px 30px;*/
+	max-width: 720px;
+	background-color: var(--bright-red);
+}
+
+.reservation-right{
+	max-width: 450px;
+	background-color: var(--royal-blue);
+}
+
+

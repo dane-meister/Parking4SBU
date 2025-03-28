@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage } from './pages'
+import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, ReservationPage } from './pages'
 import { Header, Footer } from './components'
 import { useState } from 'react';
 import "./stylesheets/App.css"; // Styles for layout
@@ -28,6 +28,8 @@ export default function App() {
         <Routes>
           {/* Route for the lot selection page, passing selectedLot and setSelectedLot as props */}
           <Route index element={<LotSelectionPage selectedLot={selectedLot} setSelectedLot={setSelectedLot} />} />
+          {/* Route for making a reservation */}
+          <Route path='/reservation' element={<ReservationPage />}/>
           {/* Route for the profile page */}
           <Route path="/profile" element={<ProfilePage />} />
           {/* Route for the tickets page */}
