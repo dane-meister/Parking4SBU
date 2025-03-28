@@ -55,32 +55,33 @@ export default function RegisterPage() {
             <>
               <div className="form-row">
                 <div>
-                  <label>First Name</label>
-                  <input name="firstName" value={form.firstName} onChange={handleChange} required />
+                  <label htmlFor="firstName">First Name</label>
+                  <input id="firstName" name="firstName" value={form.firstName} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label>Last Name</label>
-                  <input name="lastName" value={form.lastName} onChange={handleChange} required />
+                  <label htmlFor="lastName">Last Name</label>
+                  <input id="lastName" name="lastName" value={form.lastName} onChange={handleChange} required />
                 </div>
               </div>
-              <label>Email</label>
-              <input type="email" name="email" value={form.email} onChange={handleChange} required />
 
-              <label>Password</label>
-              <input type="password" name="password" value={form.password} onChange={handleChange} required />
+              <label htmlFor="email">Email</label>
+              <input id="email" type="email" name="email" value={form.email} onChange={handleChange} required />
 
-              <label>Confirm Password</label>
-              <input type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required />
+              <label htmlFor="password">Password</label>
+              <input id="password" type="password" name="password" value={form.password} onChange={handleChange} required />
 
-              <label>Phone Number</label>
-              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required />
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input id="confirmPassword" type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required />
+
+              <label htmlFor="phone">Phone Number</label>
+              <input id="phone" type="tel" name="phone" value={form.phone} onChange={handleChange} required />
             </>
           )}
 
           {step === 2 && (
             <>
-              <label>User Type</label>
-              <select name="userType" value={form.userType} onChange={handleChange} required>
+              <label htmlFor="userType">User Type</label>
+              <select id="userType" name="userType" value={form.userType} onChange={handleChange} required>
                 <option value="">Select Type</option>
                 <option value="commuter">Commuter</option>
                 <option value="resident">Resident</option>
@@ -90,8 +91,8 @@ export default function RegisterPage() {
 
               {form.userType !== 'visitor' && (
                 <>
-                  <label>Permit Type</label>
-                  <select name="permitType" value={form.permitType} onChange={handleChange} required>
+                  <label htmlFor="permitType">Permit Type</label>
+                  <select id="permitType" name="permitType" value={form.permitType} onChange={handleChange} required>
                     <option value="">Select Permit</option>
                     <option value="core">Core</option>
                     <option value="perimeter">Perimeter</option>
@@ -106,34 +107,34 @@ export default function RegisterPage() {
 
           {step === 3 && (
             <>
-              <label>Driver License Number</label>
-              <input name="dlNumber" value={form.dlNumber} onChange={handleChange} required />
+              <label htmlFor="dlNumber">Driver License Number</label>
+              <input id="dlNumber" name="dlNumber" value={form.dlNumber} onChange={handleChange} required />
 
-              <label>DL State</label>
-              <input name="dlState" value={form.dlState} onChange={handleChange} required />
+              <label htmlFor="dlState">DL State</label>
+              <input id="dlState" name="dlState" value={form.dlState} onChange={handleChange} required />
 
-              <label>Address</label>
-              <input name="address" value={form.address} onChange={handleChange} required />
+              <label htmlFor="address">Address</label>
+              <input id="address" name="address" value={form.address} onChange={handleChange} required />
 
               <div className="form-row">
                 <div>
-                  <label>City</label>
-                  <input name="city" value={form.city} onChange={handleChange} required />
+                  <label htmlFor="city">City</label>
+                  <input id="city" name="city" value={form.city} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label>State/Region</label>
-                  <input name="stateRegion" value={form.stateRegion} onChange={handleChange} required />
+                  <label htmlFor="stateRegion">State/Region</label>
+                  <input id="stateRegion" name="stateRegion" value={form.stateRegion} onChange={handleChange} required />
                 </div>
               </div>
 
               <div className="form-row">
                 <div>
-                  <label>Zip Code</label>
-                  <input name="zip" value={form.zip} onChange={handleChange} required />
+                  <label htmlFor="zip">Zip Code</label>
+                  <input id="zip" name="zip" value={form.zip} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label>Country</label>
-                  <input name="country" value={form.country} onChange={handleChange} required />
+                  <label htmlFor="country">Country</label>
+                  <input id="country" name="country" value={form.country} onChange={handleChange} required />
                 </div>
               </div>
             </>
