@@ -16,28 +16,28 @@ export default function AccountSidebar({ username, activeTab, setActiveTab }) {
           <p>ACCOUNT SETTINGS</p>
 
           {/* Profile tab button */}
-          <div
+          <button
             className={`sidebar-btn ${activeTab === 'profile' ? 'active' : ''}`}
             onClick={() => setActiveTab('profile')}
           >
             Profile
-          </div>
+          </button>
   
           {/* Vehicles tab button */}
-          <div
+          <button
             className={`sidebar-btn ${activeTab === 'vehicles' ? 'active' : ''}`}
             onClick={() => setActiveTab('vehicles')}
           >
             Vehicles
-          </div>
+          </button>
 
           {/* Sign Out button */}
-          <div
+          <button
             className="sidebar-btn"
             id='sign-out'
           >
             Sign Out
-          </div>
+          </button>
         </div>
       </section>
     );

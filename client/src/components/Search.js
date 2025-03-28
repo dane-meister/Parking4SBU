@@ -18,7 +18,7 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
   // Function to get suggestions based on user input
   const getSuggestions = (inputValue) => {
     // Escape special characters in the input string
-    const escapeRegex = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const escapeRegex = (str) => str.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
 
     // Split input into words and escape each word
     const words = inputValue.trim().split(/\s+/).map(escapeRegex);

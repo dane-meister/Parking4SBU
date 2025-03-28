@@ -13,7 +13,22 @@
 	padding: 20px;
 	border-right: 2px solid #ccc;
   }
-  
+
+  .account-sidebar button {
+	background-color: #fff;
+	border: 1px solid #ccc;
+	padding: 10px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	width: 100%;
+	margin: 2%;
+  }
+
+  .account-sidebar button:hover {
+	background-color: #f0f0f0;
+  }
+
   .account-sidebar h2 {
 	font-size: 28px;
 	margin-bottom: 10px;

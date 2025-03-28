@@ -49,13 +49,13 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
         {/* Left section containing lot details */}
         <div className='lot-result-info vbox'>
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
-          <div className="result-dist-row">{!!distance ? `${distance.toFixed(3)} mi` : ''}</div> {/* Display distance if available */}
+          <div className="result-dist-row">{distance ? `${distance.toFixed(3)} mi` : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
             <span className='result-price'>{rate ?? 'unknown rate'}</span> {/* Display rate or fallback */}
             <span className="result-time">{time ?? ''}</span> {/* Display time if available */}
           </div>
           <div className="result-available-row">
-            {!!availableCapacity ? `${availableCapacity} spots available` : 'unknown capacity'} {/* Display available capacity or fallback */}
+            {availableCapacity ? `${availableCapacity} spots available` : 'unknown capacity'} {/* Display available capacity or fallback */}
           </div>
         </div>
         <div className="flex"/> {/* Spacer for layout adjustment */}

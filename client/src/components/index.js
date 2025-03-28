@@ -9,6 +9,6 @@ export { default as Map } from './Map';
 export { default as InformationSystems } from './LotDetails';
 export { default as Search } from './Search'
 export { default as TicketItem } from './TicketItem';
-export { default as AccountSidebar } from './AccountSidebar';
+export { default as AccountSidebar } from './ProfileSidebar';
 export { default as ProfileForm } from './ProfileForm';
 export { default as CurrentReservationItem } from './CurrentReservationItem';
