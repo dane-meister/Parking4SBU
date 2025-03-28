@@ -135,7 +135,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
                 return <LotResult 
                   lotObj={lot}
                   setSelectedLot={setSelectedLot}
-                  distance={!!selectedBuilding ? lot.distance_miles : '' }
+                  distance={selectedBuilding ? lot.distance_miles : '' }
                 />
               })}
             </section>
