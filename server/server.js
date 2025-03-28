@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const sequelize = require("./db");
+const authRoutes = require('./routes/auth');
 
 // Import models
 const Building = require("./models/Building");
@@ -14,6 +15,9 @@ const PORT = process.env.PORT || 8000;
 // Middleware
 app.use(cors());
 app.use(express.json()); // Parse JSON requests
+
+//authentication routes
+app.use("/api/auth", authRoutes);
 
 // API Routes
 app.get("/api/buildings", async (req, res) => {

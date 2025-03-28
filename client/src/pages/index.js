@@ -4,3 +4,4 @@ export { default as NoPage } from './NoPage';
 export { default as LotSelectionPage } from './LotSelectionPage';
 export { default as TicketsPage } from './TicketsPage';
 export { default as CurrentReservationsPage } from './CurrentReservationsPage';
+export { default as AuthPage } from './AuthPage'; // Authentication page for login and registration
