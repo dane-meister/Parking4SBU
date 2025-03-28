@@ -7,74 +7,74 @@ export default function ProfileForm({ userData }) {
         <h2>Edit Profile</h2>
         <form>
           {/* Email Address Field */}
-          <label>Email Address*</label>
-          <input type="email" value={userData.email} readOnly />
+          <label htmlFor="email">Email Address*</label>
+          <input id="email" type="email" value={userData.email} readOnly />
   
           <div className="form-row">
             {/* First Name Field */}
             <div>
-              <label>First Name*</label>
-              <input type="text" value={userData.firstName} readOnly />
+              <label htmlFor='firstName'>First Name*</label>
+              <input id='firstName' type="text" value={userData.firstName} readOnly />
             </div>
             {/* Last Name Field */}
             <div>
-              <label>Last Name*</label>
-              <input type="text" value={userData.lastName} readOnly />
+              <label htmlFor='lastName'>Last Name*</label>
+              <input id='lastName' type="text" value={userData.lastName} readOnly />
             </div>
           </div>
   
           {/* Username Field */}
-          <label>Username*</label>
-          <input type="text" value={userData.username} readOnly />
+          <label htmlFor='username'>Username*</label>
+          <input id='username' type="text" value={userData.username} readOnly />
   
           {/* Password Field (masked for security) */}
-          <label>Password*</label>
-          <input type="password" value="***************" readOnly />
+          <label htmlFor='password'>Password*</label>
+          <input id="password" type='password' value="***************" readOnly />
   
           {/* Mobile Number Field */}
-          <label>Mobile Number*</label>
-          <input type="tel" value={userData.mobile} readOnly />
+          <label htmlFor='tel'>Mobile Number*</label>
+          <input id='tel' type="tel" value={userData.mobile} readOnly />
   
           <div className="form-row">
             {/* Driver License Number Field */}
             <div>
-              <label>Driver License No.*</label>
-              <input type="text" value={userData.dlNumber} readOnly />
+              <label htmlFor='drivesLicenseNo'>Driver License No.*</label>
+              <input id='drivesLicenseNo' type="text" value={userData.dlNumber} readOnly />
             </div>
             {/* Driver License State Field */}
             <div>
-              <label>DL State*</label>
-              <input type="text" value={userData.dlState} readOnly />
+              <label htmlFor='driversLicenseState'>DL State*</label>
+              <input id='driversLicenseState' type="text" value={userData.dlState} readOnly />
             </div>
           </div>
   
           {/* Address Line 1 Field */}
-          <label>Address Line No. 1*</label>
-          <input type="text" value={userData.address} readOnly />
+          <label htmlFor='addr1'>Address Line No. 1*</label>
+          <input id='addr1' type="text" value={userData.address} readOnly />
   
           <div className="form-row">
             {/* City Field */}
             <div>
-              <label>City*</label>
-              <input type="text" value={userData.city} readOnly />
+              <label htmlFor='city'>City*</label>
+              <input id='city' type="text" value={userData.city} readOnly />
             </div>
             {/* State/Region Field */}
             <div>
-              <label>State/Region*</label>
-              <input type="text" value={userData.state} readOnly />
+              <label htmlFor='state'>State/Region*</label>
+              <input id='state' type="text" value={userData.state} readOnly />
             </div>
           </div>
   
           <div className="form-row">
             {/* Postal/Zip Code Field */}
             <div>
-              <label>Postal/Zip Code*</label>
-              <input type="text" value={userData.zip} readOnly />
+              <label htmlFor='zipCode'>Postal/Zip Code*</label>
+              <input id='zipCode' type="text" value={userData.zip} readOnly />
             </div>
             {/* Country Field */}
             <div>
-              <label>Country*</label>
-              <input type="text" value={userData.country} readOnly />
+              <label htmlFor='country'>Country*</label>
+              <input id='country' type="text" value={userData.country} readOnly />
             </div>
           </div>
         </form>
