@@ -131,11 +131,12 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               sort by
             </header>
             <section className='lot-results'>
-              {lotResults.map(lot => {
+              {lotResults.map((lot,idx) => {
                 return <LotResult 
                   lotObj={lot}
+                  key={idx}
                   setSelectedLot={setSelectedLot}
-                  distance={selectedBuilding ? lot.distance_miles : '' }
+                  distance={selectedBuilding ? lot.distance_miles : ''}
                 />
               })}
             </section>
