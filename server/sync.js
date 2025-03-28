@@ -7,6 +7,9 @@ const Building = require("./models/Building");
 // Import the ParkingLot model
 const ParkingLot = require("./models/ParkingLot");
 
+// Import the User model
+const User = require("./models/User");
+
 // Immediately Invoked Async Function Expression (IIFE) to handle database synchronization
 (async () => {
   try {

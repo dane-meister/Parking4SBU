@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Filter, LotResult, InformationSystems, Search } from '.'
+import { Filter, LotResult, LotDetails, Search } from '.'
 
 function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   // State for rate type selection (hourly, daily, etc.)
@@ -79,7 +79,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
 
       {/* Display detailed information if a lot is selected */}
       { selectedLot 
-        ? <InformationSystems 
+        ? <LotDetails 
             lotObj={selectedLot}
           />
         : (<>
