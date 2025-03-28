@@ -9,28 +9,37 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = e => {
+  const handleLogin = async e => {
     e.preventDefault();
-    // Replace with real auth logic
-    login(email, password);
-    navigate('/');
+    try{
+      await login(email, password);
+      navigate('/');
+    } catch (err) {
+      setError("Invalid email or password.");
+      console.error(err);
+    }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2 className="auth-title">Welcome Back</h2>
+        {error && <p className="auth-error">{error}</p>}
         <form onSubmit={handleLogin} className="auth-form">
-          <label htmlFor='email'>Email Address</label>
-          <input
-            id='email'
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
+          <div className="form-group">
+            <label htmlFor='email'>Email Address</label>
+            <input
+              id='email'
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
+          <div className="form-group">
           <label htmlFor='password'>Password</label>
           <input
             id='password'
@@ -39,6 +48,7 @@ export default function LoginPage() {
             onChange={e => setPassword(e.target.value)}
             required
           />
+          </div>
 
           <button type="submit" className="auth-button">Login</button>
         </form>
