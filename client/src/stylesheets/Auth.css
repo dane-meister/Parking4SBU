@@ -5,21 +5,22 @@
     align-items: center;
     background-color: #f4f4f4;
     font-family: 'Barlow', sans-serif;
+    padding: 20px;
   }
   
   .auth-card {
     background-color: #fff;
-    padding: 40px;
-    border-radius: 16px;
+    padding: 30px;
+    border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     width: 100%;
-    max-width: 420px;
+    max-width: 500px;
     box-sizing: border-box;
   }
   
   .auth-title {
-    font-size: 32px;
-    margin-bottom: 25px;
+    font-size: 26px;
+    margin-bottom: 20px;
     color: var(--red);
     text-align: center;
   }
@@ -31,35 +32,34 @@
   
   .auth-form label {
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    font-size: 14px;
   }
   
-  .auth-form input {
-    padding: 10px 14px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-  }
+  .auth-form input,
+  .auth-form select {
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
   
   .auth-button {
-    background-color: var(--red);
+    background-color: var(--bright-red); 
     color: white;
     border: none;
-    padding: 12px;
-    font-size: 18px;
-    border-radius: 8px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.2s ease;
   }
   
   .auth-button:hover {
-    background-color: var(--bright-red);
-  }
-  
-  .auth-footer {
-    margin-top: 20px;
-    text-align: center;
+    background-color: var(--red); /* Darker shade for hover effect */
   }
   
   .auth-link {
@@ -77,15 +77,37 @@
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    gap: 10px;
   }
   
   .auth-button.secondary {
-    background-color: #ccc;
+    background-color: var(--light-grey);
     color: #333;
   }
   
   .auth-button.secondary:hover {
-    background-color: #aaa;
+    background-color: var(--medium-gray);
   }
+
+  .form-row {
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  
+  .form-row > div {
+    flex: 1;
+  }
+  
+  .auth-form select {
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: white;
+  }
+  
   
   

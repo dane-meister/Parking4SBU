@@ -27,13 +27,45 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const isStepValid = () => {
+    if (step === 1) {
+      return (
+        form.firstName &&
+        form.lastName &&
+        form.email &&
+        form.password &&
+        form.confirmPassword &&
+        form.phone &&
+        form.password === form.confirmPassword
+      );
+    }
+    if (step === 2) {
+      if (!form.userType) return false;
+      if (form.userType !== 'visitor' && !form.permitType) return false;
+      return true;
+    }
+    if (step === 3) {
+      return (
+        form.dlNumber &&
+        form.dlState &&
+        form.address &&
+        form.city &&
+        form.stateRegion &&
+        form.zip &&
+        form.country
+      );
+    }
+    return false;
+  };
+  
   const next = () => {
-    if (step === 1 && form.password !== form.confirmPassword) {
-      alert("Passwords do not match.");
+    if (!isStepValid()) {
+      alert("Please complete all required fields before proceeding.");
       return;
     }
     setStep(prev => prev + 1);
   };
+  
 
   const back = () => {
     setStep(prev => prev - 1);
