@@ -35,7 +35,10 @@ const User = sequelize.define('User', {
         allowNull: false
     },
     permit_type: {
-        type: DataTypes.ENUM('daily', 'semesterly', 'monthly', 'yearly', 'none'),
+        type: DataTypes.ENUM(
+            'core', 'perimeter', 'satellite', 'faculty',
+            'resident-zone1', 'resident-zone2', 'resident-zone3',
+            'resident-zone4', 'resident-zone5', 'resident-zone6'), 
         allowNull: false
     },
     driver_license_number: {
