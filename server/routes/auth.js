@@ -25,7 +25,6 @@ router.post("/register", async (req, res) => {
             postal_zip_code,
             country 
         } = req.body;
-            console.log(req.body); // Log the request body to see the incoming data
 
              // Basic validation
         if (
@@ -36,7 +35,6 @@ router.post("/register", async (req, res) => {
         ) {
             return res.status(400).json({ message: "Missing required fields." });
         }
-            console.log("Received registration data:");
             //checking if user already exists:
             const existing_user = await User.findOne({ where: { email } });
             if (existing_user) {
@@ -86,15 +84,17 @@ router.post("/login", async (req, res) => {
         if (!user){
             return res.status(400).json({ message: "Invalid credentials" });
         }
-
         //compare provided password with stored hash
         const is_valid = await bcrypt.compare(password, user.password);
         if (!is_valid){
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        const token = jwt.sign(
-            { user_id: user.user_id, email: user.email, user_type: user.user_type },
+        const token = jwt.sign({ 
+            user_id: user.user_id, 
+            email: user.email, 
+            user_type: user.user_type 
+        },
             process.env.JWT_SECRET,
             { expiresIn: "2h" }
         );
