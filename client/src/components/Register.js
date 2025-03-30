@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../stylesheets/Auth.css';
@@ -7,13 +7,17 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
+  const [passwordMatchMessage, setPasswordMatchMessage] = useState('');
+  const [dlNumberError, setDlNumberError] = useState('');
+
+
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
     email: '',
     password: '',
     confirm_password: '',
-    phone: '',
+    phone_number: '',
     user_type: '',
     permit_type: '',
     driver_license_number: '',
@@ -25,10 +29,37 @@ export default function RegisterPage() {
     country: '',
   });
 
+  //list of US states for driver's license state
+  const us_states = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID",
+    "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS",
+    "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK",
+    "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV",
+    "WI", "WY"
+  ];
+
+  //list of some possible countries
+  const countries = ["USA", "Canada", "Mexico", "UK", "Other"];
+
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  //dynamically confirm password match
+  useEffect(() => {
+    if (form.confirm_password) {
+      if (form.password === form.confirm_password) {
+        setPasswordMatchMessage("Passwords match");
+      } else {
+        setPasswordMatchMessage("Passwords do not match");
+      }
+    } else {
+      setPasswordMatchMessage("");
+    }
+  }, [form.password, form.confirm_password]);
+
+
+  
   const isStepValid = () => {
     if (step === 1) {
       return (
@@ -37,7 +68,7 @@ export default function RegisterPage() {
         form.email &&
         form.password &&
         form.confirm_password &&
-        form.phone &&
+        form.phone_number &&
         form.password === form.confirm_password
       );
     }
@@ -150,6 +181,13 @@ export default function RegisterPage() {
                 onChange={handleChange} 
                 required 
               />
+              {passwordMatchMessage && (
+                  <span 
+                    className={`password-match ${passwordMatchMessage === "Passwords match" ? "valid" : "invalid"}`}
+                  >
+                    {passwordMatchMessage}
+                  </span>
+                )}
 
               <label htmlFor="phone_number">Phone Number</label>
               <input 
@@ -215,13 +253,18 @@ export default function RegisterPage() {
               />
 
               <label htmlFor="dl_state">Driver License State</label>
-              <input 
+              <select 
                 id="dl_state" 
                 name="dl_state" 
                 value={form.dl_state} 
                 onChange={handleChange} 
                 required 
-              />
+              >
+                <option value="">Select State</option>
+                  {us_states.map((state) => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+              </select>
 
 
               <label htmlFor="address_line">Address</label>
