@@ -46,7 +46,7 @@ const User = sequelize.define('User', {
         allowNull: false
     },
     dl_state: {
-        type: DataTypes.STRING(2),
+        type: DataTypes.STRING,
         allowNull: false
     },
     address_line: {
