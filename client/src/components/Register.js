@@ -29,13 +29,45 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const isStepValid = () => {
+    if (step === 1) {
+      return (
+        form.first_name &&
+        form.last_name &&
+        form.email &&
+        form.password &&
+        form.confirm_password &&
+        form.phone &&
+        form.password === form.confirm_password
+      );
+    }
+    if (step === 2) {
+      if (!form.user_type) return false;
+      if (form.user_type !== 'visitor' && !form.permit_type) return false;
+      return true;
+    }
+    if (step === 3) {
+      return (
+        form.driver_license_number &&
+        form.dl_state &&
+        form.address &&
+        form.city &&
+        form.state_region &&
+        form.postal_zip_code &&
+        form.country
+      );
+    }
+    return false;
+  };
+  
   const next = () => {
-    if (step === 1 && form.password !== form.confirm_password) {
-      alert("Passwords do not match.");
+    if (!isStepValid()) {
+      alert("Please complete all required fields before proceeding.");
       return;
     }
     setStep(prev => prev + 1);
   };
+  
 
   const back = () => {
     setStep(prev => prev - 1);
