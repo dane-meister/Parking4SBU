@@ -13,7 +13,7 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirm_password: '',
-    phone: '',
+    phone_number: '',
     user_type: '',
     permit_type: '',
     driver_license_number: '',
@@ -37,7 +37,7 @@ export default function RegisterPage() {
         form.email &&
         form.password &&
         form.confirm_password &&
-        form.phone &&
+        form.phone_number &&
         form.password === form.confirm_password
       );
     }
