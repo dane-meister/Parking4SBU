@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
@@ -13,8 +14,12 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
-app.use(cors());
 app.use(express.json()); // Parse JSON requests
+app.use(cookieParser()); // Parse cookies from requests
+app.use(cors({
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:3000", // Allow requests from the client app
+  credentials: true // Allow cookies to be sent with requests
+}));
 
 // //authentication routes
 app.use("/api/auth", authRoutes);

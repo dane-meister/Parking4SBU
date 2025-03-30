@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../stylesheets/index.css';
 import '../stylesheets/Profile.css';
-import AccountSidebar from '../components/ProfileSidebar';
+import ProfileSidebar from '../components/ProfileSidebar';
 import ProfileForm from '../components/ProfileForm';
 import VehiclesForm from '../components/VehiclesForm';
 
@@ -39,7 +39,7 @@ export default function ProfilePage() {
   return (
     <section className='main-container-profile'>
       {/* Sidebar component to display account options and manage active tab */}
-      <AccountSidebar
+      <ProfileSidebar
         username={dummyUserData.username}
         activeTab={activeTab}
         setActiveTab={setActiveTab}

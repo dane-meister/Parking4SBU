@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -8,49 +8,63 @@ const DEV_BYPASS_AUTH = false;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const login = async (email, password) => {
-    if (DEV_BYPASS_AUTH) {
-      const fakeUser = { email, user_type: 'developer' };
-      setUser(fakeUser);
-      return { token: 'dev-token', user: fakeUser };
-    }
-
     try {
-      const res = await axios.post("http://localhost:8000/api/auth/login", {
+      await axios.post("http://localhost:8000/api/auth/login", {
         email,
         password
+      }, {
+        withCredentials: true
       });
 
-      const { token } = res.data;
-
-      // Decode token to get user info (assuming it's a JWT)
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userData = {
-        email: payload.email,
-        user_type: payload.user_type,
-        user_id: payload.user_id
-      };
-
-      setUser(userData);
-      return { token, user: userData };
-
+      const success = await checkAuth(); // verify cookie and fetch user
+      return success; // return true if login was successful and user is fetched 
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
       return null;
     }
   };
 
-  const logout = () => setUser(null);
+  const logout = async () => {
+    await axios.post("http://localhost:8000/api/auth/logout", {}, { withCredentials: true });
+    setUser(null);
+  };
+
+  const checkAuth = async () => {
+    if (DEV_BYPASS_AUTH) {
+      const fakeUser = { email: "dev@example.com", user_type: "developer" };
+      setUser(fakeUser);
+      return true;
+    }
+
+    try {
+      const res = await axios.get("http://localhost:8000/api/auth/me", {
+        withCredentials: true
+      });
+      console.log("Authenticated user data:", res.data.user); // Log the user data for debugging
+      setUser(res.data.user);
+      return true;
+    } catch {
+      setUser(null);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    checkAuth().finally(() => setAuthLoading(false));
+  }, []);
 
   const isAuthenticated = DEV_BYPASS_AUTH || !!user;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, authLoading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
+
 
