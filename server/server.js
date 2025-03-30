@@ -16,8 +16,9 @@ const PORT = process.env.PORT || 8000;
 app.use(cors());
 app.use(express.json()); // Parse JSON requests
 
-//authentication routes
+// //authentication routes
 app.use("/api/auth", authRoutes);
+
 
 // API Routes
 app.get("/api/buildings", async (req, res) => {
