@@ -18,6 +18,8 @@ export default function VehiclesForm({ vehicles }) {
 
             {/* Button to add a new vehicle */}
             <div className="add-vehicle">
+                {/* If no vehicles, display a message */}
+                {vehicles.length === 0 && <p style={{ color: 'gray' }}>No Vehicles Added</p>}
                 <button className="add-vehicle-btn">+ Add Vehicle</button>
             </div>
         </section>
