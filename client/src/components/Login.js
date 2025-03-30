@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
 import '../stylesheets/Auth.css';
 
 export default function LoginPage() {
@@ -15,9 +14,9 @@ export default function LoginPage() {
   const handleLogin = async e => {
     e.preventDefault();
     try{
-      const result = await login(email, password);
-      if (result && result.token){
-        navigate('/');
+      const success = await login(email, password);
+      if (success){
+        navigate('/home');
       }
       else {
         setError("Invalid email or password.");

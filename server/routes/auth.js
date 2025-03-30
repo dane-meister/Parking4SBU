@@ -5,6 +5,20 @@ const User = require("../models/User");
 const router = express.Router();
 
 const salt_rounds = 12;
+const authenticate = require("../middleware/authMiddleware"); // Middleware to authenticate users
+
+router.get("/me", authenticate, async (req, res) => {
+    try {
+      const user = await User.findByPk(req.user.user_id, {
+        attributes: { exclude: ['password'] }
+      });
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.json({ user });
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching user", error: err.message });
+    }
+  });
+  
 
 //registration endpoint
 router.post("/register", async (req, res) => {
@@ -99,10 +113,28 @@ router.post("/login", async (req, res) => {
             { expiresIn: "2h" }
         );
 
-        res.json({ message: "Login successful", token });
+        // Set the token in a secure, HttpOnly cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // true in production
+            sameSite: 'Strict',
+            maxAge: 2 * 60 * 60 * 1000, // 2 hours
+        });
+
+        res.json({ message: "Login successful" });
     } catch (error) {
         res.status(500).json({ message: "Error during login", error: error.message });
       }
 });
+
+router.post("/logout", (req, res) => {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+    res.json({ message: "Logged out successfully" });
+  });
+  
 
 module.exports = router;

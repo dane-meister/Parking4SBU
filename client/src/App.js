@@ -32,7 +32,7 @@ export default function App() {
           <Route path="/auth/*" element={<AuthPage />} />
           {/* Protected route wrapper */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-            <Route index element={<LotSelectionPage selectedLot={selectedLot} setSelectedLot={setSelectedLot} />} />
+            <Route path="/home" element={<LotSelectionPage selectedLot={selectedLot} setSelectedLot={setSelectedLot} />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/tickets" element={<TicketsPage />} />
             <Route path="/reservations" element={<CurrentReservationsPage />} />
