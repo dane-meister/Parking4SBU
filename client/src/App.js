@@ -28,7 +28,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/*" element={<AuthPage />} />
+          <Route path="/auth/*" element={<AuthPage />} />
           {/* Protected route wrapper */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route index element={<LotSelectionPage selectedLot={selectedLot} setSelectedLot={setSelectedLot} />} />
