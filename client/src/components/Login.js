@@ -45,7 +45,7 @@ export default function LoginPage() {
 
         <div className="auth-footer">
           <span>Don’t have an account?</span>
-          <Link to="/register" className="auth-link">Register</Link>
+          <Link to="/auth/register" className="auth-link">Register</Link>
         </div>
       </div>
     </div>

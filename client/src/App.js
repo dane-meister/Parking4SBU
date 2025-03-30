@@ -4,6 +4,7 @@ import { Header, Footer } from './components'
 import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Outlet } from 'react-router-dom';
 import "./stylesheets/App.css"; // Styles for layout
 import "./stylesheets/index.css"; // Global styles
 
@@ -12,12 +13,12 @@ export default function App() {
   const [ selectedLot, setSelectedLot ] = useState(null);
 
   // Layout component to provide a consistent structure for all pages
-  function Layout({ children }) {
+  function Layout() {
     return (
       <div className="app-wrapper">
         <Header /> {/* Header component */}
         <main className="page-content">
-          {children} {/* Render the child components */}
+          <Outlet /> {/* This will render nested routes */}
         </main>
         <Footer /> {/* Footer component */}
       </div>
