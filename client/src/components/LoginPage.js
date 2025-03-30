@@ -14,8 +14,14 @@ export default function LoginPage() {
   const handleLogin = async e => {
     e.preventDefault();
     try{
-      await login(email, password);
-      navigate('/');
+      const result = await login(email, password);
+      if (result && result.token){
+        navigate('/');
+      }
+      else {
+        setError("Invalid email or password.");
+      }
+      
     } catch (err) {
       setError("Invalid email or password.");
       console.error(err);

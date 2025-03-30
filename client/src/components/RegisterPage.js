@@ -1,25 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../stylesheets/Auth.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    confirm_password: '',
     phone: '',
-    userType: '',
-    permitType: '',
-    dlNumber: '',
-    dlState: '',
-    address: '',
+    user_type: '',
+    permit_type: '',
+    driver_license_number: '',
+    dl_state: '',
+    address_line: '',
     city: '',
-    stateRegion: '',
-    zip: '',
+    state_region: '',
+    postal_zip_code: '',
     country: '',
   });
 
@@ -28,7 +30,7 @@ export default function RegisterPage() {
   };
 
   const next = () => {
-    if (step === 1 && form.password !== form.confirmPassword) {
+    if (step === 1 && form.password !== form.confirm_password) {
       alert("Passwords do not match.");
       return;
     }
@@ -39,60 +41,124 @@ export default function RegisterPage() {
     setStep(prev => prev - 1);
   };
 
-  const handleRegister = e => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    // Replace with actual registration logic
-    console.log('User registered:', form);
-    navigate('/login');
+    if (form.password !== form.confirm_password) {
+      setError("Passwords do not match.");
+      return;
+    }
+    try {
+      // Send a POST request to the registration endpoint
+      const response = await axios.post('http://localhost:8000/api/auth/register', form);
+      console.log("Registration response:", response.data);
+      navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed.");
+      console.error(err);
+    }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2 className="auth-title">Register</h2>
+        {error && <p className="auth-error">{error}</p>}
         <form onSubmit={handleRegister} className="auth-form">
           {step === 1 && (
             <>
               <div className="form-row">
                 <div>
-                  <label htmlFor="firstName">First Name</label>
-                  <input id="firstName" name="firstName" value={form.firstName} onChange={handleChange} required />
+                <label htmlFor="first_name">First Name</label>
+                  <input 
+                    id="first_name" 
+                    name="first_name" 
+                    value={form.first_name} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
                 <div>
-                  <label htmlFor="lastName">Last Name</label>
-                  <input id="lastName" name="lastName" value={form.lastName} onChange={handleChange} required />
+                <label htmlFor="last_name">Last Name</label>
+                  <input 
+                    id="last_name" 
+                    name="last_name" 
+                    value={form.last_name} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
               </div>
 
-              <label htmlFor="email">Email</label>
-              <input id="email" type="email" name="email" value={form.email} onChange={handleChange} required />
+              <label htmlFor="email">Email Address</label>
+              <input 
+                id="email" 
+                type="email" 
+                name="email" 
+                value={form.email} 
+                onChange={handleChange} 
+                required 
+              />
 
               <label htmlFor="password">Password</label>
-              <input id="password" type="password" name="password" value={form.password} onChange={handleChange} required />
+              <input 
+                id="password" 
+                type="password" 
+                name="password" 
+                value={form.password} 
+                onChange={handleChange} 
+                required 
+              />
 
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input id="confirmPassword" type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required />
+              <label htmlFor="confirm_password">Confirm Password</label>
+              <input 
+                id="confirm_password" 
+                type="password" 
+                name="confirm_password" 
+                value={form.confirm_password} 
+                onChange={handleChange} 
+                required 
+              />
 
-              <label htmlFor="phone">Phone Number</label>
-              <input id="phone" type="tel" name="phone" value={form.phone} onChange={handleChange} required />
+              <label htmlFor="phone_number">Phone Number</label>
+              <input 
+                id="phone_number" 
+                type="tel" 
+                name="phone_number" 
+                value={form.phone_number} 
+                onChange={handleChange} 
+                required 
+              />
             </>
           )}
 
           {step === 2 && (
             <>
-              <label htmlFor="userType">User Type</label>
-              <select id="userType" name="userType" value={form.userType} onChange={handleChange} required>
+              <label htmlFor="user_type">User Type</label>
+              <select 
+                id="user_type" 
+                name="user_type" 
+                value={form.user_type} 
+                onChange={handleChange} 
+                required
+              >
                 <option value="">Select Type</option>
-                <option value="commuter">Commuter</option>
-                <option value="resident">Resident</option>
+                <option value="student">Student</option>
                 <option value="faculty">Faculty</option>
+                <option value="staff">Staff</option>
                 <option value="visitor">Visitor</option>
+                <option value="admin">Admin</option>
               </select>
 
-              {form.userType !== 'visitor' && (
+              {form.user_type !== 'visitor' && (
                 <>
-                  <label htmlFor="permitType">Permit Type</label>
-                  <select id="permitType" name="permitType" value={form.permitType} onChange={handleChange} required>
+                  <label htmlFor="permit_type">Permit Type</label>
+                  <select 
+                    id="permit_type" 
+                    name="permit_type" 
+                    value={form.permit_type} 
+                    onChange={handleChange} 
+                    required
+                  >
                     <option value="">Select Permit</option>
                     <option value="core">Core</option>
                     <option value="perimeter">Perimeter</option>
@@ -107,34 +173,78 @@ export default function RegisterPage() {
 
           {step === 3 && (
             <>
-              <label htmlFor="dlNumber">Driver License Number</label>
-              <input id="dlNumber" name="dlNumber" value={form.dlNumber} onChange={handleChange} required />
+              <label htmlFor="driver_license_number">Driver License Number</label>
+              <input 
+                id="driver_license_number" 
+                name="driver_license_number" 
+                value={form.driver_license_number} 
+                onChange={handleChange} 
+                required 
+              />
 
-              <label htmlFor="dlState">DL State</label>
-              <input id="dlState" name="dlState" value={form.dlState} onChange={handleChange} required />
+              <label htmlFor="dl_state">Driver License State</label>
+              <input 
+                id="dl_state" 
+                name="dl_state" 
+                value={form.dl_state} 
+                onChange={handleChange} 
+                required 
+              />
 
-              <label htmlFor="address">Address</label>
-              <input id="address" name="address" value={form.address} onChange={handleChange} required />
+
+              <label htmlFor="address_line">Address</label>
+              <input 
+                id="address_line" 
+                name="address_line" 
+                value={form.address_line} 
+                onChange={handleChange} 
+                required 
+              />
+
 
               <div className="form-row">
                 <div>
-                  <label htmlFor="city">City</label>
-                  <input id="city" name="city" value={form.city} onChange={handleChange} required />
+                <label htmlFor="city">City</label>
+                  <input 
+                    id="city" 
+                    name="city" 
+                    value={form.city} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
                 <div>
-                  <label htmlFor="stateRegion">State/Region</label>
-                  <input id="stateRegion" name="stateRegion" value={form.stateRegion} onChange={handleChange} required />
+                <label htmlFor="state_region">State/Region</label>
+                  <input 
+                    id="state_region" 
+                    name="state_region" 
+                    value={form.state_region} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
               </div>
 
               <div className="form-row">
                 <div>
-                  <label htmlFor="zip">Zip Code</label>
-                  <input id="zip" name="zip" value={form.zip} onChange={handleChange} required />
+                <label htmlFor="postal_zip_code">Zip Code</label>
+                  <input 
+                    id="postal_zip_code" 
+                    name="postal_zip_code" 
+                    value={form.postal_zip_code} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
                 <div>
-                  <label htmlFor="country">Country</label>
-                  <input id="country" name="country" value={form.country} onChange={handleChange} required />
+                <label htmlFor="country">Country</label>
+                  <input 
+                    id="country" 
+                    name="country" 
+                    value={form.country} 
+                    onChange={handleChange} 
+                    required 
+                  />
                 </div>
               </div>
             </>

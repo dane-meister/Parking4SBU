@@ -9,6 +9,7 @@ const salt_rounds = 12;
 //registration endpoint
 router.post("/register", async (req, res) => {
     try {
+        console.log("helloooooooooo");
         const { email,
             password,
             first_name,
@@ -29,7 +30,7 @@ router.post("/register", async (req, res) => {
             if (existing_user) {
                 return res.status(400).json({ message: "User already exists" });
             }
-
+        
             //hash the password with bcrypt:
             const hashed_password = await bcrypt.hash(password, salt_rounds);
 
@@ -62,7 +63,7 @@ router.post("/register", async (req, res) => {
 });
 
 //login endpoint
-router.post("/login", async (res, req) => {
+router.post("/login", async (req, res) => {
     try {
         const {email, password} = req.body;
 
@@ -74,7 +75,7 @@ router.post("/login", async (res, req) => {
 
         //compare provided password with stored hash
         const is_valid = await bcrypt.compare(password, user.password);
-        if (is_valid){
+        if (!is_valid){
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
