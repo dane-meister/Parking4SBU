@@ -130,7 +130,7 @@
 
   .password-match {
     display: block;
-    font-size: 0.8rem; /* smaller text */
+    font-size: 0.8rem; 
     margin-top: 4px;
     font-weight: 500;
   }

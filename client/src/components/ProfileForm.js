@@ -23,10 +23,6 @@ export default function ProfileForm({ userData }) {
             </div>
           </div>
   
-          {/* Username Field */}
-          <label htmlFor='username'>Username*</label>
-          <input id='username' type="text" value={userData.username} readOnly />
-  
           {/* Password Field (masked for security) */}
           <label htmlFor='password'>Password*</label>
           <input id="password" type='password' value="***************" readOnly />
