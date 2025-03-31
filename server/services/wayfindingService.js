@@ -72,6 +72,10 @@ async function getSortedParkingLots(buildingId) {
                 name: lot.name,
                 distance_meters: minDistance,
                 distance_miles: metersToMiles(minDistance),
+                covered: lot.covered,
+                ev_charging_availability: lot.ev_charging_availability,
+                ada_availability: lot.ada_availability,
+                
             };
         }).filter(lot => lot !== null); // Remove any skipped lots
 

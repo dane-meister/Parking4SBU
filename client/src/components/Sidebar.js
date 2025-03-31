@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Filter, LotResult, InformationSystems, Search } from '.'
+import { useEffect } from 'react';
+import { Filter, LotResult, LotDetails, Search } from '.'
 
 function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   // State for rate type selection (hourly, daily, etc.)
@@ -13,10 +14,16 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
 
   // States for filter visibility and individual filter options
   const [ showFilter, setShowFilter ] = useState(false);
-  const [ filterUncovered, setFilterUncovered ] = useState(true);
-  const [ filterCovered, setFilterCovered ] = useState(true);
+  const [ filterUncovered, setFilterUncovered ] = useState(false);
+  const [ filterCovered, setFilterCovered ] = useState(false);
   const [ filterEVCharging, setFilterEVCharging ] = useState(false);
-  const [ filterDisability, setFilterDisability ] = useState(true);
+  const [ filterDisability, setFilterDisability ] = useState(false);
+
+// Temporary UI state for checkboxes in Filter popup
+  const [tempFilterCovered, setTempFilterCovered] = useState(filterCovered);
+  const [tempFilterUncovered, setTempFilterUncovered] = useState(filterUncovered);
+  const [tempFilterEVCharging, setTempFilterEVCharging] = useState(filterEVCharging);
+  const [tempFilterDisability, setTempFilterDisability] = useState(filterDisability);
 
   // State for result sorting type
   const [ resultType, setResultType ] = useState('Relevance');
@@ -26,6 +33,37 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
 
   // State for the list of parking lot results
   const [ lotResults, setLotResults ] = useState(parkingLots);
+
+  // State for the base list of parking lots (original data)
+  const [ baseLots, setBaseLots ] = useState(parkingLots);
+
+  // Apply filters for parking lot results
+  function applyFilters(lots) {
+    return lots.filter(lot => {
+      const matchesCovered = lot.covered;
+      const matchesUncovered = !lot.covered;
+  
+      const passesCoverFilter = filterCovered || filterUncovered
+        ? (filterCovered && matchesCovered) || (filterUncovered && matchesUncovered)
+        : true;
+  
+      const matchesEV = filterEVCharging ? (lot.ev_charging_availability ?? 0) > 0 : true;
+      const matchesDisability = filterDisability ? (lot.ada_availability ?? 0) > 0 : true;
+  
+      return passesCoverFilter && matchesEV && matchesDisability;
+    });
+  }
+  
+  useEffect(() => {
+    const filtered = applyFilters(baseLots);
+    setLotResults(filtered);
+  }, [
+    filterCovered, 
+    filterUncovered, 
+    filterEVCharging, 
+    filterDisability, 
+    baseLots
+  ]);  
 
   return (
     <section className='sidebar'>
@@ -79,7 +117,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
 
       {/* Display detailed information if a lot is selected */}
       { selectedLot 
-        ? <InformationSystems 
+        ? <LotDetails 
             lotObj={selectedLot}
           />
         : (<>
@@ -106,6 +144,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               setValue={setValue}
               setSelectedBuilding={setSelectedBuilding} 
               setLotResults={setLotResults}
+              setBaseLots={setBaseLots}
               setSelectedLot={setSelectedLot}
             />
             {/* Filter component for additional filtering options */}
@@ -113,11 +152,18 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
               showFilter={showFilter} 
               setShowFilter={setShowFilter}
               filters={[
-                filterCovered, setFilterCovered,
-                filterUncovered, setFilterUncovered,
-                filterEVCharging, setFilterEVCharging,
-                filterDisability, setFilterDisability
+                tempFilterCovered, setTempFilterCovered,
+                tempFilterUncovered, setTempFilterUncovered,
+                tempFilterEVCharging, setTempFilterEVCharging,
+                tempFilterDisability, setTempFilterDisability
               ]}
+              onApply={() => {
+                setFilterCovered(tempFilterCovered);
+                setFilterUncovered(tempFilterUncovered);
+                setFilterEVCharging(tempFilterEVCharging);
+                setFilterDisability(tempFilterDisability);
+                setShowFilter(false);
+              }}
             />
           </div>
           
