@@ -12,19 +12,19 @@ const sequelize = new Sequelize(
     dialectOptions: {
       application_name: "p4sbu",
     },
-    logging: console.log, 
+    logging: process.env.NODE_ENV === "test" ? false : console.log, // Disable logging during test
   }
 );
 
 // Test Connection
-(async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("PostgreSQL Connected Successfully!");
-  } catch (error) {
-    console.error("PostgreSQL Connection Failed:", error.message);
-  }
-})();
+// (async () => {
+//   try {
+//     await sequelize.authenticate();
+//     console.log("PostgreSQL Connected Successfully!");
+//   } catch (error) {
+//     console.error("PostgreSQL Connection Failed:", error.message);
+//   }
+// })();
 
 module.exports = sequelize;
 
