@@ -29,7 +29,6 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
     lotImgSrc
   } = lotObj;
 
-  // Placeholder for available capacity (currently hardcoded to 0)
   const availableCapacity = 
     ada_availability +
     commuter_core_availability +
