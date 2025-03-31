@@ -2,7 +2,7 @@ import React from 'react'
 import '../stylesheets/Popup.css'
 
 // Popup component to display a modal with filters and actions
-export default function Popup({ children, close, onClearAll, anyFilterEnabled }) {
+export default function Popup({ children, close, onClearAll, anyFilterEnabled, onApply }) {
 
   return (
     // Overlay that covers the screen and closes the popup when clicked
@@ -30,7 +30,13 @@ export default function Popup({ children, close, onClearAll, anyFilterEnabled })
 
         {/* Footer section with action buttons */}
         <div className="popup-footer">
-          <button className="primary-button" onClick={close}>
+          <button 
+            className="primary-button" 
+            onClick={() =>{
+              onApply(); // Apply selected filters
+              close();
+            }}
+          >
             Show Results
           </button>
           {anyFilterEnabled && (
