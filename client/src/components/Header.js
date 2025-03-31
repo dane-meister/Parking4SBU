@@ -1,49 +1,131 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import TimeSelector from "./TimeSelector";
 import '../stylesheets/Header.css';
+
+//dynamically calculates initial arrival and departure times
+const getInitialTimes = () => {
+  const now = new Date();
+  //round up to next hour
+  const arrivalDate = new Date(now);
+  arrivalDate.setMinutes(0, 0, 0);
+  if (now.getMinutes() > 0 || now.getSeconds() > 0) {
+    arrivalDate.setHours(arrivalDate.getHours() + 1);
+  }
+  //departure one hour later
+  const departureDate = new Date(arrivalDate);
+  departureDate.setHours(departureDate.getHours() + 1);
+
+  //format the dates 
+  const dateOptions = { weekday: "short", month: "short", day: "numeric" };
+  const arrivalDateStr = arrivalDate.toLocaleDateString("en-US", dateOptions);
+  const departureDateStr = departureDate.toLocaleDateString("en-US", dateOptions);
+  const arrivalTimeStr = arrivalDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+  const departureTimeStr = departureDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+  
+  return {
+    arrival: `${arrivalDateStr} | ${arrivalTimeStr}`,
+    departure: `${departureDateStr} | ${departureTimeStr}`,
+  };
+};
+
 
 
 const Header = ({selectedLot, setSelectedLot}) => {
+  const [times, setTimes] = useState(getInitialTimes());
+  const [editingMode, setEditingMode] = useState(null); 
+
   
-  useEffect(() => {
-    const handleScroll = () => {
-      const header = document.querySelector('.header');
-      const navBanner = document.querySelector('.nav-banner');
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const header = document.querySelector('.header');
+  //     const navBanner = document.querySelector('.nav-banner');
   
-      if (header && navBanner) {
-        if (window.scrollY > 100) {
-          header.classList.add('collapsed');
-          navBanner.classList.add('fixed');
-        } else {
-          header.classList.remove('collapsed');
-          navBanner.classList.remove('fixed');
-        }
-      }
-    };
+  //     if (header && navBanner) {
+  //       if (window.scrollY > 100) {
+  //         header.classList.add('collapsed');
+  //         navBanner.classList.add('fixed');
+  //       } else {
+  //         header.classList.remove('collapsed');
+  //         navBanner.classList.remove('fixed');
+  //       }
+  //     }
+  //   };
   
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => window.removeEventListener('scroll', handleScroll);
+  // }, []);
+
+  const handleTimeSelect = (mode, formatted) => {
+    setTimes((prev) => ({
+      ...prev,
+      [mode]: formatted,
+    }));
+    setEditingMode(null);
+  };
+
   
   return (
     <>
     <header className="header">
         <div className="header-left">
-          <img className="logo" src="/images/sbu-logo.png" alt="Stony Brook Logo" />
+          <Link to="/home" onClick={() => setSelectedLot(null)}>
+            <img className="logo" src="/images/sbu-logo.png" alt="Stony Brook Logo" />
+          </Link>
           <div className="header-title">P4SBU</div>
         </div>
         <div className="header-right">
-          <Link to="/profile">
+          <Link to="/tickets" className="header-link">Tickets</Link>
+          <Link to="/reservations" className="header-link">Reservations</Link>
+          <Link to="/profile" className="header-link">
             <img className="profile-icon" src="/images/profile.png" alt="Profile Icon" />
           </Link>
         </div>
       </header>
       <nav className="nav-banner">
-        <Link to="/home" onClick={() => setSelectedLot(null)}>Home</Link>
-        <Link to="/tickets">Tickets</Link>
-        <Link to="/reservations">Reservations</Link>
+
+      <div className="time-selector-container">
+          <div className="time-input">
+            <span className="time-label">Arrive After:</span>
+            <div className="time-row">
+            <span className="time-value">{times.arrival}</span>
+            <button className="edit-button" onClick={() => setEditingMode("arrival")}>
+              <img src="/images/edit-icon.png" alt="Edit Arrival" className="edit-icon"/>
+            </button>
+            </div>
+          </div>
+
+          <div className="arrow-container">
+            <img src="/images/arrow-icon.png" alt="Arrow" className="arrow-icon" />
+          </div>
+          
+          <div className="time-input">
+            <span className="time-label">Exit Before:</span>
+            <div className="time-row">
+            <span className="time-value">{times.departure}</span>
+            <button className="edit-button" onClick={() => setEditingMode("departure")}>
+              <img src="/images/edit-icon.png" alt="Edit Departure" className="edit-icon" />
+            </button>
+          </div>
+          </div>
+        </div>
+        {editingMode && (
+          <TimeSelector
+            mode={editingMode}
+            initialTimes={times}
+            onSelect={handleTimeSelect}
+            onClose={() => setEditingMode(null)}
+          />
+        )}
       </nav>
-    
     </>
 
   );

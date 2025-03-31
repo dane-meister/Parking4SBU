@@ -59,7 +59,7 @@ export default function LotDetails(props) {
 					)}
 
 					{/* Display EV charger availability if applicable */}
-					{(ev_charging_capacity) && (
+					{(ev_charging_capacity > 0) && (
 						<div className='selected-lot-ev'>
 							<img
 								className='selected-lot-icon'
