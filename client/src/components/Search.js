@@ -4,7 +4,7 @@ import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
-const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding, selectedBuilding, setLotResults, setSelectedLot }) => {
+const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding, selectedBuilding, setLotResults, setBaseLots, setSelectedLot }) => {
   const [ suggestions, setSuggestions ] = useState([]);
 
   // Extract building names from the buildings array
@@ -84,6 +84,7 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
           try {
             // Fetch lot results for the selected building
             const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`);
+            setBaseLots(response.data);
             setLotResults(response.data);
           } catch (err) {
             console.error("Error fetching lot results:", err);
