@@ -30,7 +30,15 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
   } = lotObj;
 
   // Placeholder for available capacity (currently hardcoded to 0)
-  const availableCapacity = 0;
+  const availableCapacity = 
+    ada_availability +
+    commuter_core_availability +
+    commuter_perimeter_availability +
+    commuter_satellite_availability +
+    ev_charging_availability +
+    faculty_availability +
+    metered_availability +
+    resident_availability;
 
   return (
     <section 
