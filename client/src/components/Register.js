@@ -165,7 +165,7 @@ export default function RegisterPage() {
                 required 
               />
 
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password" style={{marginTop: '16px'}}>Password</label>
               <input 
                 id="password" 
                 type="password" 
@@ -175,7 +175,7 @@ export default function RegisterPage() {
                 required 
               />
 
-              <label htmlFor="confirm_password">Confirm Password</label>
+              <label htmlFor="confirm_password" style={{marginTop: '16px'}}>Confirm Password</label>
               <input 
                 id="confirm_password" 
                 type="password" 
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                 </span>
               )}
 
-              <label htmlFor="phone_number">Phone Number</label>
+              <label htmlFor="phone_number" style={{marginTop: '16px'}}>Phone Number</label>
               <input 
                 id="phone_number" 
                 type="tel" 
@@ -257,7 +257,7 @@ export default function RegisterPage() {
                 required 
               />
 
-              <label htmlFor="dl_state">Driver License State</label>
+              <label htmlFor="dl_state" style={{marginTop: '16px'}}>Driver License State</label>
               <select 
                 id="dl_state" 
                 name="dl_state" 
@@ -280,7 +280,7 @@ export default function RegisterPage() {
                 required 
               />
 
-              <div className="form-row">
+              <div className="form-row" style={{marginTop: '16px'}}>
                 <div>
                   <label htmlFor="city">City</label>
                   <input 
@@ -313,6 +313,8 @@ export default function RegisterPage() {
                     onChange={handleChange} 
                     required 
                   />
+                </div>
+                <div>
                   <label htmlFor="country">Country</label>
                   <input 
                     id="country" 
