@@ -1,8 +1,53 @@
-const HOST = 'http://localhost:3000/'
+const HOST = 'http://localhost:3000/home'
+
+// describe('Registering and login', () => {
+//     beforeEach(() => {
+//         cy.visit(`${HOST}/auth/`);
+//     });
+
+//     it('Fail to login to nonregistered account', () => {
+//         cy.get('#email')
+//             .should('exist')
+//             .type("invalid_account@gmail.com");
+        
+//         cy.get('#password')
+//             .should('exist')
+//             .type("fakepassword");
+
+//         cy.get('button.auth-button')
+//             .first()
+//             .should('exist')
+//             .click();
+        
+//         //check if error message exists for failed login
+//         cy.contains('Invalid').should('exist')
+//     });
+
+//     it('Register a user', () => {
+//         cy.get('a.auth-link').should('exist').click();
+//         cy.get('#first_name').type("Testname");
+//         cy.get('#last_name').type("McLastname");
+//         cy.get('#email').type("test@gmail.com");
+//         cy.get('#password').type("testpassword");
+//         cy.get()
+
+//     });
+
+//     it('Login as registered a user', () => {
+//         cy.get('#email').should('exist');
+//         cy.get('#email')
+//             .type("test@gmail.com");
+        
+//         cy.get('#password').should('exist');
+//         cy.get('#password')
+//             .type("testpassword");
+
+//     });
+// })
 
 describe('Basic home page tests', () => {
     beforeEach(() => {
-      cy.visit(HOST);
+      cy.visit(`${HOST}`);
     });
   
     it('Proper initial site loading: has header, sidebar, and map', () => {

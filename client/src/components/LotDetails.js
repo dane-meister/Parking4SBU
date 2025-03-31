@@ -1,6 +1,6 @@
 import '../stylesheets/LotDetails.css'
 
-export default function InformationSystems(props) {
+export default function LotDetails(props) {
 	// Destructure props to extract lot image source and lot object
 	const { lotImgSrc, lotObj } = props;
 
@@ -59,7 +59,7 @@ export default function InformationSystems(props) {
 					)}
 
 					{/* Display EV charger availability if applicable */}
-					{(ev_charging_capacity) && (
+					{(ev_charging_capacity > 0) && (
 						<div className='selected-lot-ev'>
 							<img
 								className='selected-lot-icon'

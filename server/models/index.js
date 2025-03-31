@@ -29,12 +29,10 @@ if (config.use_env_variable) {
 // Load models and associate them with the `db` object
 const Building = require("./Building"); // Import the Building model
 const ParkingLot = require("./ParkingLot"); // Import the ParkingLot model
-const User = require("./User"); // Import the User model
 
 // Add models to the `db` object
 db.Building = Building;
 db.ParkingLot = ParkingLot;
-db.User = User;
 
 // Add Sequelize instance and constructor to the `db` object
 db.sequelize = sequelize;
