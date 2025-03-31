@@ -4,8 +4,9 @@ import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import { Sidebar, Map } from '../components';
 
-const LotSelectionPage = ({ selectedLot, setSelectedLot }) => {
+const LotSelectionPage = () => {
   // State to store buildings and parking lots
+  const [ selectedLot, setSelectedLot ] = useState(null);
   const [buildings, setBuildings] = useState([]);
   const [parkingLots, setParkingLots] = useState([]);
   const [loading, setLoading] = useState(true); // State to track loading status
