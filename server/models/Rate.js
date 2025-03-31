@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const ParkingLot = require('./ParkingLot');
 
 const Rate = sequelize.define('Rate', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -23,9 +22,5 @@ const Rate = sequelize.define('Rate', {
   sheet_number: DataTypes.INTEGER,
   sheet_price: DataTypes.FLOAT
 });
-
-// FK relationship
-Rate.belongsTo(ParkingLot, { foreignKey: 'lot_id' });
-ParkingLot.hasMany(Rate, { foreignKey: 'lot_id' });
 
 module.exports = Rate;
