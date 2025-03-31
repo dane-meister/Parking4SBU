@@ -1,4 +1,4 @@
-.reservation-page{
+.make-reservation-page{
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -6,13 +6,13 @@
 	gap: 20px
 }
 
-.reservation-left, .reservation-right{
+.make-reservation-left, .make-reservation-right{
 	width: 100%;
 	height: 100%;
 	border-radius: 5px;
 }
 
-.reservation-left{
+.make-reservation-left{
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
@@ -21,7 +21,7 @@
 	background-color: var(--bright-red);
 }
 
-.reservation-right{
+.make-reservation-right{
 	max-width: 450px;
 	background-color: var(--royal-blue);
 }
