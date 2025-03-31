@@ -17,4 +17,4 @@ function Reservation(){
 	</section>);
 }
 
-export default ReservationPage; // Export the component for use in other parts of the application
+export default Reservation; // Export the component for use in other parts of the application
