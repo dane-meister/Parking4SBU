@@ -16,7 +16,7 @@ export default function App() {
   function Layout() {
     return (
       <div className="app-wrapper">
-        <Header /> {/* Header component */}
+        <Header setSelectedLot={setSelectedLot}/> {/* Header component */}
         <main className="page-content">
           <Outlet /> {/* This will render nested routes */}
         </main>
