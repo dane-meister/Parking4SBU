@@ -7,22 +7,24 @@ const router = express.Router();
 const salt_rounds = 12;
 const authenticate = require("../middleware/authMiddleware"); // Middleware to authenticate users
 
+// Route to get the currently authenticated user's details
 router.get("/me", authenticate, async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.user_id, {
-        attributes: { exclude: ['password'] }
-      });
-      if (!user) return res.status(404).json({ message: "User not found" });
-      res.json({ user });
+        // Fetch user details by primary key, excluding the password field
+        const user = await User.findByPk(req.user.user_id, {
+            attributes: { exclude: ['password'] }
+        });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json({ user });
     } catch (err) {
-      res.status(500).json({ message: "Error fetching user", error: err.message });
+        res.status(500).json({ message: "Error fetching user", error: err.message });
     }
-  });
-  
+});
 
-//registration endpoint
+// Registration endpoint
 router.post("/register", async (req, res) => {
     try {
+        // Destructure required fields from the request body
         const { 
             email,
             password,
@@ -40,7 +42,7 @@ router.post("/register", async (req, res) => {
             country 
         } = req.body;
 
-             // Basic validation
+        // Basic validation to ensure all required fields are provided
         if (
             !email || !password || !first_name || !last_name ||
             !user_type || !permit_type || !driver_license_number ||
@@ -49,61 +51,66 @@ router.post("/register", async (req, res) => {
         ) {
             return res.status(400).json({ message: "Missing required fields." });
         }
-            //checking if user already exists:
-            const existing_user = await User.findOne({ where: { email } });
-            if (existing_user) {
-                return res.status(400).json({ message: "User already exists" });
-            }
-            //hash the password with bcrypt:
-            const hashed_password = await bcrypt.hash(password, salt_rounds);
-            //create new user with hashed passwords:
-            const new_user = await User.create({
-                email,
-                password: hashed_password,
-                first_name,
-                last_name,
-                phone_number,
-                user_type,
-                permit_type,
-                driver_license_number,
-                dl_state,
-                address_line,
-                city,
-                state_region,
-                postal_zip_code,
-                country,
-            });
 
-             // Respond with created user (omit password)
-            const safeUser = { ...new_user.toJSON() };
-            delete safeUser.password;
-            
-            res.status(201).json({
-                message: "User registered successfully",
-                user: new_user,
-            });
+        // Check if a user with the given email already exists
+        const existing_user = await User.findOne({ where: { email } });
+        if (existing_user) {
+            return res.status(400).json({ message: "User already exists" });
+        }
 
-    } catch (error){
+        // Hash the password using bcrypt
+        const hashed_password = await bcrypt.hash(password, salt_rounds);
+
+        // Create a new user with the hashed password and other details
+        const new_user = await User.create({
+            email,
+            password: hashed_password,
+            first_name,
+            last_name,
+            phone_number,
+            user_type,
+            permit_type,
+            driver_license_number,
+            dl_state,
+            address_line,
+            city,
+            state_region,
+            postal_zip_code,
+            country,
+        });
+
+        // Respond with the created user, omitting the password
+        const safeUser = { ...new_user.toJSON() };
+        delete safeUser.password;
+
+        res.status(201).json({
+            message: "User registered successfully",
+            user: new_user,
+        });
+
+    } catch (error) {
         res.status(500).json({ message: "Error registering user", error: error.message });
     }
 });
 
-//login endpoint
+// Login endpoint
 router.post("/login", async (req, res) => {
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
-        //find user by email
+        // Find the user by email
         const user = await User.findOne({ where: { email } });
-        if (!user){
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-        //compare provided password with stored hash
-        const is_valid = await bcrypt.compare(password, user.password);
-        if (!is_valid){
+        if (!user) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
+        // Compare the provided password with the stored hashed password
+        const is_valid = await bcrypt.compare(password, user.password);
+        if (!is_valid) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        // Generate a JWT token with user details
         const token = jwt.sign({ 
             user_id: user.user_id, 
             email: user.email, 
@@ -116,7 +123,7 @@ router.post("/login", async (req, res) => {
         // Set the token in a secure, HttpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // true in production
+            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
             sameSite: 'Strict',
             maxAge: 2 * 60 * 60 * 1000, // 2 hours
         });
@@ -124,17 +131,18 @@ router.post("/login", async (req, res) => {
         res.json({ message: "Login successful" });
     } catch (error) {
         res.status(500).json({ message: "Error during login", error: error.message });
-      }
+    }
 });
 
+// Logout endpoint
 router.post("/logout", (req, res) => {
+    // Clear the authentication token cookie
     res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
     });
     res.json({ message: "Logged out successfully" });
-  });
-  
+});
 
 module.exports = router;

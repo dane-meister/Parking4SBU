@@ -5,12 +5,12 @@ import '../stylesheets/Auth.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [error, setError] = useState('');
-  const [passwordMatchMessage, setPasswordMatchMessage] = useState('');
-  const [dlNumberError, setDlNumberError] = useState('');
+  const [step, setStep] = useState(1); // Tracks the current step in the multi-step form
+  const [error, setError] = useState(''); // Stores error messages
+  const [passwordMatchMessage, setPasswordMatchMessage] = useState(''); // Message for password match validation
+  const [dlNumberError, setDlNumberError] = useState(''); // Placeholder for driver's license number validation errors
 
-
+  // Form state to store user input
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -29,7 +29,7 @@ export default function RegisterPage() {
     country: '',
   });
 
-  //list of US states for driver's license state
+  // List of US states for driver's license state dropdown
   const us_states = [
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID",
     "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS",
@@ -38,14 +38,15 @@ export default function RegisterPage() {
     "WI", "WY"
   ];
 
-  //list of some possible countries
+  // List of countries for the country dropdown
   const countries = ["USA", "Canada", "Mexico", "UK", "Other"];
 
+  // Handles changes to form inputs and updates the state
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  //dynamically confirm password match
+  // Dynamically checks if passwords match and updates the message
   useEffect(() => {
     if (form.confirm_password) {
       if (form.password === form.confirm_password) {
@@ -58,8 +59,7 @@ export default function RegisterPage() {
     }
   }, [form.password, form.confirm_password]);
 
-
-  
+  // Validates the current step of the form
   const isStepValid = () => {
     if (step === 1) {
       return (
@@ -81,7 +81,7 @@ export default function RegisterPage() {
       return (
         form.driver_license_number &&
         form.dl_state &&
-        form.address &&
+        form.address_line &&
         form.city &&
         form.state_region &&
         form.postal_zip_code &&
@@ -90,7 +90,8 @@ export default function RegisterPage() {
     }
     return false;
   };
-  
+
+  // Moves to the next step if the current step is valid
   const next = () => {
     if (!isStepValid()) {
       alert("Please complete all required fields before proceeding.");
@@ -98,12 +99,13 @@ export default function RegisterPage() {
     }
     setStep(prev => prev + 1);
   };
-  
 
+  // Moves back to the previous step
   const back = () => {
     setStep(prev => prev - 1);
   };
 
+  // Handles the registration form submission
   const handleRegister = async (e) => {
     e.preventDefault();
     if (form.password !== form.confirm_password) {
@@ -111,10 +113,10 @@ export default function RegisterPage() {
       return;
     }
     try {
-      // Send a POST request to the registration endpoint
+      // Sends a POST request to the registration endpoint
       const response = await axios.post('http://localhost:8000/api/auth/register', form);
       console.log("Registration response:", response.data);
-      navigate('/login');
+      navigate('/login'); // Redirects to the login page upon successful registration
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed.");
       console.error(err);
@@ -127,11 +129,12 @@ export default function RegisterPage() {
         <h2 className="auth-title">Register</h2>
         {error && <p className="auth-error">{error}</p>}
         <form onSubmit={handleRegister} className="auth-form">
+          {/* Step 1: Basic Information */}
           {step === 1 && (
             <>
               <div className="form-row">
                 <div>
-                <label htmlFor="first_name">First Name</label>
+                  <label htmlFor="first_name">First Name</label>
                   <input 
                     id="first_name" 
                     name="first_name" 
@@ -141,7 +144,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 <div>
-                <label htmlFor="last_name">Last Name</label>
+                  <label htmlFor="last_name">Last Name</label>
                   <input 
                     id="last_name" 
                     name="last_name" 
@@ -182,12 +185,12 @@ export default function RegisterPage() {
                 required 
               />
               {passwordMatchMessage && (
-                  <span 
-                    className={`password-match ${passwordMatchMessage === "Passwords match" ? "valid" : "invalid"}`}
-                  >
-                    {passwordMatchMessage}
-                  </span>
-                )}
+                <span 
+                  className={`password-match ${passwordMatchMessage === "Passwords match" ? "valid" : "invalid"}`}
+                >
+                  {passwordMatchMessage}
+                </span>
+              )}
 
               <label htmlFor="phone_number">Phone Number</label>
               <input 
@@ -201,6 +204,7 @@ export default function RegisterPage() {
             </>
           )}
 
+          {/* Step 2: User Type and Permit Selection */}
           {step === 2 && (
             <>
               <label htmlFor="user_type">User Type</label>
@@ -241,6 +245,7 @@ export default function RegisterPage() {
             </>
           )}
 
+          {/* Step 3: Address and Driver's License Information */}
           {step === 3 && (
             <>
               <label htmlFor="driver_license_number">Driver License Number</label>
@@ -261,11 +266,10 @@ export default function RegisterPage() {
                 required 
               >
                 <option value="">Select State</option>
-                  {us_states.map((state) => (
-                    <option key={state} value={state}>{state}</option>
-                  ))}
+                {us_states.map((state) => (
+                  <option key={state} value={state}>{state}</option>
+                ))}
               </select>
-
 
               <label htmlFor="address_line">Address</label>
               <input 
@@ -276,10 +280,9 @@ export default function RegisterPage() {
                 required 
               />
 
-
               <div className="form-row">
                 <div>
-                <label htmlFor="city">City</label>
+                  <label htmlFor="city">City</label>
                   <input 
                     id="city" 
                     name="city" 
@@ -289,7 +292,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 <div>
-                <label htmlFor="state_region">State/Region</label>
+                  <label htmlFor="state_region">State/Region</label>
                   <input 
                     id="state_region" 
                     name="state_region" 
@@ -302,7 +305,7 @@ export default function RegisterPage() {
 
               <div className="form-row">
                 <div>
-                <label htmlFor="postal_zip_code">Zip Code</label>
+                  <label htmlFor="postal_zip_code">Zip Code</label>
                   <input 
                     id="postal_zip_code" 
                     name="postal_zip_code" 
@@ -310,9 +313,6 @@ export default function RegisterPage() {
                     onChange={handleChange} 
                     required 
                   />
-                </div>
-                <div>
-                <label htmlFor="country">Country</label>
                   <input 
                     id="country" 
                     name="country" 

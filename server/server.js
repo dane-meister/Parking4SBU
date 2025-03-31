@@ -35,6 +35,7 @@ app.get("/api/buildings", async (req, res) => {
   }
 });
 
+// Endpoint to fetch all parking lots
 app.get("/api/parking-lots", async (req, res) => {
   try {
     const parkingLots = await ParkingLot.findAll();

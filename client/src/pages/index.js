@@ -5,4 +5,4 @@ export { default as LotSelectionPage } from './LotSelectionPage';
 export { default as TicketsPage } from './TicketsPage';
 export { default as CurrentReservationsPage } from './CurrentReservationsPage';
 export { default as ReservationPage } from './ReservationPage';
-export { default as AuthPage } from './AuthPage'; // Authentication page for login and registration
+export { default as AuthPage } from './AuthPage'; 

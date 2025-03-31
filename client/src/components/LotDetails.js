@@ -1,6 +1,6 @@
 import '../stylesheets/LotDetails.css'
 
-export default function InformationSystems(props) {
+export default function LotDetails(props) {
 	// Destructure props to extract lot image source and lot object
 	const { lotImgSrc, lotObj } = props;
 

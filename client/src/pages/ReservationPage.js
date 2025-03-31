@@ -1,4 +1,4 @@
-import '../stylesheets/Reservation.css'
+import '../stylesheets/Reservation.css' // Import the CSS stylesheet for styling the ReservationPage component
 
 function Reservation(){
 	return (<section className='make-reservation-page' style={{height: 'calc(100vh - 220px'}}>
@@ -16,4 +16,5 @@ function Reservation(){
 		</div>
 	</section>);
 }
-export default Reservation;
+
+export default ReservationPage; // Export the component for use in other parts of the application
