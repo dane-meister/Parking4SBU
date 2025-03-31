@@ -79,10 +79,6 @@
     transition: height 0.3s ease;
   }
 
-  /* .nav-banner.fixed {
-    top: 0;
-  } */
-
   .nav-banner a {
     color: #fff;
     text-decoration: none;
@@ -109,9 +105,9 @@
     font-size: 20px;
   } */
 
-  .nav-banner a:hover {
-    background-color: #b31b20; /* Lighter red for hover */
-  }
+  /* .nav-banner a:hover {
+    background-color: #b31b20; 
+  } */
 
   .profile-icon {
     background-color: white;
