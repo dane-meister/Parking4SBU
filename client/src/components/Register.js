@@ -313,6 +313,7 @@ export default function RegisterPage() {
                     onChange={handleChange} 
                     required 
                   />
+                  <label htmlFor="country">Country</label>
                   <input 
                     id="country" 
                     name="country" 
