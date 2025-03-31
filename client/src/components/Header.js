@@ -57,7 +57,7 @@ const Header = ({selectedLot, setSelectedLot}) => {
     <>
     <header className="header">
         <div className="header-left">
-          <Link to="/home" onClick={() => setSelectedLot(null)}>
+          <Link to="/home">
             <img className="logo" src="/images/sbu-logo.png" alt="Stony Brook Logo" />
           </Link>
           <div className="header-title">P4SBU</div>

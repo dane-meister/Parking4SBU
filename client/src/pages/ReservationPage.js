@@ -1,17 +1,17 @@
 import '../stylesheets/Reservation.css'
 
 function Reservation(){
-	return (<section className='reservation-page' style={{height: 'calc(100vh - 220px'}}>
-		<div className='reservation-left'>
-			<div className='reservation-box'>
+	return (<section className='make-reservation-page' style={{height: 'calc(100vh - 220px'}}>
+		<div className='make-reservation-left'>
+			<div className='make-reservation-box'>
 				Vehicle
 			</div>
 			<hr/>
-			<div className='reservation-box'>
+			<div className='make-reservation-box'>
 				Vehicle 2
-				</div>
+			</div>
 		</div>
-		<div className='reservation-right'>
+		<div className='make-reservation-right'>
 			<section>$20</section>
 		</div>
 	</section>);
