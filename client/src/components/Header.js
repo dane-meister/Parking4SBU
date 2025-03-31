@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import TimeSelector from "./TimeSelector";
 import '../stylesheets/Header.css';
 
@@ -42,27 +42,7 @@ const getInitialTimes = () => {
 const Header = ({selectedLot, setSelectedLot}) => {
   const [times, setTimes] = useState(getInitialTimes());
   const [editingMode, setEditingMode] = useState(null); 
-
-  
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const header = document.querySelector('.header');
-  //     const navBanner = document.querySelector('.nav-banner');
-  
-  //     if (header && navBanner) {
-  //       if (window.scrollY > 100) {
-  //         header.classList.add('collapsed');
-  //         navBanner.classList.add('fixed');
-  //       } else {
-  //         header.classList.remove('collapsed');
-  //         navBanner.classList.remove('fixed');
-  //       }
-  //     }
-  //   };
-  
-  //   window.addEventListener('scroll', handleScroll);
-  //   return () => window.removeEventListener('scroll', handleScroll);
-  // }, []);
+  const location = useLocation(); 
 
   const handleTimeSelect = (mode, formatted) => {
     setTimes((prev) => ({
@@ -90,8 +70,9 @@ const Header = ({selectedLot, setSelectedLot}) => {
           </Link>
         </div>
       </header>
-      <nav className="nav-banner">
 
+      <nav className="nav-banner">
+      {location.pathname === "/home" && (
       <div className="time-selector-container">
           <div className="time-input">
             <span className="time-label">Arrive After:</span>
@@ -117,6 +98,7 @@ const Header = ({selectedLot, setSelectedLot}) => {
           </div>
           </div>
         </div>
+      )}
         {editingMode && (
           <TimeSelector
             mode={editingMode}
