@@ -9,14 +9,11 @@ import "./stylesheets/App.css"; // Styles for layout
 import "./stylesheets/index.css"; // Global styles
 
 export default function App() {
-  // State to manage the selected parking lot
-  const [ selectedLot, setSelectedLot ] = useState(null);
-
   // Layout component to provide a consistent structure for all pages
   function Layout() {
     return (
       <div className="app-wrapper">
-        <Header setSelectedLot={setSelectedLot}/> {/* Header component */}
+        <Header /> {/* Header component */}
         <main className="page-content">
           <Outlet /> {/* This will render nested routes */}
         </main>
@@ -33,7 +30,7 @@ export default function App() {
           {/* Protected route wrapper */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             {/* Route for the lot selection page, passing selectedLot and setSelectedLot as props */}
-            <Route path="/home" element={<LotSelectionPage selectedLot={selectedLot} setSelectedLot={setSelectedLot} />} />
+            <Route path="/home" element={<LotSelectionPage />} />
             {/* Route for the profile page */}
             <Route path="/profile" element={<ProfilePage />} />
             {/* Route for the tickets page */}
