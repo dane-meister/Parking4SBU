@@ -7,11 +7,16 @@ import VehiclesForm from '../components/VehiclesForm';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProfilePage() {
+  // State to track the currently active tab ('profile' or 'vehicles')
   const [activeTab, setActiveTab] = useState('profile');
+
+  // Get the authenticated user from the AuthContext
   const { user } = useAuth(); 
+
+  // State to store the user's vehicles (currently empty)
   const [vehicles] = useState([]); 
 
-  // Handle loading/fallback
+  // Handle loading state or fallback if the user data is not yet available
   if (!user) {
     return (
       <div className="page-content">
@@ -20,7 +25,7 @@ export default function ProfilePage() {
     );
   }
 
-  // Map context user object into ProfileForm structure
+  // Map the user object from the context into a structure compatible with ProfileForm
   const userData = {
     email: user.email,
     firstName: user.first_name,
@@ -37,13 +42,17 @@ export default function ProfilePage() {
 
   return (
     <section className='main-container-profile'>
+      {/* Sidebar component to display user info and allow tab switching */}
       <ProfileSidebar
         username={`${userData.firstName || ''} ${userData.lastName || ''}`.trim()}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
 
+      {/* Render the ProfileForm if the 'profile' tab is active */}
       {activeTab === 'profile' && <ProfileForm userData={userData} />}
+
+      {/* Render the VehiclesForm if the 'vehicles' tab is active */}
       {activeTab === 'vehicles' && <VehiclesForm vehicles={vehicles} />}
     </section>
   );
