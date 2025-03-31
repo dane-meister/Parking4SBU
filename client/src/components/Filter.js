@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Popup } from '.';
 
 // Filter component to manage and display filtering options
-function Filter({ showFilter, setShowFilter, filters }) {
+function Filter({ showFilter, setShowFilter, filters, onApply }) {
   // Local state for additional filter options
   const [showFullLots, setShowFullLots] = useState(false);
   const [onlyShowEVChargerAvailable, setOnlyShowEVChargerAvailable] = useState(false);
@@ -24,7 +24,7 @@ function Filter({ showFilter, setShowFilter, filters }) {
 
   // Handler for toggling the "Show Covered Lots" checkbox
   const handleShowCoveredLotsChange = (event) => {
-    setShowFullLots(event.target.checked);
+    setShowCoveredLots(event.target.checked);
   };
 
   // Determine if any filter is currently enabled
@@ -59,6 +59,7 @@ function Filter({ showFilter, setShowFilter, filters }) {
           close={() => setShowFilter(false)} // Close the popup
           onClearAll={handleClearAll}       // Clear all filters
           anyFilterEnabled={anyFilterEnabled} // Indicate if any filter is active
+          onApply={onApply} // Function to apply filters
         >
           {/* Checkboxes for each filter option */}
           <div className='filter-row hbox'>
