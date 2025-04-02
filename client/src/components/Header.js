@@ -4,7 +4,7 @@ import TimeSelector from "./TimeSelector";
 import '../stylesheets/Header.css';
 
 // Dynamically calculates initial arrival and departure times
-const getInitialTimes = () => {
+export const getInitialTimes = () => {
   const now = new Date();
   // Round up to the next hour for arrival time
   const arrivalDate = new Date(now);

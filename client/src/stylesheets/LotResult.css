@@ -34,3 +34,12 @@
 .result-icon-row > img{
     height: 1.2em;
 }
+
+/* Uncomment in cases of emergency */
+/* .lot-result:hover{
+    animation: rotate 1s;
+}
+@keyframes rotate {
+    from{ transform: rotate(0deg);}
+    to{ transform: rotate(1080deg);}
+} */
