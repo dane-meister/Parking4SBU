@@ -26,6 +26,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
     resident_zone,
     rate,
     time,
+    location,
     lotImgSrc
   } = lotObj;
 
