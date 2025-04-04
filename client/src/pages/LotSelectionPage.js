@@ -42,7 +42,7 @@ const LotSelectionPage = () => {
     <div className="main-container-lot-selection">
       {/* Left: Map container */}
       <div className="map-container">
-        <Map />
+        <Map selectedLot={selectedLot}/>
       </div>
 
       {/* Right: Results & selections container */}
