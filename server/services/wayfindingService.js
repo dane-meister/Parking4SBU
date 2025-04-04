@@ -67,8 +67,10 @@ async function getSortedParkingLots(buildingId) {
             }
 
             // Return the parking lot with its computed distances
+            console.log("location", lot.location.coordinates[0]);
             return {
                 id: lot.id,
+                location: lot.location,
                 name: lot.name,
                 distance_meters: minDistance,
                 distance_miles: metersToMiles(minDistance),

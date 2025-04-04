@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../stylesheets/Map.css';
 
+
 const Map = ({ selectedLot }) => {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
@@ -62,9 +63,19 @@ const Map = ({ selectedLot }) => {
     }).addTo(mapRef.current);
   }, []);
 
+  const customIcon = L.icon({
+    iconUrl: '/images/location-marker2.png',  
+    iconSize: [30, 30],     
+    iconAnchor: [12, 41],    // Point of the icon which will correspond to marker's location
+    popupAnchor: [1, -34],   // Point from which the popup should open relative to the iconAnchor
+  });
+
 
 
   useEffect(() => {
+    const campusCenter = [40.911117, -73.122142];
+    const defaultZoom = 15;
+
     // When selectedLot changes and has a valid location, pan and zoom
     if (selectedLot && selectedLot.location) {
       const originalCoords = selectedLot.location.coordinates[0];
@@ -76,10 +87,17 @@ const Map = ({ selectedLot }) => {
         if (markerRef.current) {
           markerRef.current.remove();
         }
-        markerRef.current = L.marker(coords).addTo(mapRef.current);
+        markerRef.current = L.marker(coords, { icon: customIcon }).addTo(mapRef.current);
       }
     } else {
-      console.error("Selected lot does not have a valid location");
+      if (mapRef.current) {
+        mapRef.current.setView(campusCenter, defaultZoom, { animate: true });
+        if (markerRef.current) {
+          markerRef.current.remove();
+          markerRef.current = null;
+        }
+        console.log("Reset to campus center");
+      }
     }
   }, [selectedLot]);
 
