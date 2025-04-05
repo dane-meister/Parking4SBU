@@ -11,6 +11,7 @@ const LotSelectionPage = () => {
   const [parkingLots, setParkingLots] = useState([]);
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State to track any errors
+  const [selectedBuilding, setSelectedBuilding] = useState(null);
 
   // Fetch buildings and parking lots on component mount
   useEffect(() => {
@@ -42,7 +43,7 @@ const LotSelectionPage = () => {
     <div className="main-container-lot-selection">
       {/* Left: Map container */}
       <div className="map-container">
-        <Map selectedLot={selectedLot}/>
+        <Map selectedLot={selectedLot} selectedBuilding={selectedBuilding}/>
       </div>
 
       {/* Right: Results & selections container */}
@@ -61,6 +62,8 @@ const LotSelectionPage = () => {
               setSelectedLot={setSelectedLot} 
               buildings={buildings}
               parkingLots={parkingLots}
+              selectedBuilding={selectedBuilding}
+              setSelectedBuilding={setSelectedBuilding}
             />
           </>
         )}

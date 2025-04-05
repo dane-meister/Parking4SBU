@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding  }) {
   // State for rate type selection (hourly, daily, etc.)
   const [ rateType, setRateType ] = useState('hourly');
   
@@ -10,7 +10,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   const [ buildingLotType, setBuildingLotType ] = useState('building');
   
   // State for the currently selected building
-  const [ selectedBuilding, setSelectedBuilding ] = useState(null);
+  // const [ selectedBuilding, setSelectedBuilding ] = useState(null);
 
   // States for filter visibility and individual filter options
   const [ showFilter, setShowFilter ] = useState(false);

@@ -19,18 +19,19 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
   const getSuggestions = (inputValue) => {
     // Escape special characters in the input string
     const escapeRegex = (str) => str.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
-
     // Split input into words and escape each word
     const words = inputValue.trim().split(/\s+/).map(escapeRegex);
-
     // Create regex for each word
     const regexes = words.map(word => new RegExp(word, 'i'));
 
     let suggestions;
     if (searchType === 'building') {
       // Filter building names based on regex match
-      suggestions = building_names.filter(building =>
-        regexes.every(regex => regex.test(building))
+      // suggestions = building_names.filter(building =>
+      //   regexes.every(regex => regex.test(building))
+      // );
+      return buildings.filter(bldg =>
+        regexes.every(regex => regex.test(bldg.building_name))
       );
     } else { // For parking lots
       // Filter lot names based on regex match
@@ -62,12 +63,26 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
   };
 
   // Get the value of a suggestion
+  // const getSuggestionValue = (suggestion) => {
+  //   return suggestion === "No results found" ? "" : suggestion;
+  // };
+
   const getSuggestionValue = (suggestion) => {
+    if (searchType === 'building') {
+      return suggestion.building_name;
+    }
     return suggestion === "No results found" ? "" : suggestion;
   };
 
   // Render a single suggestion
+  // const renderSuggestion = (suggestion) => {
+  //   return <div>{suggestion}</div>;
+  // };
+
   const renderSuggestion = (suggestion) => {
+    if (searchType === 'building') {
+      return <div>{suggestion.building_name}</div>;
+    }
     return <div>{suggestion}</div>;
   };
 
@@ -76,11 +91,17 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
     if (event.key === 'Enter') {
       event.preventDefault(); // Prevent default form submission behavior
 
+      if (!value.trim()) {
+        setSelectedBuilding(null); // Reset the selected building
+        return; // Exit without alerting "INVALID bldg"
+      }
+
       if (searchType === 'building') {
         // Handle building search
         if (building_names.includes(value)) {
           const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
           setSelectedBuilding(bldg);
+          console.log(bldg.building_name);
           try {
             // Fetch lot results for the selected building
             const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`);
