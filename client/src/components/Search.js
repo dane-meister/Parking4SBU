@@ -83,7 +83,9 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
           setSelectedBuilding(bldg);
           try {
             // Fetch lot results for the selected building
-            const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`);
+            const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
+              withCredentials: true
+            });            
             setBaseLots(response.data);
             setLotResults(response.data);
           } catch (err) {
