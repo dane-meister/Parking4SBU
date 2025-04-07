@@ -73,7 +73,7 @@ export default function ProfileForm({ userData }) {
               <input id='country' type="text" value={userData.country} readOnly />
             </div>
           </div>
-          <Link class="profile-change-password">Change Password</Link>
+          <Link className="profile-change-password">Change Password</Link>
           <button className='profile-update-btn'>Update Profile</button>
         </form>
       </section>

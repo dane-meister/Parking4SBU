@@ -168,7 +168,7 @@
 }
 
 .add-vehicle {
-	margin-top: 20px;
+	margin-top: 5px;
 }
 
 .add-vehicle-btn {
@@ -231,4 +231,23 @@
 
 .profile-update-btn:active {
 	background-color: var(--btn-color-active);
+}
+
+/* Add Vehicle Styles */
+.vehicle-top-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.vehicle-top-row > img {
+	height: 30px;
+	opacity: .66;
+}
+.vehicle-top-row > img:hover {
+	opacity: 1;
+	cursor: pointer;
+}
+.vehicle-top-row > img:active {
+	opacity: .7;
 }
