@@ -120,13 +120,12 @@ router.post("/login", async (req, res) => {
             { expiresIn: "2h" }
         );
 
-        // Set the token in a secure, HttpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            sameSite: 'Strict',
+            secure: process.env.NODE_ENV === 'production', // true in prod (HTTPS), false in dev
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
             maxAge: 2 * 60 * 60 * 1000, // 2 hours
-        });
+          });          
 
         res.json({ message: "Login successful" });
     } catch (error) {
