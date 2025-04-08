@@ -117,7 +117,7 @@
 	display: block;
 }
 
-.profile-form input {
+.profile-form input, .profile-form select {
 	padding: 10px;
 	border: 1px solid #ccc;
 	border-radius: 6px;
@@ -162,9 +162,43 @@
 .vehicle-card {
 	background-color: #f9f9f9;
 	padding: 15px;
-	margin-bottom: 15px;
+	margin-bottom: 5px;
 	border-radius: 8px;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+	width: 230px;
+	box-shadow: 0 2px 6px 0 #ddd;
+	transition: all 150ms ease-out;
+}
+
+.vehicle-card:hover{
+	transform: translateY(-4px);
+	background-color: #eee;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.vehicle-card:active{
+	transform: translateY(1px);
+	background-color: #dfdfdf;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.vehicle-card div{
+	display: flex;
+	align-items: center;
+	justify-content: center;;
+	margin-bottom: 5px;
+}
+
+.vehicle-card div:last-child{
+	margin-bottom: 0;
+}
+
+.vehicle-card img{
+	height: 20px;
+}
+.vehicle-card h3{
+	margin: 0;
+	padding-left: 10px;;
+	display: inline-block;
 }
 
 .add-vehicle {
@@ -178,6 +212,7 @@
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
+	margin-top: 10px;
 }
 
 .add-vehicle-btn:hover {
@@ -211,7 +246,7 @@
 	filter: brightness(.9);
 }
 
-.profile-update-btn {
+.profile-form .profile-update-btn {
 	--btn-color: hsl(134, 61%, 41%);
 	--btn-color-hover: hsl(134, 61%, 37%); /* -4% brightness */
 	--btn-color-active: hsl(134, 61%, 45%); /* +4% brightness */
@@ -221,7 +256,8 @@
 	border-radius: 4px;
 	padding: 10px;
 	margin-top: 8px;
-	font-size: 16px;;
+	margin-bottom: 10px;
+	font-size: 16px;
 }
 
 .profile-update-btn:hover {
@@ -229,11 +265,10 @@
 	background-color: var(--btn-color-hover);
 }
 
-.profile-update-btn:active {
+.profile-form .profile-update-btn:active, .profile-form .profile-update-btn:focus {
 	background-color: var(--btn-color-active);
 }
 
-/* Add Vehicle Styles */
 .vehicle-top-row {
 	display: flex;
 	align-items: center;
@@ -248,6 +283,76 @@
 	opacity: 1;
 	cursor: pointer;
 }
+
 .vehicle-top-row > img:active {
 	opacity: .7;
+}
+
+.profile-error {
+	margin-top: -18px;
+	height: 20px;
+	margin-bottom: 0;
+	font-size: 14px;
+	color: var(--bright-red);
+}
+
+.vehicle-card-btn{
+	border: none;
+	background-color: transparent;
+	font-family: inherit;
+	font-size: 13px;;
+	display: flex;
+	align-items: center;
+	align-content: center;
+	margin: 0;
+	padding: 0;
+}
+
+.vehicle-card-btn:hover{
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+#vehicle-card-edit-btn{
+	color: #007bff;
+}
+#vehicle-card-edit-btn img{ 
+	height: 12px;
+	margin-right: 3px;
+	/* filter obtained through website to recolor an img */
+	filter: invert(36%) sepia(91%) saturate(3875%) hue-rotate(199deg) brightness(102%) contrast(107%);
+}
+
+#vehicle-card-delete-btn{
+	color: var(--bright-red);
+}
+
+#vehicle-card-delete-btn img{ 
+	height: 12px;
+	margin-right: 3px;
+	margin-bottom: 2px;;
+	/* filter obtained through website to recolor an img */
+	filter: invert(20%) sepia(100%) saturate(2558%) hue-rotate(344deg) brightness(84%) contrast(99%);
+}
+
+#vehicle-card-default-btn{
+	color: gray;
+}
+
+.vehicle-default-txt{
+	color: gray;
+	font-size: 13px;
+	margin-left: 4px;
+}
+
+.vehicle-card-header{
+	display: flex;
+	align-items: flex-end;
+}
+
+.vehicle-card-grid{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: center;
 }

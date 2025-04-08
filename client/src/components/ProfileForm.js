@@ -74,7 +74,7 @@ export default function ProfileForm({ userData }) {
             </div>
           </div>
           <Link className="profile-change-password">Change Password</Link>
-          <button className='profile-update-btn'>Update Profile</button>
+          <input className='profile-update-btn' type='submit' value='Update Profile' />
         </form>
       </section>
     );
