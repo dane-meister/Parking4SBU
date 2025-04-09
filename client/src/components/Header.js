@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from 'react-router-dom';
 import TimeSelector from "./TimeSelector";
+import { useAuth } from "../context/AuthContext";
 import '../stylesheets/Header.css';
 
 // Dynamically calculates initial arrival and departure times
@@ -30,7 +31,7 @@ export const getInitialTimes = () => {
     minute: "numeric",
     hour12: true,
   });
-  
+
   return {
     arrival: `${arrivalDateStr} | ${arrivalTimeStr}`,
     departure: `${departureDateStr} | ${departureTimeStr}`,
@@ -41,9 +42,11 @@ const Header = ({ selectedLot, setSelectedLot }) => {
   // State to manage arrival and departure times
   const [times, setTimes] = useState(getInitialTimes());
   // State to track which time (arrival or departure) is being edited
-  const [editingMode, setEditingMode] = useState(null); 
+  const [editingMode, setEditingMode] = useState(null);
   // React Router hook to get the current location
-  const location = useLocation(); 
+  const location = useLocation();
+  // Auth context to get the current user
+  const { user } = useAuth();
 
   // Handles time selection from the TimeSelector component
   const handleTimeSelect = (mode, formatted) => {
@@ -66,6 +69,9 @@ const Header = ({ selectedLot, setSelectedLot }) => {
         </div>
         <div className="header-right">
           {/* Navigation links */}
+          {user?.user_type === "admin" && (
+            <Link to="/admin" className="header-link">Admin</Link>
+          )}
           <Link to="/tickets" className="header-link">Tickets</Link>
           <Link to="/reservations" className="header-link">Reservations</Link>
           <Link to="/profile" className="header-link">
@@ -93,7 +99,7 @@ const Header = ({ selectedLot, setSelectedLot }) => {
               {/* Arrow icon between arrival and departure times */}
               <img src="/images/arrow-icon.png" alt="Arrow" className="arrow-icon" />
             </div>
-            
+
             <div className="time-input">
               <span className="time-label">Exit Before:</span>
               <div className="time-row">
