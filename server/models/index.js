@@ -34,6 +34,7 @@ const User = require("./User"); // Import the User model
 // Add models to the `db` object
 db.Building = Building;
 db.ParkingLot = ParkingLot;
+db.User = User;
 
 // Add Sequelize instance and constructor to the `db` object
 db.sequelize = sequelize;

@@ -14,7 +14,10 @@ export default function ProfilePage() {
   const { user } = useAuth(); 
 
   // State to store the user's vehicles (currently empty)
-  const [vehicles] = useState([]); 
+  const [ vehicles ] = useState([]); 
+
+  // State to handle Vehicle page
+  const [ currVehiclePage, setCurrVehiclePage ] = useState('my_vehicles');
 
   // Handle loading state or fallback if the user data is not yet available
   if (!user) {
@@ -47,13 +50,20 @@ export default function ProfilePage() {
         username={`${userData.firstName || ''} ${userData.lastName || ''}`.trim()}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        setCurrVehiclePage={setCurrVehiclePage}
       />
 
       {/* Render the ProfileForm if the 'profile' tab is active */}
       {activeTab === 'profile' && <ProfileForm userData={userData} />}
 
       {/* Render the VehiclesForm if the 'vehicles' tab is active */}
-      {activeTab === 'vehicles' && <VehiclesForm vehicles={vehicles} />}
+      {activeTab === 'vehicles' &&  (
+        <VehiclesForm 
+          currVehiclePage={currVehiclePage} 
+          setCurrVehiclePage={setCurrVehiclePage}
+          vehicles={vehicles} 
+        />
+      )}
     </section>
   );
 }

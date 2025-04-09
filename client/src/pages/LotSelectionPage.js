@@ -21,9 +21,9 @@ const LotSelectionPage = () => {
 
         // Fetch buildings and parking lots data concurrently
         const [buildingsRes, parkingLotsRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/buildings"),
-          axios.get("http://localhost:8000/api/parking-lots"),
-        ]);
+          axios.get("http://localhost:8000/api/buildings", { withCredentials: true }),
+          axios.get("http://localhost:8000/api/parking-lots", { withCredentials: true }),
+        ]);        
 
         // Update state with fetched data
         setBuildings(buildingsRes.data);

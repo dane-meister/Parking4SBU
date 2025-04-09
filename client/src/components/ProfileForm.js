@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 // The form displays user data passed as a prop (`userData`) in a read-only format.
 export default function ProfileForm({ userData }) {
     return (
@@ -24,8 +24,8 @@ export default function ProfileForm({ userData }) {
           </div>
   
           {/* Password Field (masked for security) */}
-          <label htmlFor='password'>Password*</label>
-          <input id="password" type='password' value="***************" readOnly />
+          {/* <label htmlFor='password'>Password*</label>
+          <input id="password" type='password' value="***************" readOnly /> */}
   
           {/* Mobile Number Field */}
           <label htmlFor='tel'>Mobile Number*</label>
@@ -73,6 +73,8 @@ export default function ProfileForm({ userData }) {
               <input id='country' type="text" value={userData.country} readOnly />
             </div>
           </div>
+          <Link className="profile-change-password">Change Password</Link>
+          <input className='profile-update-btn' type='submit' value='Update Profile' />
         </form>
       </section>
     );

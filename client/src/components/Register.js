@@ -114,7 +114,9 @@ export default function RegisterPage() {
     }
     try {
       // Sends a POST request to the registration endpoint
-      const response = await axios.post('http://localhost:8000/api/auth/register', form);
+      const response =await axios.post('http://localhost:8000/api/auth/register', form, {
+        withCredentials: true
+      });
       console.log("Registration response:", response.data);
       navigate('/login'); // Redirects to the login page upon successful registration
     } catch (err) {
