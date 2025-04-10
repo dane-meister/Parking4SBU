@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import '../stylesheets/index.css';
 import '../stylesheets/Profile.css';
+import '../stylesheets/ProfilePopup.css';
 import ProfileSidebar from '../components/ProfileSidebar';
 import ProfileForm from '../components/ProfileForm';
 import VehiclesForm from '../components/VehiclesForm';

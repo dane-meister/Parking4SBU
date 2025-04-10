@@ -374,3 +374,17 @@ input.profile-modified, select.profile-modified{
 input.profile-modified:focus{
 	background-color: #fff9d4;
 }
+
+.invisible-icon{
+	display: none;
+}
+
+.reset-icon{
+	opacity: .66;
+}
+.reset-icon:hover{
+	opacity: .9;
+	cursor: pointer;
+	transition: all 200ms ease-in;
+	transform: rotate(-360deg);
+}

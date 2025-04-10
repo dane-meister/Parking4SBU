@@ -17,7 +17,6 @@ export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehicle
       case 'edit_vehicle':
         return <EditVehicle 
           vehicle={selectedVehicle}
-          setSelectedVehicle={selectedVehicle}
           setCurrVehiclePage={setCurrVehiclePage}
           setSelectedVehicle={setSelectedVehicle}
         />;

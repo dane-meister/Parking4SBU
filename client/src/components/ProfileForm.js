@@ -1,7 +1,15 @@
-import  React, { useState } from 'react';
+import  React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { Popup } from '../components';
+
 // The form displays user data passed as a prop (`userData`) in a read-only format.
 export default function ProfileForm({ userData }) {
+  const [ popupVisible, setPopupVisible ] = useState(false);
+  const [ popupMsg, setPopupMsg ] = useState('');
+  
+  // keep track of # of modified fields
+  const [ modifiedFields, setModifiedFields ] = useState(new Set());
+
   const [ email, setEmail ] = useState(userData.email);
   const [ firstName, setFirstName ] = useState(userData.firstName);
   const [ lastName, setLastName ] = useState(userData.lastName);
@@ -14,17 +22,17 @@ export default function ProfileForm({ userData }) {
   const [ zip, setZip ] = useState(userData.zip);
   const [ country, setCountry ] = useState(userData.country);
 
-  const emailErr = document.getElementById('profile-email-err');      
-  const firstNameErr = document.getElementById('profile-first-name-err');
-  const lastNameErr = document.getElementById('profile-last-name-err');
-  const mobileNumberErr = document.getElementById('profile-mobile-number-err');
-  const licenseErr = document.getElementById('profile-license-err');
-  const dlStateErr = document.getElementById('profile-dl-state-err');
-  const addressErr = document.getElementById('profile-address-err');
-  const cityErr = document.getElementById('profile-city-err');
-  const stateErr = document.getElementById('profile-state-err');
-  const zipErr = document.getElementById('profile-zip-err');
-  const countryErr = document.getElementById('profile-country-err');
+  const emailErr = useRef(null);      
+  const firstNameErr = useRef(null);
+  const lastNameErr = useRef(null); 
+  const mobileNumberErr = useRef(null); 
+  const licenseErr = useRef(null); 
+  const dlStateErr = useRef(null); 
+  const addressErr = useRef(null); 
+  const cityErr = useRef(null); 
+  const stateErr = useRef(null); 
+  const zipErr = useRef(null); 
+  const countryErr = useRef(null); 
 
   const us_states = [
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID",
@@ -37,65 +45,66 @@ export default function ProfileForm({ userData }) {
   const handleEditProfileSubmit = (event) => {
     event.preventDefault();
     if(!email.trim()){
-      emailErr.innerHTML = 'Email cannot be empty!';
+      emailErr.current.innerHTML = 'Email cannot be empty!';
     }else if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())){
-      emailErr.innerHTML = 'Email must be valid!, ex: email@website.com';
+      emailErr.current.innerHTML = 'Email must be valid!, ex: email@website.com';
     }else{
-      emailErr.innerHTML = '';
+      emailErr.current.innerHTML = '';
     }
 
-    firstNameErr.innerHTML = !firstName.trim()
+    firstNameErr.current.innerHTML = !firstName.trim()
       ? 'First name cannot be empty!'
       : '';
 
-    lastNameErr.innerHTML = !lastName.trim()
+    lastNameErr.current.innerHTML = !lastName.trim()
       ? 'Last name cannot be empty!'
       : '';
 
     if(!mobile.trim()){
-      mobileNumberErr.innerHTML = 'Mobile number cannot be empty';
+      mobileNumberErr.current.innerHTML = 'Mobile number cannot be empty';
     }else if(!/^\d{10}$/.test(mobile.trim())){
-      mobileNumberErr.innerHTML = 'Mobile number must be a valid US 10 digit number';
+      mobileNumberErr.current.innerHTML = 'Mobile number must be a valid US 10 digit number';
     }else{
       console.log('hi');
-      mobileNumberErr.innerHTML = '';
+      mobileNumberErr.current.innerHTML = '';
     }
 
-    licenseErr.innerHTML = !dlNumber.trim()
+    licenseErr.current.innerHTML = !dlNumber.trim()
       ? 'License number cannot be empty!'
       : '';
 
     /* dlState is always valid, from a select */
 
-    addressErr.innerHTML = !address.trim()
+    addressErr.current.innerHTML = !address.trim()
       ? 'Address cannot be empty!'
       : '';
 
-    cityErr.innerHTML = !city.trim()
+    cityErr.current.innerHTML = !city.trim()
       ? 'City cannot be empty!'
       : '';
 
-    stateErr.innerHTML = !state.trim()
+    stateErr.current.innerHTML = !state.trim()
       ? 'State/region cannot be empty!'
       : '';
 
     if(!zip.trim()){
-      zipErr.innerHTML = 'Zip code cannot be empty!';
+      zipErr.current.innerHTML = 'Zip code cannot be empty!';
     }else if(!/^\d{5}(?:[-\s]\d{4})?$/.test(zip.trim())){
-      zipErr.innerHTML = 'Zip code must be valid!';
+      zipErr.current.innerHTML = 'Zip code must be valid!';
     }else{
-      zipErr.innerHTML = '';
+      zipErr.current.innerHTML = '';
     }
 
-    countryErr.innerHTML = !country.trim()
+    countryErr.current.innerHTML = !country.trim()
       ? 'Country cannot be empty!'
       : '';
 
     let hadError = [emailErr, firstNameErr, lastNameErr, mobileNumberErr, licenseErr, dlStateErr, addressErr, cityErr, stateErr, zipErr, countryErr]
-      .map(elem => elem.innerHTML)
+      .map(elem => elem.current.innerHTML)
       .some(innerHTML => innerHTML !== '');
     if(hadError) return;
     /* backend here */
+    
     const hardcodedTuples = [
       [email, userData.email, 'Email Address'], [firstName, userData.firstName, 'First Name'], [lastName, userData.lastName, 'Last Name'],
       [mobile, userData.mobile, 'Mobile Number'], [dlNumber, userData.dlNumber, 'Driver License No.'], [dlState, userData.dlState, 'DL State'],
@@ -109,31 +118,80 @@ export default function ProfileForm({ userData }) {
         differingFields.push(`${tuple[2]}: ${tuple[0]}`);
       }
     });
-    alert("Are you sure you want to modify these fields?:\n"+differingFields.join('\n'));
+
+    if(differingFields.length === 0){
+      alert('No changes to update!');
+      return;
+    }
+
+    setPopupMsg(differingFields.join('\n'));
+    setPopupVisible(true);
   };
 
   const handleFieldChange = (current, original, inputId, labelId) => {
     const input = document.getElementById(inputId);
     const label = document.getElementById(labelId);
+    
     if(current === original){
+      const newSet = new Set(modifiedFields);
+      newSet.delete(inputId);
+      setModifiedFields(newSet);
+
       input.classList.remove('profile-modified');
       label.classList.remove('profile-modified');
     }else{
+      const newSet = new Set(modifiedFields);
+      newSet.add(inputId);
+      setModifiedFields(newSet);
+
       input.classList.add('profile-modified');
       label.classList.add('profile-modified');
     }
   }
-
+  
+  const handleFieldReset = () => {
+    setEmail(userData.email);
+    handleFieldChange('', '', 'email', 'profile-email-lbl');
+    setFirstName(userData.firstName);
+    handleFieldChange('', '', 'firstName', 'profile-first-name-lbl');
+    setLastName(userData.lastName);
+    handleFieldChange('', '', 'lastName', 'profile-last-name-lbl');
+    setMobile(userData.mobile);
+    handleFieldChange('', '', 'tel', 'profile-tel-lbl');
+    setDlNumber(userData.dlNumber);
+    handleFieldChange('', '', 'driversLicenseNo', 'profile-license-lbl');
+    setDlState(userData.dlState);
+    handleFieldChange('', '', 'driversLicenseState', 'profile-dl-state-lbl');
+    setAddress(userData.address);
+    handleFieldChange('', '', 'addr1', 'profile-address-lbl');
+    setCity(userData.city);
+    handleFieldChange('', '', 'city', 'profile-city-lbl');
+    setState(userData.state);
+    handleFieldChange('', '', 'state', 'profile-state-lbl'); 
+    setZip(userData.zip);
+    handleFieldChange('', '', 'zipCode', 'profile-zip-lbl');
+    setCountry(userData.country);
+    handleFieldChange('', '', 'country', 'profile-country-lbl');
+    
+    setModifiedFields(new Set());
+  }
   return (
     <section className="profile-form">
-      <h2>Edit Profile</h2>
+      <div className='hbox' style={{justifyContent: 'space-between'}}>
+        <h2 style={{display: 'inline-block'}}>Edit Profile</h2>
+        <img src='/images/reset.png' alt='reset fields icon' 
+          className={modifiedFields.size === 0 ? 'invisible-icon' : 'reset-icon'}
+          style={{height: '22px', margin: '23px 0 27px 0'}}
+          onClick={handleFieldReset}
+        />
+      </div>
       <form onSubmit={handleEditProfileSubmit}>
         {/* Email Address Field */}
         <label htmlFor="email" id='profile-email-lbl'>Email Address</label>
         <input id="email" type="email" value={email} 
           onChange={(e) => { setEmail(e.target.value); handleFieldChange(e.target.value, userData.email, 'email', 'profile-email-lbl'); }}
         />
-        <p id='profile-email-err' className='profile-error'></p>
+        <p ref={emailErr} id='profile-email-err' className='profile-error'></p>
         
         <div className="form-row">
           {/* First Name Field */}
@@ -142,7 +200,7 @@ export default function ProfileForm({ userData }) {
             <input id='firstName' type="text" value={firstName} 
               onChange={(e) => { setFirstName(e.target.value); handleFieldChange(e.target.value, userData.firstName, 'firstName', 'profile-first-name-lbl'); }}
             />
-            <p id='profile-first-name-err' className='profile-error'></p>
+            <p ref={firstNameErr} id='profile-first-name-err' className='profile-error'></p>
           </div>
           {/* Last Name Field */}
           <div>
@@ -150,7 +208,7 @@ export default function ProfileForm({ userData }) {
             <input id='lastName' type="text" value={lastName} 
               onChange={(e) => { setLastName(e.target.value); handleFieldChange(e.target.value, userData.lastName, 'lastName', 'profile-last-name-lbl'); }}
             />
-            <p id='profile-last-name-err' className='profile-error'></p>
+            <p ref={lastNameErr} id='profile-last-name-err' className='profile-error'></p>
           </div>
         </div>
 
@@ -159,7 +217,7 @@ export default function ProfileForm({ userData }) {
         <input id='tel' type="tel" value={mobile} 
           onChange={(e) => { setMobile(e.target.value); handleFieldChange(e.target.value, userData.mobile, 'tel', 'profile-tel-lbl'); }}
         />
-        <p id='profile-mobile-number-err' className='profile-error'></p>
+        <p ref={mobileNumberErr} id='profile-mobile-number-err' className='profile-error'></p>
 
         <div className="form-row">
           {/* Driver License Number Field */}
@@ -168,16 +226,9 @@ export default function ProfileForm({ userData }) {
             <input id='driversLicenseNo' type="text" value={dlNumber} 
               onChange={(e) => { setDlNumber(e.target.value); handleFieldChange(e.target.value, userData.dlNumber, 'driversLicenseNo', 'profile-license-lbl'); }}
             />
-            <p id='profile-license-err' className='profile-error'></p>
+            <p ref={licenseErr} id='profile-license-err' className='profile-error'></p>
           </div>
           {/* Driver License State Field */}
-          {/* <div> */}
-          {/*   <label htmlFor='driversLicenseState' id='profile-dl-state-lbl'>DL State</label> */}
-          {/*   <input id='driversLicenseState' type="text" value={dlState}  */}
-          {/*     onChange={(e) => { setDlState(e.target.value); handleFieldChange(e.target.value, userData.dlState, 'driversLicenseState', 'profile-dl-state-lbl'); }} */}
-          {/*   /> */}
-          {/*   <p id='profile-dl-state-err' className='profile-error'></p> */}
-          {/* </div> */}
           <div>
             <label htmlFor='driversLicenseState' id='profile-dl-state-lbl'>DL State</label>
             <select id='driversLicenseState' value={dlState} 
@@ -185,7 +236,7 @@ export default function ProfileForm({ userData }) {
             >
               {us_states.map((state, index) => <option value={state}>{state}</option>)}
             </select>
-            <p id='profile-dl-state-err' className='profile-error'></p>
+            <p ref={dlStateErr} id='profile-dl-state-err' className='profile-error'></p>
           </div>
         </div>
 
@@ -194,7 +245,7 @@ export default function ProfileForm({ userData }) {
         <input id='addr1' type="text" value={address} 
           onChange={(e) => { setAddress(e.target.value); handleFieldChange(e.target.value, userData.address, 'addr1', 'profile-address-lbl'); }}
         />
-        <p id='profile-address-err' className='profile-error'></p>
+        <p ref={addressErr} id='profile-address-err' className='profile-error'></p>
 
         <div className="form-row">
           {/* City Field */}
@@ -203,7 +254,7 @@ export default function ProfileForm({ userData }) {
             <input id='city' type="text" value={city} 
               onChange={(e) => { setCity(e.target.value); handleFieldChange(e.target.value, userData.city, 'city', 'profile-city-lbl'); }}
             />
-            <p id='profile-city-err' className='profile-error'></p>
+            <p ref={cityErr} id='profile-city-err' className='profile-error'></p>
           </div>
           {/* State/Region Field */}
           <div>
@@ -211,7 +262,7 @@ export default function ProfileForm({ userData }) {
             <input id='state' type="text" value={state} 
               onChange={(e) => { setState(e.target.value); handleFieldChange(e.target.value, userData.state, 'state', 'profile-state-lbl'); }}
             />
-            <p id='profile-state-err' className='profile-error'></p>
+            <p ref={stateErr} id='profile-state-err' className='profile-error'></p>
           </div>
         </div>
 
@@ -222,7 +273,7 @@ export default function ProfileForm({ userData }) {
             <input id='zipCode' type="text" value={zip} 
               onChange={(e) => { setZip(e.target.value); handleFieldChange(e.target.value, userData.zip, 'zipCode', 'profile-zip-lbl'); }}
             />
-            <p id='profile-zip-err' className='profile-error'></p>
+            <p ref={zipErr} id='profile-zip-err' className='profile-error'></p>
           </div>
           {/* Country Field */}
           <div>
@@ -230,7 +281,7 @@ export default function ProfileForm({ userData }) {
             <input id='country' type="text" value={country} 
               onChange={(e) => { setCountry(e.target.value); handleFieldChange(e.target.value, userData.country, 'country', 'profile-country-lbl'); }}
             />
-            <p id='profile-country-err' className='profile-error'></p>
+            <p ref={countryErr} id='profile-country-err' className='profile-error'></p>
           </div>
         </div>
         <p
@@ -239,6 +290,16 @@ export default function ProfileForm({ userData }) {
         <Link className="profile-change-password">Change Password</Link>
         <input className='profile-update-btn' type='submit' value='Update Profile' />
       </form>
+
+      {popupVisible &&
+        <Popup name='profile' 
+          closeFunction={() => setPopupVisible(false)} 
+          popupHeading={'Are you sure you want to edit the following fields?:'}
+        >
+
+        </Popup>
+      }
+
     </section>
   );
 }
