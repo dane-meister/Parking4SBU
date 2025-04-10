@@ -97,8 +97,8 @@
 	}
 
 	.lot-rates-section {
-		max-height: 300px; 
-		min-height: 20%;
+		max-height: 75%; 
+		min-height: 40%;
 		overflow-y: auto;
 		padding-right: 10px;
 	}
@@ -150,4 +150,12 @@
 
 	.rate-list li {
 		flex: 0 1 45%;
+		gap: 10px;
 	}
+
+	.lot-capacity-section {
+		min-height: 150px;
+		max-height: 500px;
+		overflow-y: auto;
+	  }
+	  
