@@ -118,6 +118,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
       { selectedLot 
         ? <LotDetails 
             lotObj={selectedLot}
+            rateType={rateType}
           />
         : (<>
           {/* Toggle between building and lot search */}
@@ -182,6 +183,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
                   key={idx}
                   setSelectedLot={setSelectedLot}
                   distance={selectedBuilding ? lot.distance_miles : ''}
+                  rateType={rateType}
                 />
               })}
             </section>

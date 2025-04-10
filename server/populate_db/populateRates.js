@@ -1,8 +1,7 @@
 const fs = require('fs'); // File system module for reading files
 const path = require('path'); // Path module for handling file paths
 const csv = require('csv-parser'); // CSV parser module for reading CSV files
-const sequelize = require('../db'); // Sequelize instance for database connection
-const { ParkingLot, Rate } = require('../models');
+const { Rate, ParkingLot, sequelize } = require("../models");
 
 const unmatchedLots = new Set(); // Use a Set to avoid duplicates
 
@@ -26,6 +25,14 @@ function convertTime(timeStr) {
     // Return formatted time string
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds || 0).padStart(2, '0')}`;
 }
+
+function parseMoney(value) {
+    if (!value || value.trim() === '') return null;
+    const sanitized = value.replace(/[$,]/g, ''); // Remove $ and commas
+    const parsed = parseFloat(sanitized);
+    return isNaN(parsed) ? null : parsed;
+  }
+  
 
 // Read the CSV file and parse its content
 fs.createReadStream(csvPath)
@@ -55,18 +62,18 @@ fs.createReadStream(csvPath)
                 await Rate.create({
                     parking_lot_id: lot.id,
                     permit_type: permitType,
-                    hourly: parseFloat(row["Hourly"]) || null,
-                    daily: parseFloat(row["Daily"]) || null,
+                    hourly: parseMoney(row["Hourly"]) || null,
+                    daily: parseMoney(row["Daily"]) || null,
                     max_hours: parseFloat(row["Max Hours"]) || null,
-                    monthly: parseFloat(row["Monthly"]) || null,
-                    semesterly_fall_spring: parseFloat(row["Semesterly (Fall/Spring)"]) || null,
-                    semesterly_summer: parseFloat(row["Semesterly (Summer)"]) || null,
-                    yearly: parseFloat(row["Yearly"]) || null,
+                    monthly: parseMoney(row["Monthly"]) || null,
+                    semesterly_fall_spring: parseMoney(row["Semesterly (Fall/Spring)"]) || null,
+                    semesterly_summer: parseMoney(row["Semesterly (Summer)"]) || null,
+                    yearly: parseMoney(row["Yearly"]) || null,
                     lot_start_time: convertTime(row["Lot Start Time"]),
                     lot_end_time: convertTime(row["Lot End Time"]),
-                    event_parking_price: parseFloat(row["Event Parking Price"]) || null,
+                    event_parking_price: parseMoney(row["Event Parking Price"]) || null,
                     sheet_number: parseInt(row["Sheet Number"]) || null,
-                    sheet_price: parseFloat(row["Sheet Price"]) || null,
+                    sheet_price: parseMoney(row["Sheet Price"]) || null,
                 });
             
                 console.log(`[✔] Inserted rate for ${lotName} (${permitType})`);

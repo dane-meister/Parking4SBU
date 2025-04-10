@@ -1,8 +1,7 @@
 import '../stylesheets/LotDetails.css'
+import { formatTimeRange } from '../utils/formatTime';
 
-export default function LotDetails(props) {
-	// Destructure props to extract lot image source and lot object
-	const { lotImgSrc, lotObj } = props;
+export default function LotDetails({ lotObj, rateType }) {
 
 	// Destructure lotObj to extract individual lot details
 	const {
@@ -31,6 +30,28 @@ export default function LotDetails(props) {
 		time
 	} = lotObj;
 
+	function getRelevantRate(rates, rateType) {
+		for (let rate of rates) {
+			const value = rate[rateTypeMap[rateType]];
+			if (value !== null && value !== undefined) return value;
+		}
+		return null;
+	}
+
+	function formatRate(rate, type) {
+		if (rate === 0) return "Free";
+		if (!rate) return "N/A";
+		return `$${rate.toFixed(2)} ${type}`;
+	}
+
+	const rateTypeMap = {
+		hourly: 'hourly',
+		daily: 'daily',
+		monthly: 'monthly',
+		semesterly: 'semesterly_fall_spring',
+		yearly: 'yearly'
+	};
+
 	// Render the lot details section
 	return (
 		<section className='lot-details'>
@@ -42,9 +63,19 @@ export default function LotDetails(props) {
 
 					{/* Display lot rate and time */}
 					<div className='selected-lot-price-time'>
-						<span className='selected-lot-price'>{rate ?? 'Rate'}</span>
-						<span className='selected-lot-time'>{time ?? 'Time'}</span>
+						<span className='selected-lot-price'>
+							{lotObj?.Rates?.length > 0 && lotObj.Rates[0].hourly !== null
+							? `$${lotObj.Rates[0].hourly.toFixed(2)}`
+							: 'Rate'}
+						</span>
+						<span className='selected-lot-time'>
+							{lotObj?.Rates?.length > 0
+							? formatTimeRange(lotObj.Rates[0].lot_start_time, lotObj.Rates[0].lot_end_time)
+							: ''}
+						</span>
 					</div>
+
+
 
 					{/* Display disability parking availability if applicable */}
 					{(ada_availability > 0) && (

@@ -1,6 +1,7 @@
 import '../stylesheets/LotResult.css'
+import { formatTimeRange } from '../utils/formatTime';
 
-export default function LotResult({ lotObj, setSelectedLot, distance }) {
+export default function LotResult({ lotObj, setSelectedLot, distance, rateType }) {
   // Destructure the lotObj to extract all relevant properties
   const {
     ada_availability,
@@ -40,6 +41,28 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
     metered_availability +
     resident_availability;
 
+    function getRelevantRate(rates, rateType) {
+      for (let rate of rates) {
+        const value = rate[rateTypeMap[rateType]];
+        if (value !== null && value !== undefined) return value;
+      }
+      return null;
+    }
+    
+    function formatRate(rate, type) {
+      if (rate === 0) return "Free";
+      if (!rate) return "N/A";
+      return `$${rate.toFixed(2)} ${type}`;
+    }
+    
+    const rateTypeMap = {
+      hourly: 'hourly',
+      daily: 'daily',
+      monthly: 'monthly',
+      semesterly: 'semesterly_fall_spring',
+      yearly: 'yearly'
+    };    
+
   return (
     <section 
       className="lot-result hbox" 
@@ -59,8 +82,16 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
           <div className="result-dist-row">{distance ? `${distance.toFixed(3)} mi` : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
-            <span className='result-price'>{rate ?? 'unknown rate'}</span> {/* Display rate or fallback */}
-            <span className="result-time">{time ?? ''}</span> {/* Display time if available */}
+            <span className='result-price'>
+              {lotObj?.Rates?.length > 0 && lotObj.Rates[0].hourly !== null
+                ? `$${lotObj.Rates[0].hourly.toFixed(2)}`
+                : 'Free or unknown'}
+            </span>
+            <span className="result-time">
+              {lotObj?.Rates?.length > 0
+                ? formatTimeRange(lotObj.Rates[0].lot_start_time, lotObj.Rates[0].lot_end_time)
+                : ''}
+            </span>
           </div>
           <div className="result-available-row">
             {availableCapacity ? `${availableCapacity} spots available` : 'unknown capacity'} {/* Display available capacity or fallback */}
