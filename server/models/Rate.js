@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
+
 /**
  * Represents the Rate model for parking rates.
  * 
@@ -39,7 +40,18 @@ const Rate = sequelize.define('Rate', {
   lot_end_time: DataTypes.TIME,
   event_parking_price: DataTypes.FLOAT,
   sheet_number: DataTypes.INTEGER,
-  sheet_price: DataTypes.FLOAT
+  sheet_price: DataTypes.FLOAT,
+
+  // Foreign key column
+  parking_lot_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'ParkingLots',
+      key: 'id'
+    },
+    allowNull: false
+  }
 });
+
 
 module.exports = Rate;

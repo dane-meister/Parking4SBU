@@ -49,4 +49,5 @@ const ParkingLot = sequelize.define("ParkingLot", {
   },
 });
 
+
 module.exports = ParkingLot; // Export the ParkingLot model
