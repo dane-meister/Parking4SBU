@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 // - username: the name of the user
 // - activeTab: the currently active tab in the sidebar
 // - setActiveTab: function to update the active tab
-export default function ProfileSidebar({ username, activeTab, setActiveTab, setCurrVehiclePage }) {
+export default function ProfileSidebar({ username, activeTab, setActiveTab, setCurrVehiclePage, setSelectedVehicle }) {
   const { logout } = useAuth(); // Access the logout function from AuthContext
   const navigate = useNavigate(); // Hook to programmatically navigate
 
@@ -29,6 +29,7 @@ export default function ProfileSidebar({ username, activeTab, setActiveTab, setC
   const handleVehicleBtn = () => {
     setActiveTab('vehicles');
     setCurrVehiclePage('my_vehicles');
+    setSelectedVehicle(null);
   };
 
   return (

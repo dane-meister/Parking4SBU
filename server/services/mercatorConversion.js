@@ -21,21 +21,17 @@ function metersToMiles(meters) {
 }
 
 // Input coordinates (Longitude, Latitude)
-const lonLat1 = [-73.11997518217233, 40.91497659029892]; 
-const lonlat2 = [-73.1207623335315, 40.91474466814037];
-const lontlat3 = [-73.1202351978741, 40.91444080593378]
+const lonLat1 = [-73.127930, 40.920929]; 
 
 // Convert to Web Mercator (EPSG:3857)
 const mercatorCoords1 = epsg4326toEpsg3857(lonLat1);
-const mercatorCoords2 = epsg4326toEpsg3857(lonlat2);
-const mercatorCoords3 = epsg4326toEpsg3857(lontlat3);
-console.log(mercatorCoords1, mercatorCoords2, mercatorCoords3);
+console.log(mercatorCoords1);
 
-// Compute Manhattan Distance in meters
-const distanceMeters = manhattanDistance(mercatorCoords1, mercatorCoords2);
+// // Compute Manhattan Distance in meters
+// const distanceMeters = manhattanDistance(mercatorCoords1, mercatorCoords2);
 
-// Convert distance to miles
-const distanceMiles = metersToMiles(distanceMeters);
+// // Convert distance to miles
+// const distanceMiles = metersToMiles(distanceMeters);
 
-console.log(`Manhattan Distance: ${distanceMeters.toFixed(2)} meters`);
-console.log(`Manhattan Distance: ${distanceMiles.toFixed(4)} miles`);
+// console.log(`Manhattan Distance: ${distanceMeters.toFixed(2)} meters`);
+// console.log(`Manhattan Distance: ${distanceMiles.toFixed(4)} miles`);
