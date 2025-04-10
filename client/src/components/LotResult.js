@@ -31,6 +31,27 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     lotImgSrc
   } = lotObj;
 
+  const rates = lotObj?.Rates ?? []; // Get the rates from the lot object or default to an empty array
+  
+  // Find a rate with an hourly price
+  const hourlyRateObj = rates.find(rate => typeof rate.hourly === 'number' && rate.hourly > 0);
+
+  // Check for a free lot (hourly or daily is explicitly 0)
+  const freeRateObj = rates.find(rate =>
+    (rate.hourly === 0 || rate.daily === 0)
+  );
+
+  // Determine what to display for rate
+  let displayRate = 'No rate found';
+  let timeRange = '';
+  if (hourlyRateObj) {
+    displayRate = `$${hourlyRateObj.hourly.toFixed(2)} / hr`;
+    timeRange = formatTimeRange(hourlyRateObj.lot_start_time, hourlyRateObj.lot_end_time);
+  } else if (freeRateObj) {
+    displayRate = 'Free visitor parking';
+    timeRange = formatTimeRange(freeRateObj.lot_start_time, freeRateObj.lot_end_time);
+  }
+
   const availableCapacity = 
     ada_availability +
     commuter_core_availability +
@@ -82,16 +103,8 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
           <div className="result-dist-row">{distance ? `${distance.toFixed(3)} mi` : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
-            <span className='result-price'>
-              {lotObj?.Rates?.length > 0 && lotObj.Rates[0].hourly !== null
-                ? `$${lotObj.Rates[0].hourly.toFixed(2)}`
-                : 'Free or unknown'}
-            </span>
-            <span className="result-time">
-              {lotObj?.Rates?.length > 0
-                ? formatTimeRange(lotObj.Rates[0].lot_start_time, lotObj.Rates[0].lot_end_time)
-                : ''}
-            </span>
+            <span className='result-price'>{displayRate}</span>
+            <span className="result-time">{timeRange}</span>
           </div>
           <div className="result-available-row">
             {availableCapacity ? `${availableCapacity} spots available` : 'unknown capacity'} {/* Display available capacity or fallback */}
