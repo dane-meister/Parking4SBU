@@ -1,4 +1,4 @@
-const { Building, ParkingLot } = require("../models");
+const { Building, ParkingLot, Rate } = require("../models");
 
 // Function to compute Manhattan Distance in meters
 function manhattanDistance(coord1, coord2) {
@@ -38,7 +38,11 @@ async function getSortedParkingLots(buildingId) {
         }
 
         // Retrieve all parking lots from the database
-        const parkingLots = await ParkingLot.findAll();
+        const parkingLots = await ParkingLot.findAll({
+            include: [{
+                model: Rate
+            }]
+        });
 
         // Map parking lots to their distances from the building
         const lotDistances = parkingLots.map(lot => {
@@ -93,7 +97,7 @@ async function getSortedParkingLots(buildingId) {
                 resident_availability: lot.resident_availability,
                 resident_capacity: lot.resident_capacity,
                 resident_zone: lot.resident_zone,
-                rate: lot.rate,
+                Rates: lot.Rates,
                 time: lot.time,
             };
         }).filter(lot => lot !== null); // Remove any skipped lots

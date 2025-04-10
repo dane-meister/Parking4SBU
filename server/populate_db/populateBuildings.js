@@ -1,8 +1,7 @@
 const fs = require('fs'); // File system module to read files
 const csv = require('csv-parser'); // Module to parse CSV files
-const sequelize = require('../db'); // Sequelize instance for database connection
-const Building = require("../models/Building"); // Sequelize model for the Building table
 const path = require("path"); // Path module to handle file paths
+const { Building, sequelize } = require("../models");
 
 // Function to read a CSV file and populate the database with building data
 const populateBuildings = async () => {

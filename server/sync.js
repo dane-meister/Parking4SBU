@@ -1,5 +1,5 @@
 // Import the Sequelize instance from the database configuration file
-const sequelize = require("./db");
+const { sequelize } = require("./models");
 
 const { ParkingLot, Rate, Building, User } = require('./models');
 
