@@ -9,7 +9,7 @@
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1000;
+    z-index: 1002;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     height: 60px; 
     transition: all 0.3s ease;
@@ -74,7 +74,7 @@
     position: fixed;
     top: 60px; 
     width: 100%;
-    z-index: 999;
+    z-index: 1001;
     height: 60px; 
     transition: height 0.3s ease;
   }
