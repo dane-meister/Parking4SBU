@@ -42,7 +42,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
   );
 
   // Determine what to display for rate
-  let displayRate = 'No rate found';
+  let displayRate = '';
   let timeRange = '';
   if (hourlyRateObj) {
     displayRate = `$${hourlyRateObj.hourly.toFixed(2)} / hr`;
