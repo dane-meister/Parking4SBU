@@ -26,103 +26,90 @@ export default function LotDetails({ lotObj, rateType }) {
 		resident_availability,
 		resident_capacity,
 		resident_zone,
-		rate,
-		time
+		Rates = [],
 	} = lotObj;
 
-	function getRelevantRate(rates, rateType) {
-		for (let rate of rates) {
-			const value = rate[rateTypeMap[rateType]];
-			if (value !== null && value !== undefined) return value;
-		}
-		return null;
-	}
 
-	function formatRate(rate, type) {
-		if (rate === 0) return "Free";
-		if (!rate) return "N/A";
-		return `$${rate.toFixed(2)} ${type}`;
-	}
+	const rateFields = {
+		hourly: 'Hourly',
+		daily: 'Daily',
+		monthly: 'Monthly',
+		semesterly_fall_spring: 'Semesterly (Fall/Spring)',
+		semesterly_summer: 'Semesterly (Summer)',
+		yearly: 'Yearly',
+	};
 
-	const rateTypeMap = {
-		hourly: 'hourly',
-		daily: 'daily',
-		monthly: 'monthly',
-		semesterly: 'semesterly_fall_spring',
-		yearly: 'yearly'
+	const formatRate = (value) => {
+		if (value === 0) return "Free";
+		if (value == null) return "N/A";
+		return `$${value.toFixed(2)}`;
 	};
 
 	// Render the lot details section
 	return (
 		<section className='lot-details'>
-			{/* Section for displaying selected lot's basic information */}
+			{/* Basic Lot Info */}
 			<section className='selected-lot-info hbox wide'>
 				<div className='selected-lot-text flex'>
-					{/* Display lot name or fallback to 'Unknown Lot' */}
 					<div className='selected-lot-name'>{name ?? 'Unknown Lot'}</div>
 
-					{/* Display lot rate and time */}
-					<div className='selected-lot-price-time'>
-						<span className='selected-lot-price'>
-							{lotObj?.Rates?.length > 0 && lotObj.Rates[0].hourly !== null
-							? `$${lotObj.Rates[0].hourly.toFixed(2)}`
-							: 'Rate'}
-						</span>
-						<span className='selected-lot-time'>
-							{lotObj?.Rates?.length > 0
-							? formatTimeRange(lotObj.Rates[0].lot_start_time, lotObj.Rates[0].lot_end_time)
-							: ''}
-						</span>
-					</div>
-
-
-
-					{/* Display disability parking availability if applicable */}
+					{/* Display EV and ADA availability */}
 					{(ada_availability > 0) && (
 						<div className='selected-lot-disability'>
-							<img
-								className='selected-lot-icon'
-								src='/images/disability_icon.png'
-								alt='disability parking icon'
-							/>
+							<img className='selected-lot-icon' src='/images/disability_icon.png' alt='ADA icon' />
 							<span>Disability parking</span>
 						</div>
 					)}
-
-					{/* Display EV charger availability if applicable */}
 					{(ev_charging_capacity > 0) && (
 						<div className='selected-lot-ev'>
-							<img
-								className='selected-lot-icon'
-								src='/images/ev_icon.png'
-								alt='available ev chargers icon'
-							/>
+							<img className='selected-lot-icon' src='/images/ev_icon.png' alt='EV charger icon' />
 							<span>EV charger</span>
 						</div>
 					)}
 
-					{/* Display whether the lot is covered or uncovered */}
 					<div className='selected-lot-covered'>
-						{(covered ? 'Covered' : 'Uncovered') + ' Lot'}
+						{covered ? 'Covered Lot' : 'Uncovered Lot'}
 					</div>
 				</div>
-
-				{/* Placeholder for lot image (currently commented out) */}
-				{/* <img 
-					src={lotImgSrc ?? '/images/lots/placeholder_lot.png'} 
-					className='selected-lot-img'
-					alt='lot'
-				/> */}
 			</section>
 
 			<hr />
 
-			{/* Section for displaying extended lot information */}
-			<section className='selected-lot-extended-info'>
-				{/* Display available spots information */}
-				<div className='selected-lots-available'>20+ spots available now</div>
+			{/* Rate Info Section */}
+			<section className='lot-rates-section'>
+				<h4 className='lot-rates-title'>Rates</h4>
+				{Rates.length === 0 ? (
+					<div>No rate information available.</div>
+				) : (
+					Rates.map((rate, idx) => (
+						<div key={idx} className='lot-rate-block'>
+							<div className='rate-header'>
+								<strong>{rate.permit_type}</strong>
+								<span className='rate-time'>
+									{formatTimeRange(rate.lot_start_time, rate.lot_end_time)}
+								</span>
+							</div>
+							<ul className='rate-list'>
+								{Object.entries(rateFields).map(([key, label]) => {
+									const value = rate[key];
+									if (value === null || value === undefined) return null;
+									return (
+									<li key={key}>
+										{label}: {formatRate(value)}
+									</li>
+									);
+								})}
+							</ul>
+						</div>
+					))
+				)}
+			</section>
 
-				{/* Button to book a reservation */}
+			<hr />
+
+			{/* Booking / Action */}
+			<section className='selected-lot-extended-info'>
+				<div className='selected-lots-available'>20+ spots available now</div>
 				<button className='selected-lot-book-btn pointer'>Book a reservation now!</button>
 			</section>
 
