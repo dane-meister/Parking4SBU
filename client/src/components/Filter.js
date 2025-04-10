@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Popup } from '.';
+import { FilterPopup } from '.';
 
 // Filter component to manage and display filtering options
 function Filter({ showFilter, setShowFilter, filters, onApply }) {
@@ -55,7 +55,7 @@ function Filter({ showFilter, setShowFilter, filters, onApply }) {
 
       {/* Popup for filter options */}
       {showFilter && (
-        <Popup 
+        <FilterPopup 
           close={() => setShowFilter(false)} // Close the popup
           onClearAll={handleClearAll}       // Clear all filters
           anyFilterEnabled={anyFilterEnabled} // Indicate if any filter is active
@@ -109,7 +109,7 @@ function Filter({ showFilter, setShowFilter, filters, onApply }) {
               Disability Accessible
             </label>
           </div>
-        </Popup>
+        </FilterPopup>
       )}
     </>
   );
