@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage } from './pages'
+import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, AdminPage } from './pages'
 import { Header, Footer } from './components'
 import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
@@ -39,6 +39,8 @@ export default function App() {
             <Route path="/reservations" element={<CurrentReservationsPage />} />
             {/* Route for making a reservation */}
             <Route path='/reservation' element={<MakeReservationPage />}/>
+            {/* Route for the admin page */}
+            <Route path="/admin" element={<AdminPage />} />
             {/* Fallback route for undefined paths */}
             <Route path="*" element={<NoPage />} />
           </Route>
