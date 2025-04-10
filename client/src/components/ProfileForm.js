@@ -172,7 +172,7 @@ export default function ProfileForm({ userData }) {
     handleFieldChange('', '', 'zipCode', 'profile-zip-lbl');
     setCountry(userData.country);
     handleFieldChange('', '', 'country', 'profile-country-lbl');
-    
+
     setModifiedFields(new Set());
   }
   return (
@@ -234,7 +234,7 @@ export default function ProfileForm({ userData }) {
             <select id='driversLicenseState' value={dlState} 
               onChange={(e) => { setDlState(e.target.value); handleFieldChange(e.target.value, userData.dlState, 'driversLicenseState', 'profile-dl-state-lbl'); }}
             >
-              {us_states.map((state, index) => <option value={state}>{state}</option>)}
+              {us_states.map((state, index) => <option key={index} value={state}>{state}</option>)}
             </select>
             <p ref={dlStateErr} id='profile-dl-state-err' className='profile-error'></p>
           </div>
