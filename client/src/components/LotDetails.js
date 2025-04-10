@@ -84,7 +84,10 @@ export default function LotDetails({ lotObj, rateType }) {
 					Rates.map((rate, idx) => (
 						<div key={idx} className='lot-rate-block'>
 							<div className='rate-header'>
-								<strong>{rate.permit_type}</strong>
+								{rate.permit_type}
+								{rate.permit_type.toLowerCase().includes('resident') && lotObj.resident_zone
+								? ` (Zone ${Number(lotObj.resident_zone)})`
+								: ''}
 								<span className='rate-time'>
 									{formatTimeRange(rate.lot_start_time, rate.lot_end_time)}
 								</span>

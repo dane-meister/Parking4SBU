@@ -129,6 +129,7 @@
 		font-weight: 600;
 		margin-bottom: 8px;
 		font-size: 20px;
+		word-break: break-word;
 	}
 
 	.rate-time {
