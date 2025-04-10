@@ -62,18 +62,18 @@ fs.createReadStream(csvPath)
                 await Rate.create({
                     parking_lot_id: lot.id,
                     permit_type: permitType,
-                    hourly: parseMoney(row["Hourly"]) || null,
-                    daily: parseMoney(row["Daily"]) || null,
+                    hourly: parseMoney(row["Hourly"]),
+                    daily: parseMoney(row["Daily"]),
                     max_hours: parseFloat(row["Max Hours"]) || null,
-                    monthly: parseMoney(row["Monthly"]) || null,
-                    semesterly_fall_spring: parseMoney(row["Semesterly (Fall/Spring)"]) || null,
-                    semesterly_summer: parseMoney(row["Semesterly (Summer)"]) || null,
-                    yearly: parseMoney(row["Yearly"]) || null,
+                    monthly: parseMoney(row["Monthly"]),
+                    semesterly_fall_spring: parseMoney(row["Semesterly (Fall/Spring)"]),
+                    semesterly_summer: parseMoney(row["Semesterly (Summer)"]),
+                    yearly: parseMoney(row["Yearly"]),
                     lot_start_time: convertTime(row["Lot Start Time"]),
                     lot_end_time: convertTime(row["Lot End Time"]),
-                    event_parking_price: parseMoney(row["Event Parking Price"]) || null,
+                    event_parking_price: parseMoney(row["Event Parking Price"]),
                     sheet_number: parseInt(row["Sheet Number"]) || null,
-                    sheet_price: parseMoney(row["Sheet Price"]) || null,
+                    sheet_price: parseMoney(row["Sheet Price"]),
                 });
             
                 console.log(`[✔] Inserted rate for ${lotName} (${permitType})`);
