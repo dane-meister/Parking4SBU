@@ -144,4 +144,22 @@ router.post("/logout", (req, res) => {
     res.json({ message: "Logged out successfully" });
 });
 
+// Get all users endpoint (for admin use)
+router.get("/users", authenticate, async (req, res) => {
+    try {
+        // Only allow admin users to access this endpoint
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        // Fetch all users from the database
+        const users = await User.findAll({
+            attributes: { exclude: ['password'] }
+        });
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users", error: error.message });
+    }
+});
+
 module.exports = router;

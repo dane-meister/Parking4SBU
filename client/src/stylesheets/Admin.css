@@ -1,0 +1,80 @@
+/* Base layout for the admin page */
+.admin {
+    padding: 30px 50px;
+    background-color: #f9f9f9;
+    min-height: calc(100vh - 60px - 60px - 50px); /* header + nav + footer spacing */
+    font-family: 'Barlow Medium', sans-serif;
+  }
+  
+  /* Page heading */
+  .admin h1 {
+    font-size: 36px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  /* Admin tab selector bar */
+  #admin-selection {
+    gap: 20px;
+    font-size: 18px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Tab style */
+  #admin-selection .type-hover {
+    cursor: pointer;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+  }
+  
+  #admin-selection .type-hover:hover {
+    background-color: #eaeaea;
+  }
+    
+  /* Search bar */
+  .user-search {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    font-size: 16px;
+    margin-bottom: 25px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  /* User list container */
+  .user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  /* Individual user cards — styled like reservation cards */
+  .user-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+  }
+  
+  .user-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .user-card strong {
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .user-card p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #555;
+  }
+  
