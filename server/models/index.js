@@ -30,11 +30,23 @@ if (config.use_env_variable) {
 const Building = require("./Building"); // Import the Building model
 const ParkingLot = require("./ParkingLot"); // Import the ParkingLot model
 const User = require("./User"); // Import the User model
+const Rate = require("./Rate"); // Import the Rate model
 
 // Add models to the `db` object
 db.Building = Building;
 db.ParkingLot = ParkingLot;
 db.User = User;
+db.Rate = Rate;
+
+// Setup associations
+db.ParkingLot.hasMany(db.Rate, {
+  foreignKey: "parking_lot_id",
+  onDelete: "CASCADE"
+});
+
+db.Rate.belongsTo(db.ParkingLot, {
+  foreignKey: "parking_lot_id"
+});
 
 // Add Sequelize instance and constructor to the `db` object
 db.sequelize = sequelize;
