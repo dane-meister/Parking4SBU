@@ -18,6 +18,7 @@ export default function ProfilePage() {
 
   // State to handle Vehicle page
   const [ currVehiclePage, setCurrVehiclePage ] = useState('my_vehicles');
+  const [ selectedVehicle, setSelectedVehicle ] = useState(null);
 
   // Handle loading state or fallback if the user data is not yet available
   if (!user) {
@@ -51,6 +52,7 @@ export default function ProfilePage() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         setCurrVehiclePage={setCurrVehiclePage}
+        setSelectedVehicle={setSelectedVehicle}
       />
 
       {/* Render the ProfileForm if the 'profile' tab is active */}
@@ -62,6 +64,8 @@ export default function ProfilePage() {
           currVehiclePage={currVehiclePage} 
           setCurrVehiclePage={setCurrVehiclePage}
           vehicles={vehicles} 
+          setSelectedVehicle={setSelectedVehicle}
+          selectedVehicle={selectedVehicle}
         />
       )}
     </section>
