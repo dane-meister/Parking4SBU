@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Popup } from '.';
 import axios from 'axios';
-const HOST = 'localhost:3000'
+const HOST = "http://localhost:8000"
 
-export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehiclePage, selectedVehicle, setSelectedVehicle }) {
-
-  // useEffect(() => {
-  //   await axios.get(`${HOST}`)
-  // }, []);
-
+export default function VehiclesForm({ userId, vehicles, currVehiclePage, setCurrVehiclePage, selectedVehicle, setSelectedVehicle }) {
+  console.log(vehicles);
   const renderPage = (pageStr) => {
     switch(pageStr){
       case 'my_vehicles':
         return <MyVehicles
+          userId={userId}
           vehicles={vehicles} 
           selectedVehicle={selectedVehicle}
           setCurrVehiclePage={setCurrVehiclePage}
@@ -20,6 +17,7 @@ export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehicle
         />;
       case 'add_vehicle':
         return <AddVehicle 
+          userId={userId}
           setCurrVehiclePage={setCurrVehiclePage}
           setSelectedVehicle={setSelectedVehicle}
         />;
@@ -39,16 +37,16 @@ export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehicle
   );
 }
 
-function MyVehicles({ vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle }){
+function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle }){
   const [ popupVisible, setPopupVisible ] = useState(false);
   
   // TEMP override for testing frontend
-  vehicles = [
-    { make: 'Jeep', model: 'Grand Cherokee', year: '1995', plate: 'KJY9586', color: 'Green', isDefault: true},
-    { make: 'Chevy', model: 'Colorado', year: '2021', plate: 'POO1111', color: 'Black' },
-    { make: 'Jeep', model: 'Grand Cherokee', year: '1995', plate: 'KJY9586', color: 'Green' },
-    { make: 'Chevy', model: 'Colorado', year: '2021', plate: 'POO1111', color: 'Black' },
-  ];
+  // vehicles = [
+  //   { make: 'Jeep', model: 'Grand Cherokee', year: '1995', plate: 'KJY9586', color: 'Green', isDefault: true},
+  //   { make: 'Chevy', model: 'Colorado', year: '2021', plate: 'POO1111', color: 'Black' },
+  //   { make: 'Jeep', model: 'Grand Cherokee', year: '1995', plate: 'KJY9586', color: 'Green' },
+  //   { make: 'Chevy', model: 'Colorado', year: '2021', plate: 'POO1111', color: 'Black' },
+  // ];
 
   return (<>
     <h2>My Vehicles</h2>
@@ -113,7 +111,7 @@ function MyVehicles({ vehicles, setCurrVehiclePage, setSelectedVehicle, selected
   </>);
 }
 
-function AddVehicle({ setCurrVehiclePage, setSelectedVehicle }){
+function AddVehicle({ userId, setCurrVehiclePage, setSelectedVehicle }){
   const [ plate, setPlate ] = useState('');
   const [ make, setMake ] = useState('');
   const [ model, setModel ] = useState('');
@@ -159,9 +157,19 @@ function AddVehicle({ setCurrVehiclePage, setSelectedVehicle }){
         .some(innerHTML => innerHTML !== '');
     
     if(hadError) return;
-    /* implement backend here */
-    setSelectedVehicle(null);
-    setCurrVehiclePage('my_vehicles');
+    
+    axios.post(`${HOST}/api/auth/${userId}/add-vehicle`, {
+      plate, model, make, year, color,
+    }, { withCredentials: true })
+      .then(() => {
+        setSelectedVehicle(null);
+        setCurrVehiclePage('my_vehicles');
+      })
+      .catch((err) => {
+        console.error(err);
+        setSelectedVehicle(null);
+        setCurrVehiclePage('my_vehicles');
+      })   
   }
 
   return (<>

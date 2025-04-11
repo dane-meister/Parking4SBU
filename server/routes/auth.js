@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-const { User } = require("../models");
+const { User, Vehicle } = require("../models");
 const router = express.Router();
 
 const salt_rounds = 12;
@@ -159,6 +159,97 @@ router.get("/users", authenticate, async (req, res) => {
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: "Error fetching users", error: error.message });
+    }
+});
+
+/* Profile routes */
+// Route to get all vehicles for a user (accessible to the user or admin)
+// written by Deepseek LLM, modified to work
+router.get("/:userId/vehicles", authenticate, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const requestingUser = req.user; // From auth middleware
+
+        // Check if the requesting user is either:
+        // 1. The same user whose vehicles are being requested, OR
+        // 2. An admin
+        if (requestingUser.user_id !== parseInt(userId) && requestingUser.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden: You can only view your own vehicles" });
+        }
+        
+        // Find the user and include their associated vehicles
+        const user = await User.findByPk(userId, {
+            include: [{ model: Vehicle }], // Assumes you've set up the User.hasMany(Vehicle) association
+            attributes: { exclude: ['password'] } // Don't return the password
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Return the vehicles
+        res.json({ vehicles: user.Vehicles }); // Sequelize pluralizes the association (e.g., user.getVehicles())
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching vehicles", error: error.message });
+    }
+});
+
+// writtten by Deepseek LLM, modified to work
+router.post("/:userId/add-vehicle", authenticate, async (req, res) => {
+    console.log("\nentered add vehicle");
+    try {
+        const { userId } = req.params;
+        const requestingUser = req.user; // From auth middleware
+        const { 
+            plate, 
+            model, 
+            make, 
+            year, 
+            color 
+        } = req.body;
+
+        // 1. Authorization Check
+        // Only the user themselves or an admin can add a vehicle
+        if (requestingUser.user_id !== parseInt(userId) && requestingUser.user_type !== "admin") {
+            return res.status(403).json({ 
+                message: "Forbidden: You can only add vehicles to your own account" 
+            });
+        }
+
+        // 2. Input Validation
+        if (!plate || !model || !make || !year || !color) {
+            return res.status(400).json({ 
+                message: "All fields required to add vehicle" 
+            });
+        }
+
+        // 3. Check if the user exists
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // 4. Create the vehicle (assuming `db.Vehicle` is your Sequelize model)
+        const newVehicle = await Vehicle.create({
+            user_id: userId, // Link to the user
+            plate,
+            model,
+            make,
+            year,
+            color,
+        });
+
+        // 5. Return the created vehicle (excluding sensitive fields if needed)
+        res.status(201).json({ 
+            message: "Vehicle added successfully",
+            vehicle: newVehicle 
+        });
+
+    } catch (error) {
+        res.status(500).json({ 
+            message: "Error adding vehicle", 
+            error: error.message 
+        });
     }
 });
 
