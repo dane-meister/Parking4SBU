@@ -298,4 +298,38 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
     }
 });
 
+router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
+    try {
+        console.log("in del car");
+        const { vehicleId } = req.params;
+        const requestingUser = req.user; // From auth middleware
+
+        // verify actual vehicle
+        const vehicle = await Vehicle.findByPk(vehicleId);
+        if (!vehicle) {
+            return res.status(404).json({ message: "Vehicle not found" });
+        }
+
+        // verify user has permission to edit this vehicle
+        if (requestingUser.user_id !== vehicle.user_id && requestingUser.user_type !== "admin") {
+            return res.status(403).json({ 
+                message: "Forbidden: You can only edit your own vehicles" 
+            });
+        }
+
+        await vehicle.destroy();
+
+        res.status(200).json({ 
+            message: "Vehicle deleted successfully",
+        });
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ 
+            message: "Error deleting vehicle", 
+            error: error.message 
+        });
+    }
+});
+
 module.exports = router;

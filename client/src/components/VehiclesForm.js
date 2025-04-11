@@ -3,7 +3,17 @@ import { Popup } from '.';
 import axios from 'axios';
 const HOST = "http://localhost:8000"
 
-export default function VehiclesForm({ userId, vehicles, currVehiclePage, setCurrVehiclePage, selectedVehicle, setSelectedVehicle }) {
+export default function VehiclesForm(props) {
+  const { 
+    userId,
+    vehicles,
+    currVehiclePage, 
+    setCurrVehiclePage, 
+    selectedVehicle, 
+    setSelectedVehicle, 
+    toggleDeletedVehicle,
+  } = props;
+
   const renderPage = (pageStr) => {
     switch(pageStr){
       case 'my_vehicles':
@@ -13,6 +23,7 @@ export default function VehiclesForm({ userId, vehicles, currVehiclePage, setCur
           selectedVehicle={selectedVehicle}
           setCurrVehiclePage={setCurrVehiclePage}
           setSelectedVehicle={setSelectedVehicle}
+          toggleDeletedVehicle={toggleDeletedVehicle}
         />;
       case 'add_vehicle':
         return <AddVehicle 
@@ -37,16 +48,28 @@ export default function VehiclesForm({ userId, vehicles, currVehiclePage, setCur
   );
 }
 
-function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle }){
+function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle, toggleDeletedVehicle }){
   const [ popupVisible, setPopupVisible ] = useState(false);
+
+  const handleDeleteConfirmation = () => {
+    axios.delete(`${HOST}/api/auth/delete-vehicle/${selectedVehicle.vehicle_id}`, {
+      withCredentials: true
+    })
+      .then(() => { 
+        setSelectedVehicle(null); 
+        setPopupVisible(false); 
+        toggleDeletedVehicle();
+      })
+      .catch((err) => { console.error(err); setSelectedVehicle(null); setPopupVisible(false); });
+  }
 
   return (<>
     <h2>My Vehicles</h2>
     <section className='vehicle-card-grid'>
       {vehicles
         .sort((a, b) => a.createdAt >= b.createdAt)
-        .map((vehicle, index) => (
-          <div className="vehicle-card" key={index}>
+        .map((vehicle) => (
+          <div className="vehicle-card" key={vehicle.vehicle_id}>
             <div className='vehicle-card-header'>
               <img src='/images/car.png' alt='car icon'/>
               <h3>{vehicle.plate}</h3>
@@ -99,7 +122,9 @@ function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, 
           <button 
             onClick={() => { setSelectedVehicle(null); setPopupVisible(false); }}
           >Cancel</button>
-          <button id='car-delete-btn'>Delete</button>
+          <button id='car-delete-btn'
+            onClick={handleDeleteConfirmation}
+          >Delete</button>
         </div>
       </Popup>
     }
