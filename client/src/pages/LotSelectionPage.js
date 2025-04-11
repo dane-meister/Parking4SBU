@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import { Sidebar, Map } from '../components';
+const HOST = "http://localhost:8000"
 
 const LotSelectionPage = () => {
   // State to store buildings and parking lots
@@ -20,8 +21,8 @@ const LotSelectionPage = () => {
 
         // Fetch buildings and parking lots data concurrently
         const [buildingsRes, parkingLotsRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/buildings", { withCredentials: true }),
-          axios.get("http://localhost:8000/api/parking-lots", { withCredentials: true }),
+          axios.get(`${HOST}/api/buildings`, { withCredentials: true }),
+          axios.get(`${HOST}/api/parking-lots`, { withCredentials: true }),
         ]);     
 
         // Update state with fetched data
