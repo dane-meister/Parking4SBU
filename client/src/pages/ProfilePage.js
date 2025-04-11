@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../stylesheets/index.css';
 import '../stylesheets/Profile.css';
 import '../stylesheets/ProfilePopup.css';
-import ProfileSidebar from '../components/ProfileSidebar';
-import ProfileForm from '../components/ProfileForm';
-import VehiclesForm from '../components/VehiclesForm';
+// import ProfileSidebar from '../components/ProfileSidebar';
+// import ProfileForm from '../components/ProfileForm';
+// import VehiclesForm from '../components/VehiclesForm';
+
+import { ProfileSidebar, ProfileForm, VehiclesForm } from '../components'
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
+const HOST = "http://localhost:8000"
 
 export default function ProfilePage() {
   // State to track the currently active tab ('profile' or 'vehicles')
@@ -15,11 +19,19 @@ export default function ProfilePage() {
   const { user } = useAuth(); 
 
   // State to store the user's vehicles (currently empty)
-  const [ vehicles ] = useState([]); 
-
+  const [ vehicles, setVehicles ] = useState([]); 
+  
   // State to handle Vehicle page
   const [ currVehiclePage, setCurrVehiclePage ] = useState('my_vehicles');
   const [ selectedVehicle, setSelectedVehicle ] = useState(null);
+
+  //retreive user's Vehicles
+  useEffect(() => {
+    console.log("reload vehicles")
+    axios.get(`${HOST}/api/auth/${user.user_id}/vehicles`, { withCredentials: true })
+      .then(response => setVehicles(response.data.vehicles))
+      .catch(err => console.error(err));
+  }, [currVehiclePage]);
 
   // Handle loading state or fallback if the user data is not yet available
   if (!user) {
@@ -62,6 +74,7 @@ export default function ProfilePage() {
       {/* Render the VehiclesForm if the 'vehicles' tab is active */}
       {activeTab === 'vehicles' &&  (
         <VehiclesForm 
+          userId={user.user_id}
           currVehiclePage={currVehiclePage} 
           setCurrVehiclePage={setCurrVehiclePage}
           vehicles={vehicles} 
