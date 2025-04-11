@@ -23,7 +23,6 @@ const LotSelectionPage = () => {
           axios.get("http://localhost:8000/api/buildings", { withCredentials: true }),
           axios.get("http://localhost:8000/api/parking-lots", { withCredentials: true }),
         ]);     
-        console.log("Parking Lots:", parkingLotsRes.data); // Log parking lots data   
 
         // Update state with fetched data
         setBuildings(buildingsRes.data);

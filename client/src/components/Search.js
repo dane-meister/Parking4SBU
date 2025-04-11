@@ -98,7 +98,6 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
       } else { // Handle parking lot search
         if (lot_names.includes(value)) {
           const lot = parkingLots.filter(lot => lot.name === value)[0];
-          console.log(lot);
           setSelectedLot(lot);
         } else {
           alert('INVALID lot'); // Alert if the lot is invalid

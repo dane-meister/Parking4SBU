@@ -94,21 +94,6 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
             className={'type-hover '+(rateType==='daily' ? 'selected' : '')} 
             onClick={() => setRateType('daily')}
           >Daily</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='monthly' ? 'selected' : '')}
-            onClick={() => setRateType('monthly')}
-          >Monthly</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='semesterly' ? 'selected' : '')}
-            onClick={() => setRateType('semesterly')}
-          >Semesterly</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='yearly' ? 'selected' : '')}
-            onClick={() => setRateType('yearly')}
-          >Yearly</span>
         </div>
       </div>
 
