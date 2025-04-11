@@ -1,4 +1,4 @@
-import  React, { useState, useRef } from 'react';
+import  React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Popup } from '../components';
 
@@ -65,7 +65,6 @@ export default function ProfileForm({ userData }) {
     }else if(!/^\d{10}$/.test(mobile.trim())){
       mobileNumberErr.current.innerHTML = 'Mobile number must be a valid US 10 digit number';
     }else{
-      console.log('hi');
       mobileNumberErr.current.innerHTML = '';
     }
 
@@ -115,7 +114,7 @@ export default function ProfileForm({ userData }) {
     let differingFields = [];
     hardcodedTuples.map(tuple => {
       if(tuple[0] !== tuple[1]){
-        differingFields.push(`${tuple[2]}: ${tuple[0]}`);
+        differingFields.push([tuple[2], tuple[0]]);
       }
     });
 
@@ -124,7 +123,7 @@ export default function ProfileForm({ userData }) {
       return;
     }
 
-    setPopupMsg(differingFields.join('\n'));
+    setPopupMsg(differingFields);
     setPopupVisible(true);
   };
 
@@ -175,6 +174,7 @@ export default function ProfileForm({ userData }) {
 
     setModifiedFields(new Set());
   }
+
   return (
     <section className="profile-form">
       <div className='hbox' style={{justifyContent: 'space-between'}}>
@@ -188,7 +188,7 @@ export default function ProfileForm({ userData }) {
       <form onSubmit={handleEditProfileSubmit}>
         {/* Email Address Field */}
         <label htmlFor="email" id='profile-email-lbl'>Email Address</label>
-        <input id="email" type="email" value={email} 
+        <input id="email" type="email" value={email} disabled={popupVisible}
           onChange={(e) => { setEmail(e.target.value); handleFieldChange(e.target.value, userData.email, 'email', 'profile-email-lbl'); }}
         />
         <p ref={emailErr} id='profile-email-err' className='profile-error'></p>
@@ -197,7 +197,7 @@ export default function ProfileForm({ userData }) {
           {/* First Name Field */}
           <div>
             <label htmlFor='firstName' id='profile-first-name-lbl'>First Name</label>
-            <input id='firstName' type="text" value={firstName} 
+            <input id='firstName' type="text" value={firstName} disabled={popupVisible}
               onChange={(e) => { setFirstName(e.target.value); handleFieldChange(e.target.value, userData.firstName, 'firstName', 'profile-first-name-lbl'); }}
             />
             <p ref={firstNameErr} id='profile-first-name-err' className='profile-error'></p>
@@ -205,7 +205,7 @@ export default function ProfileForm({ userData }) {
           {/* Last Name Field */}
           <div>
             <label htmlFor='lastName' id='profile-last-name-lbl'>Last Name</label>
-            <input id='lastName' type="text" value={lastName} 
+            <input id='lastName' type="text" value={lastName} disabled={popupVisible}
               onChange={(e) => { setLastName(e.target.value); handleFieldChange(e.target.value, userData.lastName, 'lastName', 'profile-last-name-lbl'); }}
             />
             <p ref={lastNameErr} id='profile-last-name-err' className='profile-error'></p>
@@ -214,7 +214,7 @@ export default function ProfileForm({ userData }) {
 
         {/* Mobile Number Field */}
         <label htmlFor='tel' id='profile-tel-lbl'>Mobile Number</label>
-        <input id='tel' type="tel" value={mobile} 
+        <input id='tel' type="tel" value={mobile}  disabled={popupVisible}
           onChange={(e) => { setMobile(e.target.value); handleFieldChange(e.target.value, userData.mobile, 'tel', 'profile-tel-lbl'); }}
         />
         <p ref={mobileNumberErr} id='profile-mobile-number-err' className='profile-error'></p>
@@ -223,7 +223,7 @@ export default function ProfileForm({ userData }) {
           {/* Driver License Number Field */}
           <div>
             <label htmlFor='driversLicenseNo' id='profile-license-lbl'>Driver License No.</label>
-            <input id='driversLicenseNo' type="text" value={dlNumber} 
+            <input id='driversLicenseNo' type="text" value={dlNumber} disabled={popupVisible}
               onChange={(e) => { setDlNumber(e.target.value); handleFieldChange(e.target.value, userData.dlNumber, 'driversLicenseNo', 'profile-license-lbl'); }}
             />
             <p ref={licenseErr} id='profile-license-err' className='profile-error'></p>
@@ -231,7 +231,7 @@ export default function ProfileForm({ userData }) {
           {/* Driver License State Field */}
           <div>
             <label htmlFor='driversLicenseState' id='profile-dl-state-lbl'>DL State</label>
-            <select id='driversLicenseState' value={dlState} 
+            <select id='driversLicenseState' value={dlState} disabled={popupVisible}
               onChange={(e) => { setDlState(e.target.value); handleFieldChange(e.target.value, userData.dlState, 'driversLicenseState', 'profile-dl-state-lbl'); }}
             >
               {us_states.map((state, index) => <option key={index} value={state}>{state}</option>)}
@@ -242,7 +242,7 @@ export default function ProfileForm({ userData }) {
 
         {/* Address Line 1 Field */}
         <label htmlFor='addr1' id='profile-address-lbl'>Address Line No. 1</label>
-        <input id='addr1' type="text" value={address} 
+        <input id='addr1' type="text" value={address} disabled={popupVisible}
           onChange={(e) => { setAddress(e.target.value); handleFieldChange(e.target.value, userData.address, 'addr1', 'profile-address-lbl'); }}
         />
         <p ref={addressErr} id='profile-address-err' className='profile-error'></p>
@@ -251,7 +251,7 @@ export default function ProfileForm({ userData }) {
           {/* City Field */}
           <div>
             <label htmlFor='city' id='profile-city-lbl'>City</label>
-            <input id='city' type="text" value={city} 
+            <input id='city' type="text" value={city} disabled={popupVisible}
               onChange={(e) => { setCity(e.target.value); handleFieldChange(e.target.value, userData.city, 'city', 'profile-city-lbl'); }}
             />
             <p ref={cityErr} id='profile-city-err' className='profile-error'></p>
@@ -259,7 +259,7 @@ export default function ProfileForm({ userData }) {
           {/* State/Region Field */}
           <div>
             <label htmlFor='state' id='profile-state-lbl'>State/Region</label>
-            <input id='state' type="text" value={state} 
+            <input id='state' type="text" value={state} disabled={popupVisible}
               onChange={(e) => { setState(e.target.value); handleFieldChange(e.target.value, userData.state, 'state', 'profile-state-lbl'); }}
             />
             <p ref={stateErr} id='profile-state-err' className='profile-error'></p>
@@ -270,7 +270,7 @@ export default function ProfileForm({ userData }) {
           {/* Postal/Zip Code Field */}
           <div>
             <label htmlFor='zipCode' id='profile-zip-lbl'>Postal/Zip Code</label>
-            <input id='zipCode' type="text" value={zip} 
+            <input id='zipCode' type="text" value={zip} disabled={popupVisible}
               onChange={(e) => { setZip(e.target.value); handleFieldChange(e.target.value, userData.zip, 'zipCode', 'profile-zip-lbl'); }}
             />
             <p ref={zipErr} id='profile-zip-err' className='profile-error'></p>
@@ -278,7 +278,7 @@ export default function ProfileForm({ userData }) {
           {/* Country Field */}
           <div>
             <label htmlFor='country' id='profile-country-lbl'>Country</label>
-            <input id='country' type="text" value={country} 
+            <input id='country' type="text" value={country} disabled={popupVisible}
               onChange={(e) => { setCountry(e.target.value); handleFieldChange(e.target.value, userData.country, 'country', 'profile-country-lbl'); }}
             />
             <p ref={countryErr} id='profile-country-err' className='profile-error'></p>
@@ -287,8 +287,8 @@ export default function ProfileForm({ userData }) {
         <p
           style={{margin: '0', marginTop: '-5px', fontSize: '13px', color: 'var(--gray)'}}
         >* edited fields</p>
-        <Link className="profile-change-password">Change Password</Link>
-        <input className='profile-update-btn' type='submit' value='Update Profile' />
+        <Link className="profile-change-password" disabled={popupVisible} >Change Password</Link>
+        <input className='profile-update-btn' type='submit' value='Update Profile' disabled={popupVisible} />
       </form>
 
       {popupVisible &&
@@ -296,7 +296,16 @@ export default function ProfileForm({ userData }) {
           closeFunction={() => setPopupVisible(false)} 
           popupHeading={'Are you sure you want to edit the following fields?:'}
         >
-
+          <div style={{margin: '10px'}}>
+            {popupMsg.map((tuple, index) => {
+              return <div key={index}>
+                <strong>{tuple[0]}</strong>: {tuple[1]}
+              </div>})}
+          </div>
+          <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
+            <button onClick={() => setPopupVisible(false)}>Cancel</button>
+            <button>Confirm Edits</button>
+          </div>
         </Popup>
       }
 

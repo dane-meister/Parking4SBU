@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Popup } from '.';
 
 export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehiclePage, selectedVehicle, setSelectedVehicle }) {
   const renderPage = (pageStr) => {
@@ -6,6 +7,7 @@ export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehicle
       case 'my_vehicles':
         return <MyVehicles
           vehicles={vehicles} 
+          selectedVehicle={selectedVehicle}
           setCurrVehiclePage={setCurrVehiclePage}
           setSelectedVehicle={setSelectedVehicle}
         />;
@@ -30,7 +32,9 @@ export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehicle
   );
 }
 
-function MyVehicles({ vehicles, setCurrVehiclePage, setSelectedVehicle }){
+function MyVehicles({ vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle }){
+  const [ popupVisible, setPopupVisible ] = useState(false);
+  
   // TEMP override for testing frontend
   vehicles = [
     { make: 'Jeep', model: 'Grand Cherokee', year: '1995', plate: 'KJY9586', color: 'Green', isDefault: true},
@@ -57,7 +61,9 @@ function MyVehicles({ vehicles, setCurrVehiclePage, setSelectedVehicle }){
               <img src='/images/edit-icon.png' alt='edit icon' />
               Edit
             </button>
-            <button className='vehicle-card-btn' id='vehicle-card-delete-btn'>
+            <button className='vehicle-card-btn' id='vehicle-card-delete-btn'
+              onClick={() => {setSelectedVehicle(vehicle); setPopupVisible(true);}}
+            >
               <img src='/images/trash.png' alt='delete icon' />
               Delete
             </button>
@@ -73,6 +79,30 @@ function MyVehicles({ vehicles, setCurrVehiclePage, setSelectedVehicle }){
       className="add-vehicle-btn add-vehicle" 
       onClick={() => { setSelectedVehicle(null); setCurrVehiclePage('add_vehicle'); }}
     >+ Add Vehicle</button>
+    {popupVisible &&
+      <Popup name='profile' 
+        closeFunction={() => { setSelectedVehicle(null); setPopupVisible(false); }} 
+        popupHeading={'Are you sure you want to delete this car?:'}
+      >
+        <div style={{margin: '10px'}}>
+          <div className="delete-car-card">
+            <div className='vehicle-card-header'>
+              <img src='/images/car.png' alt='car icon'/>
+              <h3>{selectedVehicle.plate}</h3>
+              {selectedVehicle.isDefault && <span className='vehicle-default-txt'>(default)</span>}
+            </div>
+            <div>{selectedVehicle.make} {selectedVehicle.model} </div>
+            <div>{selectedVehicle.year}, {selectedVehicle.color}</div>
+          </div>
+        </div>
+        <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
+          <button 
+            onClick={() => { setSelectedVehicle(null); setPopupVisible(false); }}
+          >Cancel</button>
+          <button id='car-delete-btn'>Delete</button>
+        </div>
+      </Popup>
+    }
   </>);
 }
 
@@ -198,6 +228,9 @@ function AddVehicle({ setCurrVehiclePage, setSelectedVehicle }){
 }
 
 function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
+  const [ popupVisible, setPopupVisible ] = useState(false);
+  const [ popupMsg, setPopupMsg ] = useState([]);
+
   const [ plate, setPlate ] = useState(vehicle.plate);
   const [ make, setMake ] = useState(vehicle.make);
   const [ model, setModel ] = useState(vehicle.model);
@@ -205,13 +238,13 @@ function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
   const [ color, setColor ] = useState(vehicle.color);
 
   function handleEditVehicleSubmit(event){
+    event.preventDefault();
     const plateErr = document.getElementById('vehicle-plate-err');
     const makeErr = document.getElementById('vehicle-make-err');
     const modelErr = document.getElementById('vehicle-model-err');
     const yearErr = document.getElementById('vehicle-year-err');
     const colorErr = document.getElementById('vehicle-color-err');
 
-    event.preventDefault();
     plateErr.innerHTML = !plate.trim() 
       ? 'Plate number cannot be empty!'
       : '';
@@ -243,10 +276,7 @@ function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
         .some(innerHTML => innerHTML !== '');
     
     if(hadError) return;
-    /* implement backend here */
-    setSelectedVehicle(null);
-    setCurrVehiclePage('my_vehicles');
-
+    
     const hardcodedTuples = [
       [plate, vehicle.plate, 'Plate #'], [make, vehicle.make, 'Make'], [model, vehicle.model, 'Model'],
       [year, vehicle.year, 'Year'], [color, vehicle.color, 'Color']
@@ -255,10 +285,17 @@ function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
     let differingFields = [];
     hardcodedTuples.map(tuple => {
       if(tuple[0] !== tuple[1]){
-        differingFields.push(`${tuple[2]}: ${tuple[0]}`);
+        differingFields.push([tuple[2], tuple[0]]);
       }
     });
-    alert("Are you sure you want to modify these fields?:\n"+differingFields.join('\n'));
+    
+    if(differingFields.length === 0){
+      alert('No changes to update!');
+      return;
+    }
+
+    setPopupMsg(differingFields);
+    setPopupVisible(true);
   }
 
   const handleFieldChange = (current, original, inputId, labelId) => {
@@ -342,5 +379,24 @@ function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
       >* edited fields</p>
       <input type="submit" className='profile-update-btn' value="Edit Vehicle" />
     </form>
+
+    {popupVisible &&
+      <Popup name='profile' 
+        closeFunction={() => { setSelectedVehicle(null); setCurrVehiclePage('my_vehicles'); setPopupVisible(false); }} 
+        popupHeading={'Are you sure you want to edit the following fields?:'}
+      >
+        <div style={{margin: '10px'}}>
+          {popupMsg.map((tuple, index) => {
+            return <div key={index}>
+              <strong>{tuple[0]}</strong>: {tuple[1]}
+            </div>})}
+        </div>
+        <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
+          <button 
+            onClick={() => { setSelectedVehicle(null); setCurrVehiclePage('my_vehicles'); setPopupVisible(false); }}>Cancel</button>
+          <button>Confirm Edits</button>
+        </div>
+      </Popup>
+    }
   </>);
 }
