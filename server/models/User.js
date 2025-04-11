@@ -10,8 +10,8 @@
  * @property {string} first_name - The user's first name. Cannot be null.
  * @property {string} last_name - The user's last name. Cannot be null.
  * @property {string} [phone_number] - The user's phone number. Optional, must loosely match phone formats.
- * @property {'student'|'faculty'|'staff'|'visitor'|'admin'} user_type - The type of user. Cannot be null.
- * @property {'core'|'perimeter'|'satellite'|'faculty'|'resident-zone1'|'resident-zone2'|'resident-zone3'|'resident-zone4'|'resident-zone5'|'resident-zone6'} permit_type - The parking permit type assigned to the user. Cannot be null.
+ * @property {'faculty'|'resident'|'commuter'|'visitor'|'admin'} user_type - The type of user. Cannot be null.
+ * @property {'faculty'|'faculty-life-sciences-1'|'faculty-life-sciences-2'|'faculty-garage-gated-1'|'faculty-garage-gated-2'|'premium'|'resident-zone1'|'resident-zone2'|'resident-zone3'|'resident-zone4'|'resident-zone5'|'resident-zone6'|'core'|'perimeter'|'satellite'} permit_type - The parking permit type assigned to the user. Cannot be null.
  * @property {string} driver_license_number - The user's driver license number. Cannot be null.
  * @property {string} dl_state - The state where the user's driver license was issued. Cannot be null.
  * @property {string} address_line - The user's street address. Cannot be null.
@@ -53,14 +53,14 @@ module.exports = (sequelize, DataTypes) => {
             validate: { is: /^[\d()+\-.\s]+$/i } // loosely matches phone formats
         },
         user_type: {
-            type: DataTypes.ENUM('student', 'faculty', 'staff', 'visitor', 'admin'),
+            type: DataTypes.ENUM('faculty', 'resident', 'commuter', 'visitor', 'admin'),
             allowNull: false
         },
         permit_type: {
             type: DataTypes.ENUM(
-                'core', 'perimeter', 'satellite', 'faculty',
-                'resident-zone1', 'resident-zone2', 'resident-zone3',
-                'resident-zone4', 'resident-zone5', 'resident-zone6'), 
+                'faculty', 'faculty-life-sciences-1', 'faculty-life-sciences-2', 'faculty-garage-gated-1', 'faculty-garage-gated-2', 'premium',
+                'resident-zone1', 'resident-zone2', 'resident-zone3', 'resident-zone4', 'resident-zone5', 'resident-zone6',
+                'core', 'perimeter', 'satellite'),
             allowNull: false
         },
         driver_license_number: {
