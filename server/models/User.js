@@ -19,6 +19,7 @@
  * @property {string} state_region - The state or region of the user's address. Cannot be null.
  * @property {string} postal_zip_code - The postal or zip code of the user's address. Cannot be null.
  * @property {string} country - The country of the user's address. Cannot be null.
+ * @property {boolean} isApproved - Indicates whether the user's account is approved. Defaults to false.
  * 
  * @see {@link https://sequelize.org/} for more information on Sequelize models.
  */
@@ -90,6 +91,11 @@ module.exports = (sequelize, DataTypes) => {
         country: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        isApproved: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     }, {
         tableName: 'Users',
