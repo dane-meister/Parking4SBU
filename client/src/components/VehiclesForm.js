@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Popup } from '.';
+import axios from 'axios';
+const HOST = 'localhost:3000'
 
 export default function VehiclesForm({ vehicles, currVehiclePage, setCurrVehiclePage, selectedVehicle, setSelectedVehicle }) {
+
+  // useEffect(() => {
+  //   await axios.get(`${HOST}`)
+  // }, []);
+
   const renderPage = (pageStr) => {
     switch(pageStr){
       case 'my_vehicles':

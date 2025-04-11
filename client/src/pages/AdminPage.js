@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
+const HOST = "http://localhost:8000"
 
 export default function Admin() {
     const [adminOption, setAdminOption] = useState('users');
@@ -11,7 +12,7 @@ export default function Admin() {
     // Fetch users when 'Users' tab is selected
     useEffect(() => {
         if (adminOption === 'users') {
-            axios.get('http://localhost:8000/api/auth/users', {
+            axios.get(`${HOST}/api/auth/users`, {
                 withCredentials: true
             })
                 .then(res => setUsers(res.data))

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+const HOST = "http://localhost:8000"
 
 // Create a context for authentication
 const AuthContext = createContext();
@@ -17,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             // Send login request to the backend
-            await axios.post("http://localhost:8000/api/auth/login", {
+            await axios.post(`${HOST}/api/auth/login`, {
                 email,
                 password
             }, {
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     // Function to handle user logout
     const logout = async () => {
         // Send logout request to the backend
-        await axios.post("http://localhost:8000/api/auth/logout", {}, { withCredentials: true });
+        await axios.post(`${HOST}/api/auth/logout`, {}, { withCredentials: true });
         setUser(null); // Clear the user state
     };
 
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
         try {
             // Fetch the authenticated user's data from the backend
-            const res = await axios.get("http://localhost:8000/api/auth/me", {
+            const res = await axios.get(`${HOST}/api/auth/me`, {
                 withCredentials: true // Include cookies in the request
             });
             console.log("Authenticated user data:", res.data.user); // Log the user data for debugging
