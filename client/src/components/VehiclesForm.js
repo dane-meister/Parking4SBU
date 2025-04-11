@@ -4,7 +4,6 @@ import axios from 'axios';
 const HOST = "http://localhost:8000"
 
 export default function VehiclesForm({ userId, vehicles, currVehiclePage, setCurrVehiclePage, selectedVehicle, setSelectedVehicle }) {
-  console.log(vehicles);
   const renderPage = (pageStr) => {
     switch(pageStr){
       case 'my_vehicles':
@@ -23,6 +22,7 @@ export default function VehiclesForm({ userId, vehicles, currVehiclePage, setCur
         />;
       case 'edit_vehicle':
         return <EditVehicle 
+          selectedVehicle={selectedVehicle}
           vehicle={selectedVehicle}
           setCurrVehiclePage={setCurrVehiclePage}
           setSelectedVehicle={setSelectedVehicle}
@@ -39,42 +39,37 @@ export default function VehiclesForm({ userId, vehicles, currVehiclePage, setCur
 
 function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle }){
   const [ popupVisible, setPopupVisible ] = useState(false);
-  
-  // TEMP override for testing frontend
-  // vehicles = [
-  //   { make: 'Jeep', model: 'Grand Cherokee', year: '1995', plate: 'KJY9586', color: 'Green', isDefault: true},
-  //   { make: 'Chevy', model: 'Colorado', year: '2021', plate: 'POO1111', color: 'Black' },
-  //   { make: 'Jeep', model: 'Grand Cherokee', year: '1995', plate: 'KJY9586', color: 'Green' },
-  //   { make: 'Chevy', model: 'Colorado', year: '2021', plate: 'POO1111', color: 'Black' },
-  // ];
 
   return (<>
     <h2>My Vehicles</h2>
     <section className='vehicle-card-grid'>
-      {vehicles.map((vehicle, index) => (
-        <div className="vehicle-card" key={index}>
-          <div className='vehicle-card-header'>
-            <img src='/images/car.png' alt='car icon'/>
-            <h3>{vehicle.plate}</h3>
-            {vehicle.isDefault && <span className='vehicle-default-txt'>(default)</span>}
+      {vehicles
+        .sort((a, b) => a.createdAt >= b.createdAt)
+        .map((vehicle, index) => (
+          <div className="vehicle-card" key={index}>
+            <div className='vehicle-card-header'>
+              <img src='/images/car.png' alt='car icon'/>
+              <h3>{vehicle.plate}</h3>
+              {vehicle.isDefault && <span className='vehicle-default-txt'>(default)</span>}
+            </div>
+            <div>{vehicle.make} {vehicle.model} </div>
+            <div>{vehicle.year}, {vehicle.color}</div>
+            <div style={{display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px'}}>
+              {!vehicle.isDefault && <button className='vehicle-card-btn' id='vehicle-card-default-btn'>Make Default</button>}
+              <button className='vehicle-card-btn' id='vehicle-card-edit-btn' onClick={() => { setSelectedVehicle(vehicle); setCurrVehiclePage('edit_vehicle'); }}>
+                <img src='/images/edit-icon.png' alt='edit icon' />
+                Edit
+              </button>
+              <button className='vehicle-card-btn' id='vehicle-card-delete-btn'
+                onClick={() => { setSelectedVehicle(vehicle); setPopupVisible(true); }}
+              >
+                <img src='/images/trash.png' alt='delete icon' />
+                Delete
+              </button>
+            </div>
           </div>
-          <div>{vehicle.make} {vehicle.model} </div>
-          <div>{vehicle.year}, {vehicle.color}</div>
-          <div style={{display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px'}}>
-            {!vehicle.isDefault && <button className='vehicle-card-btn' id='vehicle-card-default-btn'>Make Default</button>}
-            <button className='vehicle-card-btn' id='vehicle-card-edit-btn' onClick={() => { setSelectedVehicle(vehicle); console.log("setting v to:", vehicle); setCurrVehiclePage('edit_vehicle'); }}>
-              <img src='/images/edit-icon.png' alt='edit icon' />
-              Edit
-            </button>
-            <button className='vehicle-card-btn' id='vehicle-card-delete-btn'
-              onClick={() => {setSelectedVehicle(vehicle); setPopupVisible(true);}}
-            >
-              <img src='/images/trash.png' alt='delete icon' />
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
+        ))
+      }
     </section>
 
     {/* If no vehicles, display a message */}
@@ -242,7 +237,7 @@ function AddVehicle({ userId, setCurrVehiclePage, setSelectedVehicle }){
   </>);
 }
 
-function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
+function EditVehicle({ setCurrVehiclePage, vehicle, selectedVehicle, setSelectedVehicle }){
   const [ popupVisible, setPopupVisible ] = useState(false);
   const [ popupMsg, setPopupMsg ] = useState([]);
 
@@ -325,6 +320,19 @@ function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
     }
   }
   
+  const handleConfirmEdit = () => {
+    axios.put(`${HOST}/api/auth/edit-vehicle/${selectedVehicle.vehicle_id}`,
+      { plate, make, model, year, color },
+      { withCredentials: true }
+    )
+      .then(() => { setSelectedVehicle(null); setCurrVehiclePage('my_vehicles'); })
+      .catch((err) => { 
+        console.error(err);
+        setSelectedVehicle(null); 
+        setCurrVehiclePage('my_vehicles');
+      })
+  }
+
   return (<>
     <div className='vehicle-top-row'>
       <h2>Edit Vehicle</h2>
@@ -366,7 +374,6 @@ function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
 
       <label htmlFor='vehicle-color' id='vehicle-color-lbl'>Color</label>
       {/* colors yoinked from sbu parking site */}
-      {console.log("color:",vehicle.color)}
       <select id="vehicle-color" name="vehicle-color" value={color} 
         onChange={(e) => { setColor(e.target.value); handleFieldChange(e.target.value, vehicle.color, 'vehicle-color', 'vehicle-color-lbl'); }}
       >
@@ -409,7 +416,9 @@ function EditVehicle({ setCurrVehiclePage, vehicle, setSelectedVehicle }){
         <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
           <button 
             onClick={() => { setSelectedVehicle(null); setCurrVehiclePage('my_vehicles'); setPopupVisible(false); }}>Cancel</button>
-          <button>Confirm Edits</button>
+          <button
+            onClick={handleConfirmEdit}
+          >Confirm Edits</button>
         </div>
       </Popup>
     }

@@ -190,6 +190,7 @@ export default function ProfileForm({ userData }) {
         <label htmlFor="email" id='profile-email-lbl'>Email Address</label>
         <input id="email" type="email" value={email} disabled={popupVisible}
           onChange={(e) => { setEmail(e.target.value); handleFieldChange(e.target.value, userData.email, 'email', 'profile-email-lbl'); }}
+          autoComplete='email'
         />
         <p ref={emailErr} id='profile-email-err' className='profile-error'></p>
         
@@ -216,6 +217,7 @@ export default function ProfileForm({ userData }) {
         <label htmlFor='tel' id='profile-tel-lbl'>Mobile Number</label>
         <input id='tel' type="tel" value={mobile}  disabled={popupVisible}
           onChange={(e) => { setMobile(e.target.value); handleFieldChange(e.target.value, userData.mobile, 'tel', 'profile-tel-lbl'); }}
+          autoComplete='tel'
         />
         <p ref={mobileNumberErr} id='profile-mobile-number-err' className='profile-error'></p>
 
@@ -280,6 +282,7 @@ export default function ProfileForm({ userData }) {
             <label htmlFor='country' id='profile-country-lbl'>Country</label>
             <input id='country' type="text" value={country} disabled={popupVisible}
               onChange={(e) => { setCountry(e.target.value); handleFieldChange(e.target.value, userData.country, 'country', 'profile-country-lbl'); }}
+              autoComplete='country'
             />
             <p ref={countryErr} id='profile-country-err' className='profile-error'></p>
           </div>

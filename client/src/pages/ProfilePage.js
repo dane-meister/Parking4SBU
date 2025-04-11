@@ -27,7 +27,6 @@ export default function ProfilePage() {
 
   //retreive user's Vehicles
   useEffect(() => {
-    console.log("reload vehicles")
     axios.get(`${HOST}/api/auth/${user.user_id}/vehicles`, { withCredentials: true })
       .then(response => setVehicles(response.data.vehicles))
       .catch(err => console.error(err));
