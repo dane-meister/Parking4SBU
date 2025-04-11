@@ -56,7 +56,7 @@ export default function ProfilePage() {
     zip: user.postal_zip_code,
     country: user.country
   };
-  console.log(deletedVehicleToggle);
+  
   return (
     <section className='main-container-profile'>
       {/* Sidebar component to display user info and allow tab switching */}
