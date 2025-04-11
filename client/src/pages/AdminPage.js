@@ -6,6 +6,7 @@ import '../stylesheets/Admin.css';
 export default function Admin() {
     const [adminOption, setAdminOption] = useState('users');
     const [users, setUsers] = useState([]);
+    const [lots, setLots] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
     // Fetch users when 'Users' tab is selected
@@ -20,8 +21,19 @@ export default function Admin() {
                     setUsers([]);
                 });
         }
+        if (adminOption === 'lots') {
+            axios.get('http://localhost:8000/api/parking-lots', {
+                withCredentials: true
+            })
+                .then(res => setLots(res.data))
+                .catch(err => {
+                    console.error("Failed to fetch lots", err);
+                    setLots([]);
+                });
+        }
     }, [adminOption]);
 
+    // Handle user approval or rejection
     const handleApproval = (userId, approve) => {
         if (approve) {
             axios.put(`http://localhost:8000/api/auth/users/${userId}/approve`, {}, { withCredentials: true })
@@ -38,6 +50,17 @@ export default function Admin() {
                 })
                 .catch(err => console.error('Failed to reject user', err));
         }
+    };
+
+    // Handle lot deletion
+    const handleDeleteLot = (lotId) => {
+        if (!window.confirm("Are you sure you want to delete this lot?")) return;
+
+        axios.delete(`http://localhost:8000/api/admin/lots/${lotId}/remove`, { withCredentials: true })
+            .then(() => {
+                setLots(prev => prev.filter(lot => lot.lot_id !== lotId));
+            })
+            .catch(err => console.error("Failed to delete lot", err));
     };
 
     return (
@@ -138,8 +161,36 @@ export default function Admin() {
                         </div>
                     </>
                 )}
-                {adminOption === 'lots' && <div>Lots Management</div>}
-                {adminOption === 'events' && <div>Events Management</div>}
+                {adminOption === 'lots' && (
+                    <>
+                        <h2>Manage Parking Lots</h2>
+                        <div className="user-list">
+                            {lots.length === 0 ? (
+                                <p>No parking lots found.</p>
+                            ) : (
+                                lots.map(lot => (
+                                    <div className="user-card" key={lot.lot_id}>
+                                        <div className="user-info">
+                                            <strong>{lot.name}</strong><br />
+                                            ID: {lot.id}<br />
+                                            Location: {Array.isArray(lot.location?.coordinates)
+                                                ? `(${lot.location.coordinates[0][1]}, ${lot.location.coordinates[0][0]})`
+                                                : 'N/A'}<br />
+                                        </div>
+                                        <div className="user-actions">
+                                            <img
+                                                src="/images/x.png"
+                                                alt="Delete Lot"
+                                                className="icon"
+                                                onClick={() => handleDeleteLot(lot.lot_id)}
+                                            />
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
+                )}                {adminOption === 'events' && <div>Events Management</div>}
                 {adminOption === 'analysis' && <div>Analysis Management</div>}
             </div>
         </main>
