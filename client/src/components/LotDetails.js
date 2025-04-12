@@ -1,7 +1,10 @@
 import '../stylesheets/LotDetails.css'
 import { formatTimeRange } from '../utils/formatTime';
+import { useNavigate } from 'react-router-dom';
 
 export default function LotDetails({ lotObj, rateType }) {
+
+	const navigate = useNavigate(); // Hook to programmatically navigate
 
 	// Destructure lotObj to extract individual lot details
 	const {
@@ -43,6 +46,24 @@ export default function LotDetails({ lotObj, rateType }) {
 		if (value === 0) return "Free";
 		if (value == null) return "N/A";
 		return `$${value.toFixed(2)}`;
+	};
+
+	const handleReservationClick = () => {
+		navigate('/reservation', {
+			state: {
+				lotId: id,
+				lotName: name,
+				covered,
+				ev_charging_availability,
+				ada_availability,
+				rates: Rates,
+				defaultTimeRange: {
+					// Optionally you could pass default time window based on rate schedule
+					start: Rates[0]?.lot_start_time ?? null,
+					end: Rates[0]?.lot_end_time ?? null,
+				}
+			}
+		});
 	};
 
 	// Render the lot details section
@@ -146,7 +167,10 @@ export default function LotDetails({ lotObj, rateType }) {
 
 			{/* Booking / Action */}
 			<section className='selected-lot-extended-info'>
-				<button className='selected-lot-book-btn pointer'>Book a reservation now!</button>
+				<button 
+					className='selected-lot-book-btn pointer'
+					onClick={handleReservationClick}
+				>Book a reservation now!</button>
 			</section>
 
 			<hr />

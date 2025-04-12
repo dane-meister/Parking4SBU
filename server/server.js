@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
+const reservationRoutes = require('./routes/reservation');
+
 
 // Import models
 const { Building, ParkingLot, Rate, User } = require("./models");
@@ -20,8 +22,10 @@ app.use(cors({
   credentials: true // Allow cookies to be sent with requests
 }));
 
-// //authentication routes
+// Authentication routes
 app.use("/api/auth", authRoutes);
+
+app.use("/api/reservations", reservationRoutes);
 
 
 // API Routes
@@ -37,30 +41,11 @@ app.get("/api/buildings", async (req, res) => {
 // Endpoint to fetch all parking lots
 app.get("/api/parking-lots", async (req, res) => {
   try {
-    console.log("Fetching parking lots..."); // Log when fetching parking lots
     const parkingLots = await ParkingLot.findAll({
       include: [{
         model: Rate,
       }]
     });
-
-    // Log basic association information
-    console.log(`Found ${parkingLots.length} parking lots.`);
-
-    parkingLots.forEach((lot, index) => {
-      console.log(`\n[${index + 1}] ${lot.name} (ID: ${lot.id})`);
-
-      if (lot.Rates && lot.Rates.length > 0) {
-        lot.Rates.forEach((rate, rateIdx) => {
-          console.log(
-            `  ├── Rate ${rateIdx + 1}: Permit Type: ${rate.permit_type}, Hourly: $${rate.hourly ?? "N/A"}, Daily: $${rate.daily ?? "N/A"}`
-          );
-        });
-      } else {
-        console.log("  └── No associated rates found.");
-      }
-    });
-
     res.json(parkingLots);
   } catch (error) {
     res.status(500).json({ message: "Error fetching parking lots", error: error.message });

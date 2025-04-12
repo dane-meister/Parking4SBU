@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.get(`${HOST}/api/auth/me`, {
                 withCredentials: true // Include cookies in the request
             });
-            // console.log("Authenticated user data:", res.data.user); // Log the user data for debugging
+            
             setUser(res.data.user); // Set the user state with the fetched data
             return res.data.user; // Return the user data
         } catch {

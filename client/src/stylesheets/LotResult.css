@@ -18,6 +18,7 @@
 .lot-result-info-container{
     padding: 10px 0px;
     margin-left: 10px;
+    cursor: pointer;
 }
 
 .result-price-time-row{

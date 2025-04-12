@@ -118,7 +118,6 @@ export default function RegisterPage() {
       const response = await axios.post(`${HOST}/api/auth/register`, form, {
         withCredentials: true
       });
-      console.log("Registration response:", response.data);
       navigate('/login'); // Redirects to the login page upon successful registration
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed.");
