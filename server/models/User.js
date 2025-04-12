@@ -11,7 +11,7 @@
  * @property {string} last_name - The user's last name. Cannot be null.
  * @property {string} [phone_number] - The user's phone number. Optional, must loosely match phone formats.
  * @property {'faculty'|'resident'|'commuter'|'visitor'|'admin'} user_type - The type of user. Cannot be null.
- * @property {'faculty'|'faculty-life-sciences-1'|'faculty-life-sciences-2'|'faculty-garage-gated-1'|'faculty-garage-gated-2'|'premium'|'resident-zone1'|'resident-zone2'|'resident-zone3'|'resident-zone4'|'resident-zone5'|'resident-zone6'|'core'|'perimeter'|'satellite'} permit_type - The parking permit type assigned to the user. Cannot be null.
+ * @property {'faculty'|'faculty-life-sciences-1'|'faculty-life-sciences-2'|'faculty-garage-gated-1'|'faculty-garage-gated-2'|'premium'|'resident-zone1'|'resident-zone2'|'resident-zone3'|'resident-zone4'|'resident-zone5'|'resident-zone6'|'core'|'perimeter'|'satellite'|'visitor'} permit_type - The parking permit type assigned to the user. Cannot be null.
  * @property {string} driver_license_number - The user's driver license number. Cannot be null.
  * @property {string} dl_state - The state where the user's driver license was issued. Cannot be null.
  * @property {string} address_line - The user's street address. Cannot be null.
@@ -61,7 +61,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM(
                 'faculty', 'faculty-life-sciences-1', 'faculty-life-sciences-2', 'faculty-garage-gated-1', 'faculty-garage-gated-2', 'premium',
                 'resident-zone1', 'resident-zone2', 'resident-zone3', 'resident-zone4', 'resident-zone5', 'resident-zone6',
-                'core', 'perimeter', 'satellite'),
+                'core', 'perimeter', 'satellite',
+                'visitor'),
             allowNull: false
         },
         driver_license_number: {
