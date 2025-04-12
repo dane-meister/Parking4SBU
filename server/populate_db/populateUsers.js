@@ -45,12 +45,15 @@ const populateUsers = async () => {
         city,
         state_region,
         postal_zip_code,
-        country 
+        country,
+        is_approved,
       } = row;
 
       // Now we can properly await the hash
       const hashed_password = await bcrypt.hash(password, salt_rounds);
-      
+      // convert strings to bool
+      const is_approved_value = is_approved === 'true' ? true : false;
+
       usersData.push({
         email,
         password: hashed_password,
@@ -65,7 +68,8 @@ const populateUsers = async () => {
         city,
         state_region,
         postal_zip_code,
-        country 
+        country,
+        isApproved: is_approved_value,
       });
     }
 
@@ -89,5 +93,8 @@ const populateUsers = async () => {
 
 // Run the function to populate the database
 populateUsers()
-  .then(count => console.log(`Successfully added ${count} users to the database`))
+  .then(count => {
+    console.log(`Successfully added ${count} users to the database`);
+    sequelize.close();
+  })
   .catch(err => console.error('Failed to populate users:', err));
