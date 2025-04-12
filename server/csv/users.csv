@@ -1,0 +1,4 @@
+email,password,first_name,last_name,phone_number,user_type,permit_type,driver_license_number,dl_state,address_line,city,state_region,postal_zip_code,country
+admin@admin.com,admin,Mister,Admin,6311234567,admin,faculty,198343243,NY,123 Admin St,Stonybrook,NY,11720,United States of America
+user@user.com,user,Miss,User,5169876543,student,core,093420194,AZ,14 Main Rd,Userville,NM,97443,United States of America
+faculty@faculty.com,faculty,Mrs,Faculty,9560001111,faculty,resident-zone1,3248502138,NY,76 premiere,Paris,Île-de-France,19999,France

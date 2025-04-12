@@ -112,6 +112,7 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
   const inputProps = {
     placeholder: `Search for a ${searchType}`, // Dynamic placeholder based on search type
     value,
+    id: 'search-input',
     onChange,
     onKeyDown: handleKeyDown
   };
