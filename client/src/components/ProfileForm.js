@@ -1,6 +1,8 @@
 import  React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Popup } from '../components';
+import axios from 'axios';
+const HOST = "http://localhost:8000"
 
 // The form displays user data passed as a prop (`userData`) in a read-only format.
 export default function ProfileForm({ userData }) {
@@ -147,6 +149,33 @@ export default function ProfileForm({ userData }) {
       label.classList.add('profile-modified');
     }
   }
+
+  const handleEditConfirmation = () => {
+    axios.put(`${HOST}/api/auth/edit-profile/${userData.user_id}`, 
+      {
+        email,
+        first_name: firstName,
+        last_name: lastName, 
+        phone_number: mobile, 
+        driver_license_number: dlNumber, 
+        dl_state: dlState, 
+        address_line: address, 
+        city,
+        state_region: state,
+        postal_zip_code: zip,
+        country
+      }, 
+      { withCredentials: true }
+    )
+      .then(() => {
+        setPopupVisible(false);
+        window.location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+        setPopupVisible(err);
+      })
+  };
   
   const handleFieldReset = () => {
     setEmail(userData.email);
@@ -190,6 +219,7 @@ export default function ProfileForm({ userData }) {
         <label htmlFor="email" id='profile-email-lbl'>Email Address</label>
         <input id="email" type="email" value={email} disabled={popupVisible}
           onChange={(e) => { setEmail(e.target.value); handleFieldChange(e.target.value, userData.email, 'email', 'profile-email-lbl'); }}
+          autoComplete='email'
         />
         <p ref={emailErr} id='profile-email-err' className='profile-error'></p>
         
@@ -216,6 +246,7 @@ export default function ProfileForm({ userData }) {
         <label htmlFor='tel' id='profile-tel-lbl'>Mobile Number</label>
         <input id='tel' type="tel" value={mobile}  disabled={popupVisible}
           onChange={(e) => { setMobile(e.target.value); handleFieldChange(e.target.value, userData.mobile, 'tel', 'profile-tel-lbl'); }}
+          autoComplete='tel'
         />
         <p ref={mobileNumberErr} id='profile-mobile-number-err' className='profile-error'></p>
 
@@ -280,6 +311,7 @@ export default function ProfileForm({ userData }) {
             <label htmlFor='country' id='profile-country-lbl'>Country</label>
             <input id='country' type="text" value={country} disabled={popupVisible}
               onChange={(e) => { setCountry(e.target.value); handleFieldChange(e.target.value, userData.country, 'country', 'profile-country-lbl'); }}
+              autoComplete='country'
             />
             <p ref={countryErr} id='profile-country-err' className='profile-error'></p>
           </div>
@@ -304,7 +336,9 @@ export default function ProfileForm({ userData }) {
           </div>
           <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
             <button onClick={() => setPopupVisible(false)}>Cancel</button>
-            <button>Confirm Edits</button>
+            <button
+              onClick={handleEditConfirmation}
+            >Confirm Edits</button>
           </div>
         </Popup>
       }
