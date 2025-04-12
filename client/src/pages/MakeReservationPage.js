@@ -4,6 +4,7 @@ import { getInitialTimes } from '../components/Header';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDateWithTime } from '../utils/getDateWithTime';
+import Popup from '../components/Popup';
 import axios from 'axios';
 import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
 
@@ -13,6 +14,9 @@ function Reservation(){
 	const { user } = useAuth(); // Access the current user from AuthContext
 	const navigate = useNavigate(); // Hook to programmatically navigate
 	const location = useLocation(); // Get the current location from React Router
+
+	const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+	const [reservationSuccess, setReservationSuccess] = useState(null);
 
 	// Destructure the lot details from the location state
 	const {
@@ -69,7 +73,7 @@ function Reservation(){
 		setEditingMode(null);
 	};
 
-	const handleReservation = async () => {
+	const confirmReservation = async () => {
 		if (!selectedVehicleId) {
 			alert("Please select a vehicle.");
 			return;
@@ -94,7 +98,7 @@ function Reservation(){
 			};
 			const res = await axios.post(`${HOST}/api/reservations`, payload, { withCredentials: true });
 			console.log("Reservation successful:", res.data);
-			navigate("/confirmation");
+			setReservationSuccess(true);
 		} catch (err) {
 			console.error("Reservation failed:", err.response?.data || err.message);
 			alert("Failed to create reservation. Please try again.");
@@ -244,12 +248,17 @@ function Reservation(){
 				<span>${10.50 + Math.round(10.50 * .08725 * 100) / 100}</span>
 			</div>
 			<div>
-				<button 
-					className='make-reservation-pay-btn'
-					onClick={handleReservation}
-				>
-					Pay with Card
-				</button>
+			<button 
+				className='make-reservation-pay-btn'
+				onClick={() => {
+					if (!selectedVehicleId) return alert("Please select a vehicle.");
+					if (isEventParking && !eventDescription.trim()) return alert("Please enter an event description.");
+					setShowConfirmPopup(true);
+				}}
+			>
+				Pay with Card
+			</button>
+
 			</div>
 		</section>
 
@@ -261,7 +270,85 @@ function Reservation(){
 				onClose={() => setEditingMode(null)}
 			/>
 	)}
+	{showConfirmPopup && (
+		<Popup
+			name="reservation-confirm"
+			popupHeading="Confirm Reservation"
+			closeFunction={() => {
+				setShowConfirmPopup(false);
+				setReservationSuccess(null);
+			}}
+		>
+			{reservationSuccess === null ? (
+				<>
+					<div className="reservation-confirm-popup-body">
+						<p><strong>Lot:</strong> {lotName}</p>
+						<p><strong>Arrival:</strong> {times.arrival}</p>
+						<p><strong>Departure:</strong> {times.departure}</p>
+						<p><strong>Vehicle:</strong> {
+							vehicles.find(v => v.vehicle_id === selectedVehicleId)?.plate
+						}</p>
+						{isEventParking && (
+							<>
+								<p><strong>Spots:</strong> {spotCount}</p>
+								<p><strong>Event:</strong> {eventDescription}</p>
+							</>
+						)}
+						<p><strong>Total:</strong> ${(10.5 + Math.round(10.5 * 0.08725 * 100) / 100).toFixed(2)}</p>
+					</div>
+
+					<div className="reservation-confirm-popup-buttons">
+						<button 
+							onClick={confirmReservation} 
+							className="reservation-confirm-btn"
+						>
+							Confirm
+						</button>
+						<button 
+							onClick={() => setShowConfirmPopup(false)} 
+							className="reservation-cancel-btn"
+						>
+							Cancel
+						</button>
+					</div>
+				</>
+			) : reservationSuccess ? (
+				<div className="reservation-confirm-popup-body">
+					<p style={{ color: 'green' }}>Reservation successfully created!</p>
+					<div className="reservation-confirm-popup-buttons">
+						<button 
+							onClick={() => {
+								setShowConfirmPopup(false);
+								navigate("/reservations");
+							}} 
+							className="reservation-confirm-btn"
+						>
+							Go to My Reservations
+						</button>
+					</div>
+				</div>
+			) : (
+				<div className="reservation-confirm-popup-body">
+					<p style={{ color: 'red' }}>Reservation failed. Please try again.</p>
+					<div className="reservation-confirm-popup-buttons">
+						<button 
+							onClick={() => {
+								setShowConfirmPopup(false);
+								setReservationSuccess(null);
+							}} 
+							className="reservation-cancel-btn"
+						>
+							Close
+						</button>
+					</div>
+				</div>
+			)}
+		</Popup>
+	)}
+
+
 	</section>);
+	
 }
 
 export default Reservation; // Export the component for use in other parts of the application

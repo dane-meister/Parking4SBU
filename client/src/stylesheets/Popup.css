@@ -108,4 +108,108 @@
   .clear-button:hover {
 	text-decoration: underline;
   }
+
+  /* ===== Scoped Styles for Reservation Confirmation Popup ===== */
+
+.reservation-confirm-popup-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 999;
+	animation: fadeInReservationPopup 0.2s ease-in-out;
+}
+
+@keyframes fadeInReservationPopup {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.reservation-confirm-popup {
+	background-color: #ffffff;
+	width: 400px;
+	max-height: 80vh;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border: 2px solid #990000;
+	animation: fadeInReservationPopup 0.2s ease-in-out;
+}
+
+/* Header */
+.reservation-confirm-popup-heading {
+	background-color: #990000;
+	color: white;
+	font-size: 20px;
+	font-weight: 600;
+	padding: 14px 20px;
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid #ddd;
+}
+
+/* Close Icon */
+.reservation-confirm-popup .close-icon {
+	width: 22px;
+	height: 22px;
+	cursor: pointer;
+	margin-left: auto;
+	filter: brightness(0) invert(1);
+}
+
+/* Body */
+.reservation-confirm-popup-body {
+	padding: 20px;
+	font-size: 16px;
+	color: #333;
+	overflow-y: auto;
+}
+
+/* Button Row */
+.reservation-confirm-popup-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+/* Confirm & Cancel Buttons */
+.reservation-confirm-btn, .reservation-cancel-btn {
+	padding: 10px 16px;
+	font-size: 16px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.reservation-confirm-btn {
+	background-color: #990000;
+	color: white;
+	font-weight: 600;
+}
+
+.reservation-confirm-btn:hover {
+	background-color: #c30000;
+}
+
+.reservation-cancel-btn {
+	background-color: #6c757d;
+	color: white;
+	font-weight: 500;
+}
+
+.reservation-cancel-btn:hover {
+	background-color: #5a6268;
+}
+
+
+  
   

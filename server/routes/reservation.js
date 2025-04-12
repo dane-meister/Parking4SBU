@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Reservation } = require('../models');
+const { Reservation, ParkingLot, Vehicle } = require('../models');
 
 // Create a reservation
 router.post('/', async (req, res) => {
@@ -36,6 +36,27 @@ router.post('/', async (req, res) => {
     } catch (err) {
       console.error("Error creating reservation:", err);
       res.status(500).json({ message: "Failed to create reservation", error: err.message });
+    }
+  });
+
+  // GET: All reservations for the current user
+router.get('/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+  
+    try {
+      const reservations = await Reservation.findAll({
+        where: { user_id },
+        include: [
+          { model: ParkingLot, attributes: ['name'] },
+          { model: Vehicle, attributes: ['plate'] }
+        ],
+        order: [['start_time', 'DESC']]
+      });
+  
+      res.json({ reservations });
+    } catch (err) {
+      console.error('Error fetching reservations:', err);
+      res.status(500).json({ message: "Failed to fetch reservations", error: err.message });
     }
   });
   
