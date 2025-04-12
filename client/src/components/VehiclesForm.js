@@ -11,7 +11,7 @@ export default function VehiclesForm(props) {
     setCurrVehiclePage, 
     selectedVehicle, 
     setSelectedVehicle, 
-    toggleDeletedVehicle,
+    toggleRefresh,
   } = props;
 
   const renderPage = (pageStr) => {
@@ -23,7 +23,7 @@ export default function VehiclesForm(props) {
           selectedVehicle={selectedVehicle}
           setCurrVehiclePage={setCurrVehiclePage}
           setSelectedVehicle={setSelectedVehicle}
-          toggleDeletedVehicle={toggleDeletedVehicle}
+          toggleRefresh={toggleRefresh}
         />;
       case 'add_vehicle':
         return <AddVehicle 
@@ -48,7 +48,7 @@ export default function VehiclesForm(props) {
   );
 }
 
-function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle, toggleDeletedVehicle }){
+function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, selectedVehicle, toggleRefresh }){
   const [ popupVisible, setPopupVisible ] = useState(false);
 
   const handleDeleteConfirmation = () => {
@@ -58,16 +58,41 @@ function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, 
       .then(() => { 
         setSelectedVehicle(null); 
         setPopupVisible(false); 
-        toggleDeletedVehicle();
+        toggleRefresh();
       })
       .catch((err) => { console.error(err); setSelectedVehicle(null); setPopupVisible(false); });
   }
 
+  const handleMakeDefault = (vehicle) => {
+    const vehicleData = { 
+      plate: vehicle.plate, 
+      make: vehicle.make, 
+      model: vehicle.model,
+      year: vehicle.year, 
+      color: vehicle.color, 
+      isDefault: true 
+    };
+    axios.put(`${HOST}/api/auth/edit-vehicle/${vehicle.vehicle_id}`, vehicleData,
+      { withCredentials: true }
+    )
+      .then(() => { 
+        toggleRefresh();
+        setSelectedVehicle(null); 
+        setCurrVehiclePage('my_vehicles'); 
+      })
+      .catch((err) => { 
+        console.error(err);
+        setSelectedVehicle(null); 
+        setCurrVehiclePage('my_vehicles');
+      })
+  };
+
   return (<>
+  {console.log(vehicles.map(a => Date.parse(a.createdAt)))}
     <h2>My Vehicles</h2>
     <section className='vehicle-card-grid'>
       {vehicles
-        .sort((a, b) => a.createdAt >= b.createdAt)
+        .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))
         .map((vehicle) => (
           <div className="vehicle-card" key={vehicle.vehicle_id}>
             <div className='vehicle-card-header'>
@@ -78,7 +103,11 @@ function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, 
             <div>{vehicle.make} {vehicle.model} </div>
             <div>{vehicle.year}, {vehicle.color}</div>
             <div style={{display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px'}}>
-              {!vehicle.isDefault && <button className='vehicle-card-btn' id='vehicle-card-default-btn'>Make Default</button>}
+              {!vehicle.isDefault && 
+                <button className='vehicle-card-btn' id='vehicle-card-default-btn'
+                  onClick={ () => { setSelectedVehicle(vehicle); handleMakeDefault(vehicle); }}
+                >Make Default</button>
+              }
               <button className='vehicle-card-btn' id='vehicle-card-edit-btn' onClick={() => { setSelectedVehicle(vehicle); setCurrVehiclePage('edit_vehicle'); }}>
                 <img src='/images/edit-icon.png' alt='edit icon' />
                 Edit

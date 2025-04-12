@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { User, Vehicle } = require("../models");
 const router = express.Router();
+const { Op } = require('sequelize');
 
 const salt_rounds = 12;
 const authenticate = require("../middleware/authMiddleware"); // Middleware to authenticate users
@@ -261,7 +262,8 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
             model, 
             make, 
             year, 
-            color 
+            color,
+            isDefault
         } = req.body;
 
         // verify all information present
@@ -284,7 +286,21 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
             });
         }
 
-        await vehicle.update({ plate, model, make, year, color });
+        const isDefaultValue = isDefault ?? false;
+        await vehicle.update({ plate, model, make, year, color, isDefault: isDefaultValue });
+
+        // if setting is Default make sure all other cars are not default
+        if (isDefaultValue) {
+            await Vehicle.update(
+                { isDefault: false },
+                { 
+                    where: { 
+                        user_id: vehicle.user_id,
+                        vehicle_id: { [Op.ne]: vehicleId } // All vehicles except this one
+                    }
+                }
+            );
+        }
 
         res.status(200).json({ 
             message: "Vehicle edited successfully",

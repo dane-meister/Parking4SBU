@@ -20,7 +20,7 @@ export default function ProfilePage() {
 
   // State to store the user's vehicles (currently empty)
   const [ vehicles, setVehicles ] = useState([]); 
-  const [ deletedVehicleToggle, setDeletedVehicleToggle ] = useState(false);
+  const [ refreshToggle, setRefreshToggle ] = useState(false);
 
   // State to handle Vehicle page
   const [ currVehiclePage, setCurrVehiclePage ] = useState('my_vehicles');
@@ -31,7 +31,7 @@ export default function ProfilePage() {
     axios.get(`${HOST}/api/auth/${user.user_id}/vehicles`, { withCredentials: true })
       .then(response => setVehicles(response.data.vehicles))
       .catch(err => console.error(err));
-  }, [currVehiclePage, deletedVehicleToggle]);
+  }, [currVehiclePage, refreshToggle]);
 
   // Handle loading state or fallback if the user data is not yet available
   if (!user) {
@@ -80,7 +80,7 @@ export default function ProfilePage() {
           vehicles={vehicles} 
           setSelectedVehicle={setSelectedVehicle}
           selectedVehicle={selectedVehicle}
-          toggleDeletedVehicle={() => setDeletedVehicleToggle(!deletedVehicleToggle)}
+          toggleRefresh={() => setRefreshToggle(!refreshToggle)}
         />
       )}
     </section>
