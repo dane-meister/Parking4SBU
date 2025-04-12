@@ -347,6 +347,50 @@ router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
     }
 });
 
+// Approve a user account (for admin use)
+router.put("/users/:user_id/approve", authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const { user_id } = req.params;
+
+        const user = await User.findByPk(user_id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.isApproved = true;
+        await user.save();
+
+        res.json({ message: "User approved successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error approving user", error: error.message });
+    }
+});
+
+// Delete a user account (for admin use)
+router.delete("/user/:user_id/remove", authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const { user_id } = req.params;
+
+        const deleted = await User.destroy({ where: { user_id } });
+
+        if (deleted === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ message: "User deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting user", error: error.message });
+    }
+});
+
 router.put("/edit-profile/:userId", authenticate, async (req, res) => {
     try{
         const { userId } = req.params;

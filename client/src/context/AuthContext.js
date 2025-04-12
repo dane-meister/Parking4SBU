@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
             // If bypassing authentication, set a fake user
             const fakeUser = { email: "dev@example.com", user_type: "developer" };
             setUser(fakeUser);
-            return true;
+            return fakeUser; // Return the fake user
         }
 
         try {
@@ -57,10 +57,10 @@ export const AuthProvider = ({ children }) => {
             });
             // console.log("Authenticated user data:", res.data.user); // Log the user data for debugging
             setUser(res.data.user); // Set the user state with the fetched data
-            return true; // Return true if authentication is successful
+            return res.data.user; // Return the user data
         } catch {
             setUser(null); // Clear the user state if authentication fails
-            return false; // Return false if authentication fails
+            return null; // Return null if authentication fails
         }
     };
 
