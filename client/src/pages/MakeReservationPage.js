@@ -1,38 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TimeSelector from '../components/TimeSelector';
 import { getInitialTimes } from '../components/Header';
-import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { getDateWithTime } from '../utils/getDateWithTime';
+import axios from 'axios';
+import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
+
+const HOST = "http://localhost:8000";
 
 function Reservation(){
-	const { user } = useAuth();
-	const navigate = useNavigate();
+	const { user } = useAuth(); // Access the current user from AuthContext
+	const navigate = useNavigate(); // Hook to programmatically navigate
+	const location = useLocation(); // Get the current location from React Router
 
-	const handleReservation = async () => {
-		try {
-			const startTime = getDateWithTime(times.arrival);
-			const endTime = getDateWithTime(times.departure);
-		
-			const res = await axios.post("http://localhost:8000/api/reservations", {
-			user_id: user?.user_id,
-			parking_lot_id: lotId,
-			start_time: startTime,
-			end_time: endTime
-			});
-		
-			console.log("Reservation successful:", res.data);
-			navigate("/confirmation");
-		} catch (err) {
-			console.error("Reservation failed:", err.response?.data || err.message);
-			alert("Failed to create reservation. Please try again.");
-		}
-	};
-	// Get the current location from React Router
-	const location = useLocation();
+	// Destructure the lot details from the location state
 	const {
 		lotId,
 		lotName,
@@ -43,20 +25,80 @@ function Reservation(){
 		rates,
 	} = location.state || {};
 
+	const [vehicles, setVehicles] = useState([]);
+	const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+
+	const [isEventParking, setIsEventParking] = useState(false);
+	const [spotCount, setSpotCount] = useState(1);
+	const [eventDescription, setEventDescription] = useState('');
+
+
+	// TODO: have this update from the users prev selected times
+	// State to manage arrival and departure times (default to initial times)
+	// Set default times based on the passed defaultTimeRange or use initial times
 	const [times, setTimes] = useState({
 		arrival: defaultTimeRange?.start ?? getInitialTimes().arrival,
 		departure: defaultTimeRange?.end ?? getInitialTimes().departure
 	});
+
 	// State to track which time (arrival or departure) is being edited
 	const [editingMode, setEditingMode] = useState(null); 
 
+	// Fetch vehicles and auto-select default on mount
+	useEffect(() => {
+		if (!user?.user_id) return; // Exit if user ID is not available
+		// Fetch vehicles associated with the user
+		axios.get(`${HOST}/api/auth/${user.user_id}/vehicles`, { withCredentials: true })
+			.then((res) => {
+				setVehicles(res.data.vehicles);
+				const defaultVehicle = res.data.vehicles.find(v => v.isDefault);
+				if (defaultVehicle) {
+					setSelectedVehicleId(defaultVehicle.vehicle_id);
+				} else if (res.data.vehicles.length > 0) {
+					setSelectedVehicleId(res.data.vehicles[0].vehicle_id); // fallback
+				}
+			})
+			.catch((err) => {
+				console.error("Failed to fetch vehicles", err);
+			});
+	}, [user?.user_id]);
+
 	// Handles time selection from the TimeSelector component
 	const handleTimeSelect = (mode, formatted) => {
-	setTimes((prev) => ({
-		...prev,
-		[mode]: formatted,
-	}));
-	setEditingMode(null); // Exit editing mode after selection
+		setTimes((prev) => ({ ...prev, [mode]: formatted }));
+		setEditingMode(null);
+	};
+
+	const handleReservation = async () => {
+		if (!selectedVehicleId) {
+			alert("Please select a vehicle.");
+			return;
+		}
+		if (isEventParking && !eventDescription.trim()) {
+			alert("Please enter an event description.");
+			return;
+		}  
+		try {
+			const startTime = getDateWithTime(times.arrival);
+			const endTime = getDateWithTime(times.departure);
+		
+			const payload = {
+				user_id: user?.user_id,
+				parking_lot_id: lotId,
+				vehicle_id: selectedVehicleId,
+				start_time: startTime,
+				end_time: endTime,
+				total_price: 10.5, // still static
+				spot_count: isEventParking ? spotCount : 1,
+				event_description: isEventParking ? eventDescription : null
+			};
+			const res = await axios.post(`${HOST}/api/reservations`, payload, { withCredentials: true });
+			console.log("Reservation successful:", res.data);
+			navigate("/confirmation");
+		} catch (err) {
+			console.error("Reservation failed:", err.response?.data || err.message);
+			alert("Failed to create reservation. Please try again.");
+		}
 	};
 
 	return (<section className='make-reservation-page'>
@@ -112,12 +154,79 @@ function Reservation(){
 						</div>
 					</div>
 				</div>
+				<hr style={{ border: '1px solid #ADAEB2', margin: '20px 0' }} />
+				<label style={{ marginLeft: '20px' }}>
+					<input 
+					type="checkbox" 
+					checked={isEventParking} 
+					onChange={() => setIsEventParking(prev => !prev)} 
+					/>
+					<span style={{ marginLeft: '8px' }}>Event Parking</span>
+				</label>
 			</div>
 
-			<div className='make-reservation-lot-box' style={{paddingBottom: '20px'}}>
-				<h4>Vehicle Selection</h4>
-				<div style={{marginLeft: '25px', color: 'gray'}}>Vehicle Select To Be Implemented</div>
+
+		{isEventParking && (
+			<div className='make-reservation-lot-box'>
+				<h4>Event Details</h4>
+				
+				<label style={{ marginLeft: '20px' }}>
+				Spots Needed:
+				<input
+					type="number"
+					min="1"
+					value={spotCount}
+					onChange={(e) => setSpotCount(Number(e.target.value))}
+					style={{ marginLeft: '10px', width: '60px' }}
+				/>
+				</label>
+
+				<br /><br />
+
+				<label style={{ marginLeft: '20px' }}>
+				Description:
+				<textarea
+					required
+					rows="2"
+					style={{ marginTop: '10px', width: '90%' }}
+					value={eventDescription}
+					onChange={(e) => setEventDescription(e.target.value)}
+					placeholder="e.g. Football Game, Graduation, Guest Lecture..."
+				/>
+				</label>
 			</div>
+		)}
+
+		{!isEventParking && (
+			<div className='make-reservation-lot-box' style={{ paddingBottom: '20px' }}>
+				<h4>Vehicle Selection</h4>
+				{vehicles.length === 0 ? (
+					<div style={{ marginLeft: '25px', color: 'gray' }}>
+					No vehicles available.
+					</div>
+				) : (
+					<select
+					value={selectedVehicleId || ''}
+					onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
+					style={{
+						marginLeft: '25px',
+						width: '80%',
+						padding: '8px',
+						fontSize: '16px',
+						borderRadius: '5px',
+						border: '1px solid #ccc'
+					}}
+					>
+					{vehicles.map(vehicle => (
+						<option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
+						{vehicle.year} {vehicle.make} {vehicle.model} ({vehicle.plate})
+						</option>
+					))}
+					</select>
+				)}
+			</div>
+		)}
+
 		</section>
 
 		<section className='make-reservation-right'>
@@ -151,7 +260,7 @@ function Reservation(){
 				onSelect={handleTimeSelect}
 				onClose={() => setEditingMode(null)}
 			/>
-    )}
+	)}
 	</section>);
 }
 

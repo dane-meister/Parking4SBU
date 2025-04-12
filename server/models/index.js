@@ -64,7 +64,7 @@ db.Reservation.belongsTo(db.Vehicle, {
   onDelete: "CASCADE"
 });
 
-// Optionally, add reverse associations too:
+// add reverse associations
 db.User.hasMany(db.Reservation, { foreignKey: "user_id" });
 db.ParkingLot.hasMany(db.Reservation, { foreignKey: "parking_lot_id" });
 db.Vehicle.hasMany(db.Reservation, { foreignKey: "vehicle_id" });
