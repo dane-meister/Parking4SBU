@@ -1,6 +1,8 @@
 import  React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Popup } from '../components';
+import axios from 'axios';
+const HOST = "http://localhost:8000"
 
 // The form displays user data passed as a prop (`userData`) in a read-only format.
 export default function ProfileForm({ userData }) {
@@ -147,6 +149,33 @@ export default function ProfileForm({ userData }) {
       label.classList.add('profile-modified');
     }
   }
+
+  const handleEditConfirmation = () => {
+    axios.put(`${HOST}/api/auth/edit-profile/${userData.user_id}`, 
+      {
+        email,
+        first_name: firstName,
+        last_name: lastName, 
+        phone_number: mobile, 
+        driver_license_number: dlNumber, 
+        dl_state: dlState, 
+        address_line: address, 
+        city,
+        state_region: state,
+        postal_zip_code: zip,
+        country
+      }, 
+      { withCredentials: true }
+    )
+      .then(() => {
+        setPopupVisible(false);
+        window.location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+        setPopupVisible(err);
+      })
+  };
   
   const handleFieldReset = () => {
     setEmail(userData.email);
@@ -307,7 +336,9 @@ export default function ProfileForm({ userData }) {
           </div>
           <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
             <button onClick={() => setPopupVisible(false)}>Cancel</button>
-            <button>Confirm Edits</button>
+            <button
+              onClick={handleEditConfirmation}
+            >Confirm Edits</button>
           </div>
         </Popup>
       }

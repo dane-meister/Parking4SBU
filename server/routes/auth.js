@@ -316,7 +316,6 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
 
 router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
     try {
-        console.log("in del car");
         const { vehicleId } = req.params;
         const requestingUser = req.user; // From auth middleware
 
@@ -344,6 +343,76 @@ router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
         res.status(500).json({ 
             message: "Error deleting vehicle", 
             error: error.message 
+        });
+    }
+});
+
+router.put("/edit-profile/:userId", authenticate, async (req, res) => {
+    try{
+        const { userId } = req.params;
+        const requestingUser = req.user; // From auth middleware
+
+        // verify user has permission to edit this profile
+        if (requestingUser.user_id !== userId && requestingUser.user_type !== "admin") {
+            return res.status(403).json({ 
+                message: "Forbidden: You can only edit your own account!" 
+            });
+        }
+
+        // verify all fields provided
+        const {
+            email,
+            first_name,
+            last_name,
+            phone_number,
+            driver_license_number,
+            dl_state,
+            address_line,
+            city,
+            state_region,
+            postal_zip_code,
+            country
+        } = req.body;
+
+        if(!email || !first_name || !last_name || !phone_number || !driver_license_number ||
+        !dl_state || !address_line || !city || !state_region || !postal_zip_code || !country
+        ){
+            return res.status(400).json({ 
+                message: "All fields must be present to update profile!" 
+            });
+        }
+
+        // verify user exists
+        const user = await User.findByPk(userId);
+        if(!user){
+            return res.status(404).json({ 
+                message: "User not found!" 
+            });
+        }
+
+        // update user
+        await user.update({
+            email,
+            first_name,
+            last_name,
+            phone_number,
+            driver_license_number,
+            dl_state,
+            address_line,
+            city,
+            state_region,
+            postal_zip_code,
+            country
+        });
+
+        return res.status(200).json({ 
+            message: "Profile edited successfully",
+        });
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({
+            message: 'Error editing profile!',
+            error: err
         });
     }
 });

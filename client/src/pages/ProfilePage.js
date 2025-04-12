@@ -2,10 +2,6 @@ import { useEffect, useState } from 'react';
 import '../stylesheets/index.css';
 import '../stylesheets/Profile.css';
 import '../stylesheets/ProfilePopup.css';
-// import ProfileSidebar from '../components/ProfileSidebar';
-// import ProfileForm from '../components/ProfileForm';
-// import VehiclesForm from '../components/VehiclesForm';
-
 import { ProfileSidebar, ProfileForm, VehiclesForm } from '../components'
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
@@ -36,7 +32,7 @@ export default function ProfilePage() {
   // Handle loading state or fallback if the user data is not yet available
   if (!user) {
     return (
-      <div className="page-content">
+      <div className="page-content" style={{minHeight: 'calc(100vh - 60px - 50px - 50px)'}}>
         <p>Loading profile...</p>
       </div>
     );
@@ -54,7 +50,8 @@ export default function ProfilePage() {
     city: user.city,
     state: user.state_region,
     zip: user.postal_zip_code,
-    country: user.country
+    country: user.country,
+    user_id: user.user_id
   };
   
   return (
