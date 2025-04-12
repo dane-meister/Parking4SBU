@@ -114,6 +114,7 @@ export default function RegisterPage() {
     }
     try {
       // Sends a POST request to the registration endpoint
+      console.log("Form data before registration:", form);
       const response = await axios.post('http://localhost:8000/api/auth/register', form, {
         withCredentials: true
       });
@@ -225,7 +226,7 @@ export default function RegisterPage() {
                 <option value="admin">Admin</option> {/* Admin option to be removed later */}
               </select>
 
-              {form.user_type !== 'visitor' && (
+              {form.user_type && (
                 <>
                   <label htmlFor="permit_type">Permit Type</label>
                   <select
@@ -265,10 +266,15 @@ export default function RegisterPage() {
                     )}
                     {form.user_type === 'admin' && (
                       <>
-                      {/* Just so admin has a permit type */}
+                        {/* Just so admin has a permit type */}
                         <option value="core">Core</option>
                         <option value="perimeter">Perimeter</option>
                         <option value="satellite">Satellite</option>
+                      </>
+                    )}
+                    {form.user_type === 'visitor' && (
+                      <>
+                        <option value="visitor">Visitor</option>
                       </>
                     )}
                   </select>
