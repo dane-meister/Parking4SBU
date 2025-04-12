@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
+const reservationRoutes = require('./routes/reservation');
+
 
 // Import models
 const { Building, ParkingLot, Rate, User } = require("./models");
@@ -20,8 +22,10 @@ app.use(cors({
   credentials: true // Allow cookies to be sent with requests
 }));
 
-// //authentication routes
+// Authentication routes
 app.use("/api/auth", authRoutes);
+
+app.use("/api/reservations", reservationRoutes);
 
 
 // API Routes

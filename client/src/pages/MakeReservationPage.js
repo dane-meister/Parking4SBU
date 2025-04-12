@@ -3,8 +3,34 @@ import TimeSelector from '../components/TimeSelector';
 import { getInitialTimes } from '../components/Header';
 import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { getDateWithTime } from '../utils/getDateWithTime';
 
 function Reservation(){
+	const { user } = useAuth();
+	const navigate = useNavigate();
+
+	const handleReservation = async () => {
+		try {
+			const startTime = getDateWithTime(times.arrival);
+			const endTime = getDateWithTime(times.departure);
+		
+			const res = await axios.post("http://localhost:8000/api/reservations", {
+			user_id: user?.user_id,
+			parking_lot_id: lotId,
+			start_time: startTime,
+			end_time: endTime
+			});
+		
+			console.log("Reservation successful:", res.data);
+			navigate("/confirmation");
+		} catch (err) {
+			console.error("Reservation failed:", err.response?.data || err.message);
+			alert("Failed to create reservation. Please try again.");
+		}
+	};
 	// Get the current location from React Router
 	const location = useLocation();
 	const {
@@ -23,8 +49,6 @@ function Reservation(){
 	});
 	// State to track which time (arrival or departure) is being edited
 	const [editingMode, setEditingMode] = useState(null); 
-	// React Router hook to get the current location
-	// const location = useLocation(); 
 
 	// Handles time selection from the TimeSelector component
 	const handleTimeSelect = (mode, formatted) => {
@@ -111,7 +135,12 @@ function Reservation(){
 				<span>${10.50 + Math.round(10.50 * .08725 * 100) / 100}</span>
 			</div>
 			<div>
-				<button className='make-reservation-pay-btn'>Pay with Card</button>
+				<button 
+					className='make-reservation-pay-btn'
+					onClick={handleReservation}
+				>
+					Pay with Card
+				</button>
 			</div>
 		</section>
 

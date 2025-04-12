@@ -1,7 +1,7 @@
 // Import the Sequelize instance from the database configuration file
 const { sequelize } = require("./models");
 
-const { ParkingLot, Rate, Building, User } = require('./models');
+const { ParkingLot, Rate, Building, User, Reservation, Vehicle } = require('./models');
 
 // Immediately Invoked Async Function Expression (IIFE) to handle database synchronization
 (async () => {
