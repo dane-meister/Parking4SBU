@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { User, Vehicle } = require("../models");
 const router = express.Router();
+const { Op } = require('sequelize');
 
 const salt_rounds = 12;
 const authenticate = require("../middleware/authMiddleware"); // Middleware to authenticate users
@@ -196,7 +197,6 @@ router.get("/:userId/vehicles", authenticate, async (req, res) => {
 
 // writtten by Deepseek LLM, modified to work
 router.post("/:userId/add-vehicle", authenticate, async (req, res) => {
-    console.log("\nentered add vehicle");
     try {
         const { userId } = req.params;
         const requestingUser = req.user; // From auth middleware
@@ -249,6 +249,214 @@ router.post("/:userId/add-vehicle", authenticate, async (req, res) => {
         res.status(500).json({ 
             message: "Error adding vehicle", 
             error: error.message 
+        });
+    }
+});
+
+router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
+    try {
+        const { vehicleId } = req.params;
+        const requestingUser = req.user; // From auth middleware
+        const { 
+            plate, 
+            model, 
+            make, 
+            year, 
+            color,
+            isDefault
+        } = req.body;
+
+        // verify all information present
+        if (!plate || !model || !make || !year || !color) {
+            return res.status(400).json({ 
+                message: "All fields required to edit vehicle" 
+            });
+        }
+
+        // verify actual vehicle
+        const vehicle = await Vehicle.findByPk(vehicleId);
+        if (!vehicle) {
+            return res.status(404).json({ message: "Vehicle not found" });
+        }
+
+        // verify user has permission to edit this vehicle
+        if (requestingUser.user_id !== vehicle.user_id && requestingUser.user_type !== "admin") {
+            return res.status(403).json({ 
+                message: "Forbidden: You can only edit your own vehicles" 
+            });
+        }
+
+        const isDefaultValue = isDefault ?? false;
+        await vehicle.update({ plate, model, make, year, color, isDefault: isDefaultValue });
+
+        // if setting is Default make sure all other cars are not default
+        if (isDefaultValue) {
+            await Vehicle.update(
+                { isDefault: false },
+                { 
+                    where: { 
+                        user_id: vehicle.user_id,
+                        vehicle_id: { [Op.ne]: vehicleId } // All vehicles except this one
+                    }
+                }
+            );
+        }
+
+        res.status(200).json({ 
+            message: "Vehicle edited successfully",
+        });
+
+    } catch (error) {
+        res.status(500).json({ 
+            message: "Error editing vehicle", 
+            error: error.message 
+        });
+    }
+});
+
+router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
+    try {
+        const { vehicleId } = req.params;
+        const requestingUser = req.user; // From auth middleware
+
+        // verify actual vehicle
+        const vehicle = await Vehicle.findByPk(vehicleId);
+        if (!vehicle) {
+            return res.status(404).json({ message: "Vehicle not found" });
+        }
+
+        // verify user has permission to edit this vehicle
+        if (requestingUser.user_id !== vehicle.user_id && requestingUser.user_type !== "admin") {
+            return res.status(403).json({ 
+                message: "Forbidden: You can only edit your own vehicles" 
+            });
+        }
+
+        await vehicle.destroy();
+
+        res.status(200).json({ 
+            message: "Vehicle deleted successfully",
+        });
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ 
+            message: "Error deleting vehicle", 
+            error: error.message 
+        });
+    }
+});
+
+// Approve a user account (for admin use)
+router.put("/users/:user_id/approve", authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const { user_id } = req.params;
+
+        const user = await User.findByPk(user_id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.isApproved = true;
+        await user.save();
+
+        res.json({ message: "User approved successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error approving user", error: error.message });
+    }
+});
+
+// Delete a user account (for admin use)
+router.delete("/user/:user_id/remove", authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const { user_id } = req.params;
+
+        const deleted = await User.destroy({ where: { user_id } });
+
+        if (deleted === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ message: "User deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting user", error: error.message });
+    }
+});
+
+router.put("/edit-profile/:userId", authenticate, async (req, res) => {
+    try{
+        const { userId } = req.params;
+        const requestingUser = req.user; // From auth middleware
+
+        // verify user has permission to edit this profile
+        if (requestingUser.user_id !== parseInt(userId) && requestingUser.user_type !== "admin") {
+            return res.status(403).json({ 
+                message: "Forbidden: You can only edit your own account!" 
+            });
+        }
+
+        // verify all fields provided
+        const {
+            email,
+            first_name,
+            last_name,
+            phone_number,
+            driver_license_number,
+            dl_state,
+            address_line,
+            city,
+            state_region,
+            postal_zip_code,
+            country
+        } = req.body;
+
+        if(!email || !first_name || !last_name || !phone_number || !driver_license_number ||
+        !dl_state || !address_line || !city || !state_region || !postal_zip_code || !country
+        ){
+            return res.status(400).json({ 
+                message: "All fields must be present to update profile!" 
+            });
+        }
+
+        // verify user exists
+        const user = await User.findByPk(userId);
+        if(!user){
+            return res.status(404).json({ 
+                message: "User not found!" 
+            });
+        }
+
+        // update user
+        await user.update({
+            email,
+            first_name,
+            last_name,
+            phone_number,
+            driver_license_number,
+            dl_state,
+            address_line,
+            city,
+            state_region,
+            postal_zip_code,
+            country
+        });
+
+        return res.status(200).json({ 
+            message: "Profile edited successfully",
+        });
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({
+            message: 'Error editing profile!',
+            error: err
         });
     }
 });

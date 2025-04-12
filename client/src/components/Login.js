@@ -19,7 +19,13 @@ export default function LoginPage() {
     try {
       const success = await login(email, password); // Attempt to log in with provided credentials
       if (success) {
-        navigate('/home'); // Navigate to the home page on successful login
+        if (!success.isApproved) {
+          setError("Your account is not approved yet."); // Set error message if account is not approved
+          console.log("Your account is not approved yet.");
+          return;
+        } else {
+          navigate('/home'); // Navigate to the home page on successful login
+        }
       } else {
         setError("Invalid email or password."); // Set error message for invalid credentials
       }

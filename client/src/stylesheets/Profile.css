@@ -8,6 +8,10 @@
 	justify-content: center;
 }
 
+html:has(.main-container-profile){
+	overflow-y: scroll;
+}
+
 /* Sidebar styles */
 .account-sidebar {
 	width: 275px;
