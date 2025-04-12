@@ -83,6 +83,13 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
       semesterly: 'semesterly_fall_spring',
       yearly: 'yearly'
     };    
+    
+    const formatDistance = (distance) => {
+      const MILE_FOOT_THRESHOLD = 0.15;
+      return (distance < MILE_FOOT_THRESHOLD)
+        ? `${Math.round(distance * 5280)} ft` // to feet
+        : `${distance.toFixed(3)} mi`; // remain in miles
+    }
 
   return (
     <section 
@@ -101,7 +108,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
         {/* Left section containing lot details */}
         <div className='lot-result-info vbox'>
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
-          <div className="result-dist-row">{distance ? `${distance.toFixed(3)} mi` : ''}</div> {/* Display distance if available */}
+          <div className="result-dist-row">{distance ? formatDistance(distance) : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
             <span className='result-price'>{displayRate}</span>
             <span className="result-time">{timeRange}</span>
