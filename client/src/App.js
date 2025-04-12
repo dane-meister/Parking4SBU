@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, AdminPage } from './pages'
 import { Header, Footer } from './components'
 import { useState } from 'react';
@@ -11,10 +11,12 @@ import "./stylesheets/index.css"; // Global styles
 export default function App() {
   // Layout component to provide a consistent structure for all pages
   function Layout() {
+    const location = useLocation(); // Get the current location
+    const isHome = location.pathname === "/home"; // Check if the current path is home
     return (
       <div className="app-wrapper">
         <Header /> {/* Header component */}
-        <main className="page-content">
+        <main className={`page-content ${isHome ? "home-padding" : "compact-padding"}`}>
           <Outlet /> {/* This will render nested routes */}
         </main>
         <Footer /> {/* Footer component */}

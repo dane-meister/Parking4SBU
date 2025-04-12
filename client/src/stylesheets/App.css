@@ -1,8 +1,30 @@
 /* This file contains the styles for the main page content layout */
+/* Ensure full-height layout */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Top-level wrapper for the whole app */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensures app takes at least full viewport height */
+}
+
+/* Main page content takes remaining space between header and footer */
 .page-content {
-    padding-top: 120px;
-    flex: auto;
-    display: flex;
-    flex-direction: column;
-    max-height: 500vh;
-  }
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  transition: padding-top 0.3s ease;
+}
+
+.home-padding {
+  padding-top: 120px; /* header (60px) + nav-banner (60px) */
+}
+
+.compact-padding {
+  padding-top: 90px; /* header (60px) + nav-banner (shrunk to 30px) */
+}
