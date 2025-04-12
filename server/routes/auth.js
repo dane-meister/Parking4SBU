@@ -397,7 +397,7 @@ router.put("/edit-profile/:userId", authenticate, async (req, res) => {
         const requestingUser = req.user; // From auth middleware
 
         // verify user has permission to edit this profile
-        if (requestingUser.user_id !== userId && requestingUser.user_type !== "admin") {
+        if (requestingUser.user_id !== parseInt(userId) && requestingUser.user_type !== "admin") {
             return res.status(403).json({ 
                 message: "Forbidden: You can only edit your own account!" 
             });
