@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../stylesheets/Auth.css';
+const HOST = "http://localhost:8000"
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -114,8 +115,7 @@ export default function RegisterPage() {
     }
     try {
       // Sends a POST request to the registration endpoint
-      console.log("Form data before registration:", form);
-      const response = await axios.post('http://localhost:8000/api/auth/register', form, {
+      const response = await axios.post(`${HOST}/api/auth/register`, form, {
         withCredentials: true
       });
       console.log("Registration response:", response.data);

@@ -24,17 +24,25 @@ const db = {};
 // Import models as functions and initialize them
 db.Building = require("./Building")(sequelize, Sequelize.DataTypes);
 db.ParkingLot = require("./ParkingLot")(sequelize, Sequelize.DataTypes);
-db.User = require("./User")(sequelize, Sequelize.DataTypes);
 db.Rate = require("./Rate")(sequelize, Sequelize.DataTypes);
+db.User = require("./User")(sequelize, Sequelize.DataTypes);
+db.Vehicle = require("./Vehicle")(sequelize, Sequelize.DataTypes);
 
 // Setup associations
 db.ParkingLot.hasMany(db.Rate, {
   foreignKey: "parking_lot_id",
   onDelete: "CASCADE"
 });
-
 db.Rate.belongsTo(db.ParkingLot, {
   foreignKey: "parking_lot_id"
+});
+
+db.User.hasMany(db.Vehicle, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+db.Vehicle.belongsTo(db.User, {
+  foreignKey: "user_id",
 });
 
 // Add Sequelize instance and constructor to the `db` object

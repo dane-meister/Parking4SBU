@@ -84,7 +84,10 @@ export default function LotDetails({ lotObj, rateType }) {
 					Rates.map((rate, idx) => (
 						<div key={idx} className='lot-rate-block'>
 							<div className='rate-header'>
-								<strong>{rate.permit_type}</strong>
+								{rate.permit_type}
+								{rate.permit_type.toLowerCase().includes('resident') && lotObj.resident_zone
+								? ` (Zone ${Number(lotObj.resident_zone)})`
+								: ''}
 								<span className='rate-time'>
 									{formatTimeRange(rate.lot_start_time, rate.lot_end_time)}
 								</span>
@@ -107,9 +110,42 @@ export default function LotDetails({ lotObj, rateType }) {
 
 			<hr />
 
+			{/* Lot Capacity Info Section */}
+			<section className='lot-capacity-section'>
+			<h4 className='lot-rates-title'>Capacity</h4>
+			<ul className='rate-list'>
+				{faculty_capacity > 0 && (
+				<li>Faculty: {faculty_availability} / {faculty_capacity}</li>
+				)}
+				{commuter_core_capacity > 0 && (
+				<li>Commuter Core: {commuter_core_availability} / {commuter_core_capacity}</li>
+				)}
+				{commuter_perimeter_capacity > 0 && (
+				<li>Commuter Perimeter: {commuter_perimeter_availability} / {commuter_perimeter_capacity}</li>
+				)}
+				{commuter_satellite_capacity > 0 && (
+				<li>Commuter Satellite: {commuter_satellite_availability} / {commuter_satellite_capacity}</li>
+				)}
+				{resident_capacity > 0 && (
+				<li>Resident: {resident_availability} / {resident_capacity}</li>
+				)}
+				{metered_capacity > 0 && (
+				<li>Metered: {metered_availability} / {metered_capacity}</li>
+				)}
+				{ada_capacity > 0 && (
+				<li>ADA: {ada_availability} / {ada_capacity}</li>
+				)}
+				{ev_charging_capacity > 0 && (
+				<li>EV Charging: {ev_charging_availability} / {ev_charging_capacity}</li>
+				)}
+				{capacity > 0 && (
+				<li><strong>Total: </strong>{capacity} Available Spaces</li>
+				)}
+			</ul>
+			</section>
+
 			{/* Booking / Action */}
 			<section className='selected-lot-extended-info'>
-				<div className='selected-lots-available'>20+ spots available now</div>
 				<button className='selected-lot-book-btn pointer'>Book a reservation now!</button>
 			</section>
 

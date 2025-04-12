@@ -115,6 +115,9 @@
 	font-weight: bold;
 	margin-right: 5px;
 	display: block;
+	width: 100%;
+	text-overflow: ellipsis;
+	text-wrap: nowrap;
 }
 
 .profile-form input, .profile-form select {
@@ -194,10 +197,10 @@
 	margin: 10px -10px 0 -10px;
 }
 
-.vehicle-card img{
+.vehicle-card img, .delete-car-card img{
 	height: 20px;
 }
-.vehicle-card h3{
+.vehicle-card h3, .delete-car-card h3{
 	margin: 0;
 	padding-left: 10px;;
 	display: inline-block;
@@ -374,3 +377,23 @@ input.profile-modified, select.profile-modified{
 input.profile-modified:focus{
 	background-color: #fff9d4;
 }
+
+.invisible-icon{
+	display: none;
+}
+
+.reset-icon{
+	opacity: .66;
+}
+.reset-icon:hover{
+	opacity: 1;
+	cursor: pointer;
+	transition: transform 200ms ease-in;
+	transform: rotate(-360deg);
+}
+
+.delete-car-card{
+	margin: 0 auto;
+	width: fit-content;
+}
+
