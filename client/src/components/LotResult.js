@@ -122,7 +122,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
         {/* Right section containing additional lot details */}
         <div className="lot-result-info vbox">
           <div className="result-dummy-row flex"/> {/* Placeholder rows for alignment */}
-          <div className="result-dummy-row flex"/>
+          <div className="result-dummy-row flex" style={{color: 'white'}}>uncovered</div>
           <div className="result-covered-row">{covered ? 'covered' : 'uncovered'}</div> {/* Display whether the lot is covered */}
           <div className="result-icon-row">
             {/* Display icons for ADA and EV charging availability */}
