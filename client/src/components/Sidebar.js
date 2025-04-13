@@ -89,13 +89,14 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
         });
         break;
       case 'Price':
-        sortedLots = [];
+        sortedLots = lotResults.toSorted((a,b) => {
+          /* sort logic here */
+        });
         break;
     }
-    console.log("sortedLots:",sortedLots);
     setLotResults(sortedLots);
-
   }, [resortToggle, selectedBuilding]);
+
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -254,9 +255,9 @@ function LotList({
       <header id='results-header' className='hbox'>
         Results
         <span className='flex' key={1}/>
-        <span>
-          sort by
-          <select value={sortMethod} onChange={handleSortSelect}>
+        <span>sort by</span>
+        <span id='sort-by'>
+          <select value={sortMethod} onChange={handleSortSelect} id='sort-by-select'>
             {availableSortMethods.map(method => {
               return <option 
                 key={method} value={method}
