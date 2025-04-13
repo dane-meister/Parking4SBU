@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { validateAndFormatTimeSelection } from "../utils/validateAndFormatTimeSelection";
 import "../stylesheets/TimeSelector.css";
 
 const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
@@ -8,37 +9,29 @@ const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
 
   // Function to handle the save button click
   const handleSave = () => {
-    // Ensure both date and time are selected before proceeding
-    if (!selectedDate || !selectedHour) {
-      alert("Please select both date and time for both arrival and departure.");
-      return;
-    }
-
-    const formattedHour = selectedHour.padStart(2, '0'); // "09" instead of "9"
-    const timeStr = `${formattedHour}:00`;
-
-    // Create a new Date object using the selected date and time
-    const newDate = new Date(`${selectedDate}T${timeStr}`);
-    const now = new Date();
-    if (newDate < now) {
-      alert("Please select a future time.");
-      return;
-    }
-
-    
-    // Format the date and time for display
-    const options = { weekday: "short", month: "short", day: "numeric" };
-    const formattedDate = newDate.toLocaleDateString("en-US", options);
-    const formattedTime = newDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
+    const result = validateAndFormatTimeSelection({
+      selectedDate,
+      selectedHour,
+      mode,
+      initialTimes
     });
-    const formatted = `${formattedDate} | ${formattedTime}`;
-    
-    // Pass the formatted date and time back to the parent component
-    onSelect(mode, formatted);
+  
+    if (result.error) {
+      alert(result.error);
+      return;
+    }
+  
+    // Update only the opposite field if autoAdjust exists
+    if (result.autoAdjust) {
+      onSelect(result.autoAdjust.mode, result.autoAdjust.value);
+    }
+  
+    // Update current field
+    if (!result.autoAdjust || result.autoAdjust.mode !== mode) {
+      onSelect(mode, result.formatted);
+    }
   };
+  
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
