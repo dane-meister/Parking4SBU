@@ -88,7 +88,6 @@ function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, 
   };
 
   return (<>
-  {console.log(vehicles.map(a => Date.parse(a.createdAt)))}
     <h2>My Vehicles</h2>
     <section className='vehicle-card-grid'>
       {vehicles
