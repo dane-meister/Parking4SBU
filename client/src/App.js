@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, AdminPage, FeedbackPage } from './pages'
 import { Header, Footer } from './components'
+import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Outlet } from 'react-router-dom';
