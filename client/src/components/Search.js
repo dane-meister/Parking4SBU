@@ -4,7 +4,20 @@ import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
-const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding, selectedBuilding, setLotResults, setBaseLots, setSelectedLot }) => {
+const AutocompleteSearch = (props) => {
+  const { 
+    value, setValue, 
+    searchType, 
+    buildings, 
+    parkingLots, 
+    selectedBuilding, setSelectedBuilding, 
+    setLotResults, 
+    setBaseLots, 
+    setSelectedLot,
+    setSort
+  } = props
+
+
   const [ suggestions, setSuggestions ] = useState([]);
 
   // Extract building names from the buildings array
@@ -14,8 +27,6 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
   const lot_names = parkingLots
     .filter(lot => lot.capacity > 0)
     .map(lot => lot.name);
-
-
 
      // Function that performs the search logic
   const performSearch = async () => {
@@ -127,47 +138,40 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
     return <div>{suggestion}</div>;
   };
 
-  // Handle the Enter key press for search
-  // const handleKeyDown = async (event) => {
-  //   if (event.key === 'Enter') {
-  //     event.preventDefault(); // Prevent default form submission behavior
+  const handleKeyDown = async (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent default form submission behavior
 
-  //     if (!value.trim()) {
-  //       setSelectedBuilding(null); // Reset the selected building
-  //       return; // Exit without alerting "INVALID bldg"
-  //     }
-
-  //     if (searchType === 'building') {
-  //       // Handle building search
-  //       if (building_names.includes(value)) {
-  //         const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
-  //         setSelectedBuilding(bldg);
-  //         console.log(bldg.building_name);
-  //         try {
-  //           // Fetch lot results for the selected building
-  //           const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
-  //             withCredentials: true
-  //           });            
-  //           setBaseLots(response.data);
-  //           setLotResults(response.data);
-  //         } catch (err) {
-  //           console.error("Error fetching lot results:", err);
-  //           alert('Error fetching lot results');
-  //         }
-  //       } else {
-  //         alert('INVALID bldg'); // Alert if the building is invalid
-  //       }
-  //     } else { // Handle parking lot search
-  //       if (lot_names.includes(value)) {
-  //         const lot = parkingLots.filter(lot => lot.name === value)[0];
-  //         console.log(lot);
-  //         setSelectedLot(lot);
-  //       } else {
-  //         alert('INVALID lot'); // Alert if the lot is invalid
-  //       }
-  //     }
-  //   }
-  // };
+      if (searchType === 'building') {
+        // Handle building search
+        if (building_names.includes(value)) {
+          const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
+          setSelectedBuilding(bldg);
+          try {
+            // Fetch lot results for the selected building
+            const response = await axios.get(`${HOST}/api/wayfinding/${bldg.id}`, {
+              withCredentials: true
+            });            
+            setBaseLots(response.data);
+            setLotResults(response.data);
+            setSort(); // sorts by distance
+          } catch (err) {
+            console.error("Error fetching lot results:", err);
+            alert('Error fetching lot results');
+          }
+        } else {
+          alert('INVALID bldg'); // Alert if the building is invalid
+        }
+      } else { // Handle parking lot search
+        if (lot_names.includes(value)) {
+          const lot = parkingLots.filter(lot => lot.name === value)[0];
+          setSelectedLot(lot);
+        } else {
+          alert('INVALID lot'); // Alert if the lot is invalid
+        }
+      }
+    }
+  };
 
   // Input properties for the Autosuggest component
   const inputProps = {

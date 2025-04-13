@@ -57,3 +57,107 @@
   .time-selector-buttons button:hover {
     background-color: #b31b20;
   }
+  
+  .dropdown-wrapper {
+    position: relative;
+    width: 100%;
+    max-height: 40px;
+    overflow: hidden;
+  }
+  
+  .hour-dropdown {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    appearance: none;
+    background-color: white;
+    height: 40px;        
+    box-sizing: border-box;
+    line-height: 1.2;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  
+  
+.dropdown-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #555;
+  pointer-events: none;
+}
+
+  .hour-dropdown:focus {
+    border-color: #0077cc;
+    box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.2);
+    outline: none;
+  }
+  
+  .hour-dropdown option {
+    padding: 8px;
+  }
+
+  .time-selector-inputs label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+
+  .custom-dropdown {
+    position: relative;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background: white;
+    user-select: none;
+  }
+  
+  .custom-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-top: none;
+    background: white;
+    z-index: 10;
+  }
+  
+  .dropdown-options li {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .dropdown-options li:hover {
+    background: #f0f0f0;
+  }
+
+  .error-message {
+    margin-top: 10px;
+    color: #ff4d4f; /* red tone */
+    font-size: 0.9rem;
+  }
+  
+  
+  
+  

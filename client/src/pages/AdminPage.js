@@ -7,6 +7,7 @@ const HOST = "http://localhost:8000"
 export default function Admin() {
     const [adminOption, setAdminOption] = useState('users');
     const [users, setUsers] = useState([]);
+    const [editingUser, setEditingUser] = useState(null);
     const [lots, setLots] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -23,7 +24,7 @@ export default function Admin() {
                 });
         }
         if (adminOption === 'lots') {
-            axios.get('http://localhost:8000/api/parking-lots', {
+            axios.get(`${HOST}/api/parking-lots`, {
                 withCredentials: true
             })
                 .then(res => setLots(res.data))
@@ -37,14 +38,14 @@ export default function Admin() {
     // Handle user approval or rejection
     const handleApproval = (userId, approve) => {
         if (approve) {
-            axios.put(`http://localhost:8000/api/auth/users/${userId}/approve`, {}, { withCredentials: true })
+            axios.put(`${HOST}/api/auth/users/${userId}/approve`, {}, { withCredentials: true })
                 .then(() => {
                     // Refresh user list after approval
                     setUsers(prev => prev.map(u => u.user_id === userId ? { ...u, isApproved: true } : u));
                 })
                 .catch(err => console.error('Failed to approve user', err));
         } else {
-            axios.delete(`http://localhost:8000/api/auth/user/${userId}/remove`, { withCredentials: true })
+            axios.delete(`${HOST}/api/auth/user/${userId}/remove`, { withCredentials: true })
                 .then(() => {
                     // Remove the user from the list
                     setUsers(prev => prev.filter(u => u.user_id !== userId));
@@ -57,11 +58,28 @@ export default function Admin() {
     const handleDeleteLot = (lotId) => {
         if (!window.confirm("Are you sure you want to delete this lot?")) return;
 
-        axios.delete(`http://localhost:8000/api/admin/lots/${lotId}/remove`, { withCredentials: true })
+        axios.delete(`${HOST}/api/admin/lots/${lotId}/remove`, { withCredentials: true })
             .then(() => {
                 setLots(prev => prev.filter(lot => lot.lot_id !== lotId));
             })
             .catch(err => console.error("Failed to delete lot", err));
+    };
+
+    const handleUpdateUser = (user) => {
+        axios.put(`${HOST}/api/auth/users/${user.user_id}/edit`, user, {
+            withCredentials: true
+        })
+            .then(() => {
+                // Refresh user list
+                setUsers(prev =>
+                    prev.map(u => (u.user_id === user.user_id ? { ...u, ...user } : u))
+                );
+                setEditingUser(null);
+            })
+            .catch(err => {
+                console.error('Failed to update user', err);
+                alert('Update failed');
+            });
     };
 
     return (
@@ -148,7 +166,7 @@ export default function Admin() {
                                 <p>No users found.</p>
                             ) : (
                                 users.map(user => (
-                                    <div className="user-card" key={user.user_id}>
+                                    <div className="user-card" key={user.user_id} onClick={() => setEditingUser(user)}>
                                         <strong>{user.first_name} {user.last_name}</strong><br />
                                         ID: {user.user_id}<br />
                                         Email: {user.email}<br />
@@ -194,6 +212,86 @@ export default function Admin() {
                 )}                {adminOption === 'events' && <div>Events Management</div>}
                 {adminOption === 'analysis' && <div>Analysis Management</div>}
             </div>
+            {editingUser && (
+                <div className="edit-modal" onClick={() => setEditingUser(null)}>
+                    <div className="edit-form" onClick={(e) => e.stopPropagation()}>
+                        <h2>Edit User</h2>
+
+                        <label htmlFor="edit-email">Email:</label>
+                        <input
+                            id="edit-email"
+                            type="text"
+                            value={editingUser.email}
+                            onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                        />
+
+                        <label htmlFor="edit-user-type">User Type:</label>
+                        <select
+                            id="edit-user-type"
+                            value={editingUser.user_type}
+                            onChange={(e) => setEditingUser({ ...editingUser, user_type: e.target.value, permit_type: '' })}
+                        >
+                            <option value="">Select Type</option>
+                            <option value="faculty">Faculty</option>
+                            <option value="resident">Resident</option>
+                            <option value="commuter">Commuter</option>
+                            <option value="visitor">Visitor</option>
+                        </select>
+
+                        <label htmlFor="edit-permit-type">Permit Type:</label>
+                        <select
+                            id="edit-permit-type"
+                            value={editingUser.permit_type}
+                            onChange={(e) => setEditingUser({ ...editingUser, permit_type: e.target.value })}
+                        >
+                            <option value="">Select Permit</option>
+
+                            {editingUser.user_type === 'faculty' && (
+                                <>
+                                    <option value="faculty">Faculty</option>
+                                    <option value="faculty-life-sciences-1">Faculty Life Sciences 1</option>
+                                    <option value="faculty-life-sciences-2">Faculty Life Sciences 2</option>
+                                    <option value="faculty-garage-gated-1">Faculty Garage/Gated: CSEA/UUP/PEF/PBA/NUSCOPBA</option>
+                                    <option value="faculty-garage-gated-2">Faculty Garage/Gated: GSEU/MC/Research</option>
+                                    <option value="premium">Premium</option>
+                                </>
+                            )}
+
+                            {editingUser.user_type === 'resident' && (
+                                <>
+                                    <option value="resident-zone1">Resident Zone 1</option>
+                                    <option value="resident-zone2">Resident Zone 2</option>
+                                    <option value="resident-zone3">Resident Zone 3</option>
+                                    <option value="resident-zone4">Resident Zone 4</option>
+                                    <option value="resident-zone5">Resident Zone 5</option>
+                                    <option value="resident-zone6">Resident Zone 6</option>
+                                </>
+                            )}
+
+                            {editingUser.user_type === 'commuter' && (
+                                <>
+                                    <option value="core">Core</option>
+                                    <option value="perimeter">Perimeter</option>
+                                    <option value="satellite">Satellite</option>
+                                </>
+                            )}
+
+                            {editingUser.user_type === 'visitor' && (
+                                <>
+                                    <option value="visitor">Visitor</option>
+                                </>
+                            )}
+                        </select>
+
+                        <div className="form-buttons">
+                            <button onClick={() => setEditingUser(null)}>Cancel</button>
+                            <button className="save-button" onClick={() => handleUpdateUser(editingUser)}>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
