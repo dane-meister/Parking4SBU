@@ -151,6 +151,13 @@
   .dropdown-options li:hover {
     background: #f0f0f0;
   }
+
+  .error-message {
+    margin-top: 10px;
+    color: #ff4d4f; /* red tone */
+    font-size: 0.9rem;
+  }
+  
   
   
   

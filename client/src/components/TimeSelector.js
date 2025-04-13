@@ -6,6 +6,8 @@ const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
   // State to store the selected date and time
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedHour, setSelectedHour] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Function to handle the save button click
   const handleSave = () => {
@@ -17,9 +19,11 @@ const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
     });
   
     if (result.error) {
-      alert(result.error);
+      setErrorMessage(result.error);
       return;
     }
+
+    setErrorMessage(""); 
   
     // Update only the opposite field if autoAdjust exists
     if (result.autoAdjust) {
@@ -32,9 +36,6 @@ const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
     }
   };
   
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const formatHour = (i) => {
     if (i === 0) return "12:00 AM";
     if (i < 12) return `${i}:00 AM`;
@@ -83,8 +84,8 @@ const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
               )}
             </div>
           </label>
-
-
+          {/* Display error message if any */}
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>
         <div className="time-selector-buttons">
           {/* Button to save the selected date and time */}
