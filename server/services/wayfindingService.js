@@ -70,8 +70,7 @@ async function getSortedParkingLots(buildingId) {
                 }
             }
 
-            // Return the parking lot with its computed distances
-            console.log("location", lot.location.coordinates[0]);
+
             return {
                 id: lot.id,
                 location: lot.location,

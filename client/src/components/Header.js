@@ -80,7 +80,7 @@ const Header = ({ times, setTimes }) => {
 
       <nav className={`nav-banner ${location.pathname !== "/home" ? "nav-shrink" : ""}`}>
         {/* Show time selection only on the home page */}
-        {location.pathname === "/home" && (
+        {location.pathname === "/lotselection" && (
           <div className="time-selector-container">
             <div className="time-input">
               <span className="time-label">Arrive After:</span>
