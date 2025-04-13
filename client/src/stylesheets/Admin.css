@@ -1,95 +1,148 @@
 .admin {
-    padding: 30px 50px;
-    background-color: #f9f9f9;
-    min-height: calc(100vh - 60px - 60px - 50px); /* header + nav + footer spacing */
-    font-family: 'Barlow Medium', sans-serif;
-  }
-  
-  .admin h1 {
-    font-size: 36px;
-    margin-bottom: 30px;
-    color: #333;
-  }
-  
-  #admin-selection {
-    gap: 20px;
-    font-size: 18px;
-    text-transform: uppercase;
-    font-weight: bold;
-    padding-bottom: 20px;
-    color: #333;
-  }
-  
-  #admin-selection .type-hover {
-    cursor: pointer;
-    color: #333;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
-  }
-  
-  #admin-selection .type-hover:hover {
-    background-color: #eaeaea;
-  }
-    
-  .user-search {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px 15px;
-    font-size: 16px;
-    margin-bottom: 25px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-  
-  .user-list {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-  }
-  
-  .user-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 20px 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-  }
-  
-  .user-card:hover {
-    transform: translateY(-3px);
-  }
-  
-  .user-card strong {
-    font-size: 18px;
-    color: #333;
-  }
-  
-  .user-card p {
-    margin: 8px 0;
-    font-size: 16px;
-    color: #555;
-  }
+  padding: 30px 50px;
+  background-color: #f9f9f9;
+  min-height: calc(100vh - 60px - 60px - 50px);
+  /* header + nav + footer spacing */
+  font-family: 'Barlow Medium', sans-serif;
+}
 
-  .user-details {
-    flex-grow: 1;
-  }  
+.admin h1 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: #333;
+}
 
-  .user-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }  
-  
-  .user-info {
-    flex-grow: 1;
-  }
-  
-  .icon {
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
-  }
+#admin-selection {
+  gap: 20px;
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: bold;
+  padding-bottom: 20px;
+  color: #333;
+}
+
+#admin-selection .type-hover {
+  cursor: pointer;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+#admin-selection .type-hover:hover {
+  background-color: #eaeaea;
+}
+
+.user-search {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 15px;
+  font-size: 16px;
+  margin-bottom: 25px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-3px);
+}
+
+.user-card strong {
+  font-size: 18px;
+  color: #333;
+}
+
+.user-card p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.user-details {
+  flex-grow: 1;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info {
+  flex-grow: 1;
+}
+
+.icon {
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+}
+
+.edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.edit-form {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.edit-form label {
+  display: block;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.edit-form input,
+.edit-form select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.save-button {
+  background-color: #990000;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
