@@ -222,7 +222,6 @@ export default function RegisterPage() {
                 <option value="resident">Resident</option>
                 <option value="commuter">Commuter</option>
                 <option value="visitor">Visitor</option>
-                <option value="admin">Admin</option> {/* Admin option to be removed later */}
               </select>
 
               {form.user_type && (
@@ -258,14 +257,6 @@ export default function RegisterPage() {
                     )}
                     {form.user_type === 'commuter' && (
                       <>
-                        <option value="core">Core</option>
-                        <option value="perimeter">Perimeter</option>
-                        <option value="satellite">Satellite</option>
-                      </>
-                    )}
-                    {form.user_type === 'admin' && (
-                      <>
-                        {/* Just so admin has a permit type */}
                         <option value="core">Core</option>
                         <option value="perimeter">Perimeter</option>
                         <option value="satellite">Satellite</option>
