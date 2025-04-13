@@ -1,5 +1,6 @@
 import React from "react";
-import "../stylesheets/Footer.css"; 
+import { Link } from 'react-router-dom';
+import "../stylesheets/Footer.css";
 
 // Footer component to display footer information and a feedback button
 const Footer = () => {
@@ -11,7 +12,9 @@ const Footer = () => {
         <p>&copy; {new Date().getFullYear()} P4SBU. All rights reserved.</p>
       </div>
       {/* Feedback button */}
-      <button className="feedback-btn">Leave Feedback</button>
+      <Link to="/feedback">
+        <button className="feedback-btn">Leave Feedback</button>
+      </Link>
     </footer>
   );
 };

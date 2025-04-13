@@ -1,21 +1,26 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, AdminPage } from './pages'
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, AdminPage, FeedbackPage } from './pages'
 import { Header, Footer } from './components'
 import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Outlet } from 'react-router-dom';
+import { getInitialTimes } from './components/Header';
 import "./stylesheets/App.css"; // Styles for layout
 import "./stylesheets/index.css"; // Global styles
 
 export default function App() {
+  const [times, setTimes] = useState(getInitialTimes()); // shared time state
+
   // Layout component to provide a consistent structure for all pages
   function Layout() {
+    const location = useLocation(); // Get the current location
+    const isHome = location.pathname === "/home"; // Check if the current path is home
     return (
       <div className="app-wrapper">
-        <Header /> {/* Header component */}
-        <main className="page-content">
-          <Outlet /> {/* This will render nested routes */}
+        <Header times={times} setTimes={setTimes}/> {/* Header component */}
+        <main className={`page-content ${isHome ? "home-padding" : "compact-padding"}`}>
+          <Outlet context={{ times, setTimes }}/> {/* This will render nested routes */}
         </main>
         <Footer /> {/* Footer component */}
       </div>
@@ -41,6 +46,8 @@ export default function App() {
             <Route path='/reservation' element={<MakeReservationPage />}/>
             {/* Route for the admin page */}
             <Route path="/admin" element={<AdminPage />} />
+            {/* Route for the feedback page */}
+            <Route path="/feedback" element={<FeedbackPage />} />
             {/* Fallback route for undefined paths */}
             <Route path="*" element={<NoPage />} />
           </Route>

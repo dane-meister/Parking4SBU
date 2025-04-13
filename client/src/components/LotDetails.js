@@ -2,7 +2,7 @@ import '../stylesheets/LotDetails.css'
 import { formatTimeRange } from '../utils/formatTime';
 import { useNavigate } from 'react-router-dom';
 
-export default function LotDetails({ lotObj, rateType }) {
+export default function LotDetails({ lotObj, rateType, times }) {
 
 	const navigate = useNavigate(); // Hook to programmatically navigate
 
@@ -57,11 +57,7 @@ export default function LotDetails({ lotObj, rateType }) {
 				ev_charging_availability,
 				ada_availability,
 				rates: Rates,
-				defaultTimeRange: {
-					// Optionally you could pass default time window based on rate schedule
-					start: Rates[0]?.lot_start_time ?? null,
-					end: Rates[0]?.lot_end_time ?? null,
-				}
+				defaultTimeRange: times,
 			}
 		});
 	};

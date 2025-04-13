@@ -77,6 +77,12 @@
     z-index: 1001;
     height: 60px; 
     transition: height 0.3s ease;
+    overflow: hidden;
+  }
+
+  .nav-banner.nav-shrink {
+    height: 30px;
+    padding: 0 20px;
   }
 
   .nav-banner a {
