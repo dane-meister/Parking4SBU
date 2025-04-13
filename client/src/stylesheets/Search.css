@@ -44,14 +44,18 @@
 .autocomplete-suggestion:hover {
   background-color: #f0f0f0;
 }
-.suggestion{
-/*  background-color: red;*/
-}
+
 ul[role="listbox"]{
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
+
+ul[role="listbox"] > li{
+  font-size: 18px;
+  padding: 3px 6px;
+}
+
 ul[role="listbox"] > li:nth-child(odd){
   background-color: #fafafa;
 }

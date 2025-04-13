@@ -83,6 +83,13 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
       semesterly: 'semesterly_fall_spring',
       yearly: 'yearly'
     };    
+    
+    const formatDistance = (distance) => {
+      const MILE_FOOT_THRESHOLD = 0.15;
+      return (distance < MILE_FOOT_THRESHOLD)
+        ? `${Math.round(distance * 5280)} ft` // to feet
+        : `${distance.toFixed(3)} mi`; // remain in miles
+    }
 
   return (
     <section 
@@ -101,7 +108,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
         {/* Left section containing lot details */}
         <div className='lot-result-info vbox'>
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
-          <div className="result-dist-row">{distance ? `${distance.toFixed(3)} mi` : ''}</div> {/* Display distance if available */}
+          <div className="result-dist-row">{distance ? formatDistance(distance) : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
             <span className='result-price'>{displayRate}</span>
             <span className="result-time">{timeRange}</span>
@@ -115,7 +122,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
         {/* Right section containing additional lot details */}
         <div className="lot-result-info vbox">
           <div className="result-dummy-row flex"/> {/* Placeholder rows for alignment */}
-          <div className="result-dummy-row flex"/>
+          <div className="result-dummy-row flex" style={{color: 'white'}}>uncovered</div>
           <div className="result-covered-row">{covered ? 'covered' : 'uncovered'}</div> {/* Display whether the lot is covered */}
           <div className="result-icon-row">
             {/* Display icons for ADA and EV charging availability */}
