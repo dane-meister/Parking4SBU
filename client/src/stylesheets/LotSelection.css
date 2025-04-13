@@ -150,7 +150,7 @@ hr{
 }
 
 #results-header{
-  padding: 0px 15px;
+  padding: 0px 15px 2px 15px;
   align-items: center;
 }
 
@@ -205,4 +205,14 @@ hr{
 #rate-selection{
   flex: 1;
   margin: 0px 0px 10px 0px; 
+}
+
+#sort-by-select{
+  width: 100px;
+  text-align: right;
+  margin-left: 5px;
+}
+
+#sort-by-select:hover{
+  cursor: pointer
 }

@@ -68,7 +68,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
   const [ resortToggle, setResortToggle ] = useState(false);
   useEffect(() => {
     if(!!selectedBuilding) {
-      setAvailableMethods(['Alphabetical', 'Distance', 'Price']);
+      setAvailableMethods(['Distance', 'Price', 'Alphabetical']);
     } else { // if no building selected only alphabetical available
       setAvailableMethods(['Alphabetical']);
     }
@@ -84,14 +84,19 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
         });
         break;
       case 'Distance':
-        sortedLots = lotResults.toSorted((a,b) => a.distance - b.distance);
+        sortedLots = lotResults.toSorted((a,b) => {
+          return a.distance_miles - b.distance_miles
+        });
         break;
       case 'Price':
+        sortedLots = lotResults.toSorted((a,b) => {
+          /* sort logic here */
+        });
         break;
     }
     setLotResults(sortedLots);
+  }, [resortToggle, selectedBuilding]);
 
-  }, [resortToggle]);
   return (
     <section className='sidebar'>
       <div className='hbox'>
@@ -154,6 +159,9 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
             setFilterDisability={setFilterDisability}
             rateType={rateType}
             times={times}
+            availableSortMethods={availableSortMethods} setAvailableMethods={setAvailableMethods}
+            sortMethod={sortMethod} setSortMethod={setSortMethod}
+            toggleResort={() => setResortToggle(!resortToggle)} 
           />
       }
     </section>
@@ -161,6 +169,8 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
 }
 
 // C89 style!
+// probaly needs better name than LotList
+//  -Only displays infomation needed to search lots and browse the list
 function LotList({
   buildingLotType, setBuildingLotType,
   buildings,
@@ -180,8 +190,16 @@ function LotList({
   setFilterEVCharging,
   setFilterDisability,
   rateType,
-  times
+  times,
+  availableSortMethods, setAvailableMethods,
+  sortMethod, setSortMethod,
+  toggleResort,
 }){
+  const handleSortSelect = (event) => {
+    setSortMethod(event.target.value);
+    toggleResort();
+  };
+
   return (<>
     {/* Toggle between building and lot search */}
     <div className='hbox selection' id='building-lot-selection'>
@@ -208,6 +226,7 @@ function LotList({
         setLotResults={setLotResults}
         setBaseLots={setBaseLots}
         setSelectedLot={setSelectedLot}
+        setSort={() => setSortMethod('Distance')}
       />
       {/* Filter component for additional filtering options */}
       <Filter 
@@ -236,7 +255,16 @@ function LotList({
       <header id='results-header' className='hbox'>
         Results
         <span className='flex' key={1}/>
-        sort by
+        <span>sort by</span>
+        <span id='sort-by'>
+          <select value={sortMethod} onChange={handleSortSelect} id='sort-by-select'>
+            {availableSortMethods.map(method => {
+              return <option 
+                key={method} value={method}
+              >{method}</option>
+            })}
+          </select>
+        </span>
       </header>
       <section className='lot-results'>
         {lotResults.map((lot,idx) => {

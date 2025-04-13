@@ -5,7 +5,20 @@ import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 const HOST = "http://localhost:8000"
 
-const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding, selectedBuilding, setLotResults, setBaseLots, setSelectedLot }) => {
+const AutocompleteSearch = (props) => {
+  const { 
+    value, setValue, 
+    searchType, 
+    buildings, 
+    parkingLots, 
+    selectedBuilding, setSelectedBuilding, 
+    setLotResults, 
+    setBaseLots, 
+    setSelectedLot,
+    setSort
+  } = props
+
+
   const [ suggestions, setSuggestions ] = useState([]);
 
   // Extract building names from the buildings array
@@ -89,6 +102,7 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
             });            
             setBaseLots(response.data);
             setLotResults(response.data);
+            setSort(); // sorts by distance
           } catch (err) {
             console.error("Error fetching lot results:", err);
             alert('Error fetching lot results');
