@@ -37,9 +37,9 @@ export const getInitialTimes = () => {
   };
 };
 
-const Header = ({ selectedLot, setSelectedLot }) => {
+const Header = ({ selectedLot, setSelectedLot, initialTimes }) => {
   // State to manage arrival and departure times
-  const [times, setTimes] = useState(getInitialTimes());
+  const [times, setTimes] = useState(initialTimes || getInitialTimes());
   // State to track which time (arrival or departure) is being edited
   const [editingMode, setEditingMode] = useState(null); 
   // React Router hook to get the current location
@@ -76,7 +76,7 @@ const Header = ({ selectedLot, setSelectedLot }) => {
 
       <nav className="nav-banner">
         {/* Show time selection only on the home page */}
-        {location.pathname === "/home" && (
+        {location.pathname === "/lotselection" && (
           <div className="time-selector-container">
             <div className="time-input">
               <span className="time-label">Arrive After:</span>

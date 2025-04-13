@@ -1,5 +1,5 @@
 // AutocompleteSearch.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
@@ -14,6 +14,56 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
   const lot_names = parkingLots
     .filter(lot => lot.capacity > 0)
     .map(lot => lot.name);
+
+
+
+     // Function that performs the search logic
+  const performSearch = async () => {
+    if (!value.trim()) {
+      setSelectedBuilding(null);
+      return;
+    }
+    if (searchType === "building") {
+      if (building_names.includes(value)) {
+        const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
+        setSelectedBuilding(bldg);
+        try {
+          const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
+            withCredentials: true
+          });
+          setBaseLots(response.data);
+          setLotResults(response.data);
+        } catch (err) {
+          console.error("Error fetching lot results:", err);
+          alert("Error fetching lot results");
+        }
+      } else {
+        alert("INVALID bldg");
+      }
+    } else { // For parking lot search
+      if (lot_names.includes(value)) {
+        const lot = parkingLots.filter(lot => lot.name === value)[0];
+        setSelectedLot(lot);
+      } else {
+        alert("INVALID lot");
+      }
+    }
+  };
+
+  const handleKeyDown = async (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      await performSearch();
+    }
+  };
+
+  useEffect(() => {
+    if (value && value.trim() !== "") {
+      performSearch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   // Function to get suggestions based on user input
   const getSuggestions = (inputValue) => {
@@ -62,11 +112,6 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
     setValue(newValue);
   };
 
-  // Get the value of a suggestion
-  // const getSuggestionValue = (suggestion) => {
-  //   return suggestion === "No results found" ? "" : suggestion;
-  // };
-
   const getSuggestionValue = (suggestion) => {
     if (searchType === 'building') {
       return suggestion.building_name;
@@ -74,10 +119,6 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
     return suggestion === "No results found" ? "" : suggestion;
   };
 
-  // Render a single suggestion
-  // const renderSuggestion = (suggestion) => {
-  //   return <div>{suggestion}</div>;
-  // };
 
   const renderSuggestion = (suggestion) => {
     if (searchType === 'building') {
@@ -87,46 +128,46 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
   };
 
   // Handle the Enter key press for search
-  const handleKeyDown = async (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent default form submission behavior
+  // const handleKeyDown = async (event) => {
+  //   if (event.key === 'Enter') {
+  //     event.preventDefault(); // Prevent default form submission behavior
 
-      if (!value.trim()) {
-        setSelectedBuilding(null); // Reset the selected building
-        return; // Exit without alerting "INVALID bldg"
-      }
+  //     if (!value.trim()) {
+  //       setSelectedBuilding(null); // Reset the selected building
+  //       return; // Exit without alerting "INVALID bldg"
+  //     }
 
-      if (searchType === 'building') {
-        // Handle building search
-        if (building_names.includes(value)) {
-          const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
-          setSelectedBuilding(bldg);
-          console.log(bldg.building_name);
-          try {
-            // Fetch lot results for the selected building
-            const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
-              withCredentials: true
-            });            
-            setBaseLots(response.data);
-            setLotResults(response.data);
-          } catch (err) {
-            console.error("Error fetching lot results:", err);
-            alert('Error fetching lot results');
-          }
-        } else {
-          alert('INVALID bldg'); // Alert if the building is invalid
-        }
-      } else { // Handle parking lot search
-        if (lot_names.includes(value)) {
-          const lot = parkingLots.filter(lot => lot.name === value)[0];
-          console.log(lot);
-          setSelectedLot(lot);
-        } else {
-          alert('INVALID lot'); // Alert if the lot is invalid
-        }
-      }
-    }
-  };
+  //     if (searchType === 'building') {
+  //       // Handle building search
+  //       if (building_names.includes(value)) {
+  //         const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
+  //         setSelectedBuilding(bldg);
+  //         console.log(bldg.building_name);
+  //         try {
+  //           // Fetch lot results for the selected building
+  //           const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
+  //             withCredentials: true
+  //           });            
+  //           setBaseLots(response.data);
+  //           setLotResults(response.data);
+  //         } catch (err) {
+  //           console.error("Error fetching lot results:", err);
+  //           alert('Error fetching lot results');
+  //         }
+  //       } else {
+  //         alert('INVALID bldg'); // Alert if the building is invalid
+  //       }
+  //     } else { // Handle parking lot search
+  //       if (lot_names.includes(value)) {
+  //         const lot = parkingLots.filter(lot => lot.name === value)[0];
+  //         console.log(lot);
+  //         setSelectedLot(lot);
+  //       } else {
+  //         alert('INVALID lot'); // Alert if the lot is invalid
+  //       }
+  //     }
+  //   }
+  // };
 
   // Input properties for the Autosuggest component
   const inputProps = {

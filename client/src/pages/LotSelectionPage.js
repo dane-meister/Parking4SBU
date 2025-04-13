@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
+import Header from "../components/Header"; 
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import { Sidebar, Map } from '../components';
+import { getInitialTimes } from "../components/Header";
 
 const LotSelectionPage = () => {
   // State to store buildings and parking lots
@@ -12,6 +15,13 @@ const LotSelectionPage = () => {
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State to track any errors
   const [selectedBuilding, setSelectedBuilding] = useState(null);
+
+
+  const location = useLocation();
+  const searchParams = location.state; 
+  const initialSearchValue = searchParams.searchValue || "";
+  const initialSearchType = searchParams.buildingLotType || "building"; 
+  const initialTimes = searchParams.times || getInitialTimes();
 
   // Fetch buildings and parking lots on component mount
   useEffect(() => {
@@ -36,10 +46,16 @@ const LotSelectionPage = () => {
       }
     };
 
-    fetchData(); // Call the fetch function
+    fetchData(); 
   }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
+    <>
+    <Header 
+        selectedLot={selectedLot} 
+        setSelectedLot={setSelectedLot}
+        initialTimes={initialTimes} 
+      />
     <div className="main-container-lot-selection">
       {/* Left: Map container */}
       <div className="map-container">
@@ -64,11 +80,14 @@ const LotSelectionPage = () => {
               parkingLots={parkingLots}
               selectedBuilding={selectedBuilding}
               setSelectedBuilding={setSelectedBuilding}
+              initialSearchValue={initialSearchValue}
+              initialSearchType={initialSearchType}
             />
           </>
         )}
       </div>
     </div>
+    </>
   );
 };
 

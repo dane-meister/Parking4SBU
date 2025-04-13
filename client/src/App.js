@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage } from './pages'
+import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, LandingPage } from './pages'
 import { Header, Footer } from './components'
 import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
@@ -30,7 +30,8 @@ export default function App() {
           {/* Protected route wrapper */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             {/* Route for the lot selection page, passing selectedLot and setSelectedLot as props */}
-            <Route path="/home" element={<LotSelectionPage />} />
+            <Route path="/home" element={<LandingPage />} />
+            <Route path="/lotselection" element={<LotSelectionPage />} />
             {/* Route for the profile page */}
             <Route path="/profile" element={<ProfilePage />} />
             {/* Route for the tickets page */}

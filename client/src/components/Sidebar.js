@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding  }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType  }) {
   // State for rate type selection (hourly, daily, etc.)
   const [ rateType, setRateType ] = useState('hourly');
   
   // State for toggling between building and lot selection
-  const [ buildingLotType, setBuildingLotType ] = useState('building');
+  const [ buildingLotType, setBuildingLotType ] = useState(initialSearchType || 'building');
   
   // State for the currently selected building
   // const [ selectedBuilding, setSelectedBuilding ] = useState(null);
@@ -29,7 +29,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
   const [ resultType, setResultType ] = useState('Relevance');
   
   // State for search input value
-  const [ value, setValue ] = useState('');
+  const [ value, setValue ] = useState(initialSearchValue || '');
 
   // State for the list of parking lot results
   const [ lotResults, setLotResults ] = useState(parkingLots);
@@ -75,7 +75,10 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
               src='/images/arrow.png' 
               alt='back' 
               className='back-arrow' 
-              onClick={() => setSelectedLot(null)}
+              onClick={() => {
+                setSelectedLot(null);
+                setValue("");
+              }}
             />
           </div>
         }
@@ -130,7 +133,10 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
             <span>/</span>
             <span 
               className={'type-hover '+((buildingLotType==='lot') ? 'selected' : '')}
-              onClick={() => setBuildingLotType('lot')}
+              onClick={() => {
+                setBuildingLotType('lot');
+                setSelectedBuilding(null);
+              }}
             >Lot</span>
           </div>
 

@@ -1,0 +1,177 @@
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - 60px - 60px - 50px);
+  }
+  
+  .landing-content {
+    width: 80%;
+    max-width: 1000px;
+    margin-top: 2rem;
+    text-align: center;
+  }
+  
+  .slogan {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .pricing-options {
+    margin-bottom: 1.5rem;
+  }
+  
+  .pricing-options .option {
+    font-size: 1rem;              /* Slightly smaller font */
+    margin: 0 0.25rem;            /* Reduced side margins */
+    padding: 0.25rem 1.5rem;       /* Less vertical, more horizontal padding */
+    background: transparent;
+    border: 2px solid #333;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+  }
+  
+  .pricing-options .option.selected,
+  .pricing-options .option:hover {
+    background: #333;
+    color: #fff;
+  }
+  
+  .search-container {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 600px;           /* Adjust max width as needed */
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;        /* Some internal padding */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+  }
+  
+  .duration-selector-container {
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .duration-summary {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem;
+    background: #f9f9f9;
+  }
+  
+  .calendar-icon img {
+    height: 24px;
+    width: 24px;
+    margin-right: 0.5rem;
+  }
+  
+  .search-submit {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border: none;
+    background: #333;
+    color: #fff;
+    border-radius: 5px;
+    transition: background 0.3s;
+  }
+  
+  .search-submit:hover {
+    background: #555;
+  }
+  
+  .landing-page .time-selector-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;           /* to match search bar width */
+    margin: 1rem auto;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  /* Individual container for each (arrive / exit) */
+  .landing-page .time-input {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0.5rem;
+  }
+  
+  /* Label styling */
+  .landing-page .time-label {
+    font-size: 0.75rem;
+    color: #777;
+    margin-bottom: 2px;
+  }
+  
+  /* Row for time values and edit button */
+  .landing-page .time-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  
+  .landing-page .time-value {
+    font-size: 1rem;
+    margin-right: 5px;
+    color: #333;
+  }
+  
+  .building-lot-toggle {
+    display: flex;
+    justify-content: center; /* center the buttons horizontally */
+    gap: 2rem;              /* more space between options */
+    margin-bottom: 1rem;
+  }
+  
+  /* Each toggle option */
+  .building-lot-toggle .toggle-option {
+    font-size: 1rem;
+    cursor: pointer;
+    padding-bottom: 0.25rem;
+    transition: color 0.3s, border-bottom 0.3s;
+  }
+  
+  /* Underline selected option */
+  .building-lot-toggle .toggle-option.selected {
+    border-bottom: 2px solid #333;
+    color: #333;
+  }
+  
+  /* Hover styles */
+  .building-lot-toggle .toggle-option:hover {
+    color: #555;
+    border-bottom: 2px solid #555;
+  }
+
+  .find-parking-btn button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: #d9534f;   /* Red color */
+    color: #fff;
+    border: none;
+    border-radius: 30px;         /* Oval-ish curved corners */
+    cursor: pointer;
+    transition: background 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* Optionally, add a box-shadow for extra visual pop */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  
+  .find-parking-btn button:hover {
+    background-color: #c9302c;
+  }
