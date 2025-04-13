@@ -1,6 +1,7 @@
 import '../stylesheets/LotResult.css'
+import { formatTimeRange } from '../utils/formatTime';
 
-export default function LotResult({ lotObj, setSelectedLot, distance }) {
+export default function LotResult({ lotObj, setSelectedLot, distance, rateType }) {
   // Destructure the lotObj to extract all relevant properties
   const {
     ada_availability,
@@ -30,6 +31,27 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
     lotImgSrc
   } = lotObj;
 
+  const rates = lotObj?.Rates ?? []; // Get the rates from the lot object or default to an empty array
+  
+  // Find a rate with an hourly price
+  const hourlyRateObj = rates.find(rate => typeof rate.hourly === 'number' && rate.hourly > 0);
+
+  // Check for a free lot (hourly or daily is explicitly 0)
+  const freeRateObj = rates.find(rate =>
+    (rate.hourly === 0 || rate.daily === 0)
+  );
+
+  // Determine what to display for rate
+  let displayRate = '';
+  let timeRange = '';
+  if (hourlyRateObj) {
+    displayRate = `$${hourlyRateObj.hourly.toFixed(2)} / hr`;
+    timeRange = formatTimeRange(hourlyRateObj.lot_start_time, hourlyRateObj.lot_end_time);
+  } else if (freeRateObj) {
+    displayRate = 'Free visitor parking';
+    timeRange = formatTimeRange(freeRateObj.lot_start_time, freeRateObj.lot_end_time);
+  }
+
   const availableCapacity = 
     ada_availability +
     commuter_core_availability +
@@ -39,6 +61,35 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
     faculty_availability +
     metered_availability +
     resident_availability;
+
+    function getRelevantRate(rates, rateType) {
+      for (let rate of rates) {
+        const value = rate[rateTypeMap[rateType]];
+        if (value !== null && value !== undefined) return value;
+      }
+      return null;
+    }
+    
+    function formatRate(rate, type) {
+      if (rate === 0) return "Free";
+      if (!rate) return "N/A";
+      return `$${rate.toFixed(2)} ${type}`;
+    }
+    
+    const rateTypeMap = {
+      hourly: 'hourly',
+      daily: 'daily',
+      monthly: 'monthly',
+      semesterly: 'semesterly_fall_spring',
+      yearly: 'yearly'
+    };    
+    
+    const formatDistance = (distance) => {
+      const MILE_FOOT_THRESHOLD = 0.15;
+      return (distance < MILE_FOOT_THRESHOLD)
+        ? `${Math.round((distance * 5280) / 5) * 5} ft` // to feet (nearest 5ft)
+        : `${distance.toFixed(3)} mi`; // remain in miles
+    }
 
   return (
     <section 
@@ -57,10 +108,10 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
         {/* Left section containing lot details */}
         <div className='lot-result-info vbox'>
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
-          <div className="result-dist-row">{distance ? `${distance.toFixed(3)} mi` : ''}</div> {/* Display distance if available */}
+          <div className="result-dist-row">{distance ? formatDistance(distance) : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
-            <span className='result-price'>{rate ?? 'unknown rate'}</span> {/* Display rate or fallback */}
-            <span className="result-time">{time ?? ''}</span> {/* Display time if available */}
+            <span className='result-price'>{displayRate}</span>
+            <span className="result-time">{timeRange}</span>
           </div>
           <div className="result-available-row">
             {availableCapacity ? `${availableCapacity} spots available` : 'unknown capacity'} {/* Display available capacity or fallback */}
@@ -71,7 +122,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance }) {
         {/* Right section containing additional lot details */}
         <div className="lot-result-info vbox">
           <div className="result-dummy-row flex"/> {/* Placeholder rows for alignment */}
-          <div className="result-dummy-row flex"/>
+          <div className="result-dummy-row flex" style={{color: 'white'}}>uncovered</div>
           <div className="result-covered-row">{covered ? 'covered' : 'uncovered'}</div> {/* Display whether the lot is covered */}
           <div className="result-icon-row">
             {/* Display icons for ADA and EV charging availability */}

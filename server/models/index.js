@@ -11,30 +11,64 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 
 // Load the configuration for the current environment
-const config = require(__dirname + "/../config/config.json")[env];
+const config = require(__dirname + '/../config/config.js')[env];
+
+// Initialize Sequelize
+const sequelize = config.use_env_variable
+  ? new Sequelize(process.env[config.use_env_variable], config)
+  : new Sequelize(config.database, config.username, config.password, config);
 
 // Initialize an empty object to hold the database models and Sequelize instance
 const db = {};
 
-// Initialize Sequelize instance based on configuration
-let sequelize;
-if (config.use_env_variable) {
-  // If an environment variable is specified, use it to connect to the database
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  // Otherwise, use the database credentials from the configuration file
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+// Import models as functions and initialize them
+db.Building = require("./Building")(sequelize, Sequelize.DataTypes);
+db.ParkingLot = require("./ParkingLot")(sequelize, Sequelize.DataTypes);
+db.Rate = require("./Rate")(sequelize, Sequelize.DataTypes);
+db.User = require("./User")(sequelize, Sequelize.DataTypes);
+db.Vehicle = require("./Vehicle")(sequelize, Sequelize.DataTypes);
+db.Reservation = require("./Reservation")(sequelize, Sequelize.DataTypes);
 
-// Load models and associate them with the `db` object
-const Building = require("./Building"); // Import the Building model
-const ParkingLot = require("./ParkingLot"); // Import the ParkingLot model
-const User = require("./User"); // Import the User model
+// Setup associations
+db.ParkingLot.hasMany(db.Rate, {
+  foreignKey: "parking_lot_id",
+  onDelete: "CASCADE"
+});
+db.Rate.belongsTo(db.ParkingLot, {
+  foreignKey: "parking_lot_id"
+});
 
-// Add models to the `db` object
-db.Building = Building;
-db.ParkingLot = ParkingLot;
-db.User = User;
+db.User.hasMany(db.Vehicle, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+db.Vehicle.belongsTo(db.User, {
+  foreignKey: "user_id",
+});
+
+// Reservation belongs to User
+db.Reservation.belongsTo(db.User, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE"
+});
+
+// Reservation belongs to ParkingLot
+db.Reservation.belongsTo(db.ParkingLot, {
+  foreignKey: "parking_lot_id",
+  onDelete: "CASCADE"
+});
+
+// Reservation belongs to Vehicle
+db.Reservation.belongsTo(db.Vehicle, {
+  foreignKey: "vehicle_id",
+  onDelete: "CASCADE"
+});
+
+// add reverse associations
+db.User.hasMany(db.Reservation, { foreignKey: "user_id" });
+db.ParkingLot.hasMany(db.Reservation, { foreignKey: "parking_lot_id" });
+db.Vehicle.hasMany(db.Reservation, { foreignKey: "vehicle_id" });
+
 
 // Add Sequelize instance and constructor to the `db` object
 db.sequelize = sequelize;

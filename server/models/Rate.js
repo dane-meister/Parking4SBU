@@ -1,6 +1,3 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
-
 /**
  * Represents the Rate model for parking rates.
  * 
@@ -20,26 +17,35 @@ const sequelize = require('../db');
  * @property {number} [sheet_number] - The sheet number associated with the rate.
  * @property {number} [sheet_price] - The price associated with the sheet number.
  */
-const Rate = sequelize.define('Rate', {
-  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-
-  permit_type: {
-    type: DataTypes.STRING, // e.g., Faculty, Visitor, Residential Perimeter
-    allowNull: false
-  },
-
-  hourly: DataTypes.FLOAT,
-  daily: DataTypes.FLOAT,
-  max_hours: DataTypes.FLOAT,
-  monthly: DataTypes.FLOAT,
-  semesterly_fall_spring: DataTypes.FLOAT,
-  semesterly_summer: DataTypes.FLOAT,
-  yearly: DataTypes.FLOAT,
-  lot_start_time: DataTypes.TIME,
-  lot_end_time: DataTypes.TIME,
-  event_parking_price: DataTypes.FLOAT,
-  sheet_number: DataTypes.INTEGER,
-  sheet_price: DataTypes.FLOAT
-});
-
-module.exports = Rate;
+module.exports = (sequelize, DataTypes) => {
+  return sequelize.define('Rate', {
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  
+    permit_type: {
+      type: DataTypes.STRING, // e.g., Faculty, Visitor, Residential Perimeter
+      allowNull: false
+    },
+  
+    hourly: DataTypes.FLOAT,
+    daily: DataTypes.FLOAT,
+    max_hours: DataTypes.FLOAT,
+    monthly: DataTypes.FLOAT,
+    semesterly_fall_spring: DataTypes.FLOAT,
+    semesterly_summer: DataTypes.FLOAT,
+    yearly: DataTypes.FLOAT,
+    lot_start_time: DataTypes.TIME,
+    lot_end_time: DataTypes.TIME,
+    event_parking_price: DataTypes.FLOAT,
+    sheet_number: DataTypes.INTEGER,
+    sheet_price: DataTypes.FLOAT,
+    // Foreign key column
+    parking_lot_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'ParkingLots',
+        key: 'id'
+      },
+      allowNull: false
+    }
+  });
+} 

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../stylesheets/index.css';
 import '../stylesheets/Profile.css';
-import ProfileSidebar from '../components/ProfileSidebar';
-import ProfileForm from '../components/ProfileForm';
-import VehiclesForm from '../components/VehiclesForm';
+import '../stylesheets/ProfilePopup.css';
+import { ProfileSidebar, ProfileForm, VehiclesForm } from '../components'
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
+const HOST = "http://localhost:8000"
 
 export default function ProfilePage() {
   // State to track the currently active tab ('profile' or 'vehicles')
@@ -14,15 +15,24 @@ export default function ProfilePage() {
   const { user } = useAuth(); 
 
   // State to store the user's vehicles (currently empty)
-  const [ vehicles ] = useState([]); 
+  const [ vehicles, setVehicles ] = useState([]); 
+  const [ refreshToggle, setRefreshToggle ] = useState(false);
 
   // State to handle Vehicle page
   const [ currVehiclePage, setCurrVehiclePage ] = useState('my_vehicles');
+  const [ selectedVehicle, setSelectedVehicle ] = useState(null);
+
+  //retreive user's Vehicles
+  useEffect(() => {
+    axios.get(`${HOST}/api/auth/${user.user_id}/vehicles`, { withCredentials: true })
+      .then(response => setVehicles(response.data.vehicles))
+      .catch(err => console.error(err));
+  }, [currVehiclePage, refreshToggle]);
 
   // Handle loading state or fallback if the user data is not yet available
   if (!user) {
     return (
-      <div className="page-content">
+      <div className="page-content" style={{minHeight: 'calc(100vh - 60px - 50px - 50px)'}}>
         <p>Loading profile...</p>
       </div>
     );
@@ -40,9 +50,10 @@ export default function ProfilePage() {
     city: user.city,
     state: user.state_region,
     zip: user.postal_zip_code,
-    country: user.country
+    country: user.country,
+    user_id: user.user_id
   };
-
+  
   return (
     <section className='main-container-profile'>
       {/* Sidebar component to display user info and allow tab switching */}
@@ -51,6 +62,7 @@ export default function ProfilePage() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         setCurrVehiclePage={setCurrVehiclePage}
+        setSelectedVehicle={setSelectedVehicle}
       />
 
       {/* Render the ProfileForm if the 'profile' tab is active */}
@@ -59,9 +71,13 @@ export default function ProfilePage() {
       {/* Render the VehiclesForm if the 'vehicles' tab is active */}
       {activeTab === 'vehicles' &&  (
         <VehiclesForm 
+          userId={user.user_id}
           currVehiclePage={currVehiclePage} 
           setCurrVehiclePage={setCurrVehiclePage}
           vehicles={vehicles} 
+          setSelectedVehicle={setSelectedVehicle}
+          selectedVehicle={selectedVehicle}
+          toggleRefresh={() => setRefreshToggle(!refreshToggle)}
         />
       )}
     </section>

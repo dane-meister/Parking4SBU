@@ -1,7 +1,7 @@
 export { default as Collapsible } from './Collapsible';
 export { default as Footer } from './Footer';
 export { default as Header } from './Header';
-export { default as Popup } from './Popup';
+export { default as FilterPopup } from './FilterPopup';
 export { default as Sidebar } from './Sidebar';
 export { default as Filter } from './Filter';
 export { default as LotResult } from './LotResult'; 
@@ -11,6 +11,8 @@ export { default as Search } from './Search'
 export { default as TicketItem } from './TicketItem';
 export { default as ProfileSidebar } from './ProfileSidebar';
 export { default as ProfileForm } from './ProfileForm';
+export { default as VehiclesForm } from './VehiclesForm';
 export { default as CurrentReservationItem } from './CurrentReservationItem';
 export { default as Login } from './Login';
 export { default as Register } from './Register';
+export { default as Popup } from './Popup';

@@ -57,6 +57,10 @@
   .status.upcoming {
     background-color: #007bff;  
   }
+
+  .status.past {
+    color: gray;
+}
   
   .reservation-details p {
     margin: 8px 0;
