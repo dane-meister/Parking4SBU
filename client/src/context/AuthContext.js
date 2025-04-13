@@ -1,70 +1,86 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+const HOST = "http://localhost:8000"
 
+// Create a context for authentication
 const AuthContext = createContext();
 
 // Toggle this to true during development to bypass login
 const DEV_BYPASS_AUTH = false;
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
+    // State to store the authenticated user
+    const [user, setUser] = useState(null);
+    // State to track whether authentication is still loading
+    const [authLoading, setAuthLoading] = useState(true);
 
-  const login = async (email, password) => {
-    try {
-      await axios.post("http://localhost:8000/api/auth/login", {
-        email,
-        password
-      }, {
-        withCredentials: true
-      });
+    // Function to handle user login
+    const login = async (email, password) => {
+        try {
+            // Send login request to the backend
+            await axios.post(`${HOST}/api/auth/login`, {
+                email,
+                password
+            }, {
+                withCredentials: true // Include cookies in the request
+            });
 
-      const success = await checkAuth(); // verify cookie and fetch user
-      return success; // return true if login was successful and user is fetched 
-    } catch (err) {
-      console.error("Login error:", err.response?.data || err.message);
-      return null;
-    }
-  };
+            // Verify the login and fetch user data
+            const success = await checkAuth();
+            return success; // Return true if login was successful
+        } catch (err) {
+            console.error("Login error:", err.response?.data || err.message);
+            return null; // Return null if login failed
+        }
+    };
 
-  const logout = async () => {
-    await axios.post("http://localhost:8000/api/auth/logout", {}, { withCredentials: true });
-    setUser(null);
-  };
+    // Function to handle user logout
+    const logout = async () => {
+        // Send logout request to the backend
+        await axios.post(`${HOST}/api/auth/logout`, {}, { withCredentials: true });
+        setUser(null); // Clear the user state
+    };
 
-  const checkAuth = async () => {
-    if (DEV_BYPASS_AUTH) {
-      const fakeUser = { email: "dev@example.com", user_type: "developer" };
-      setUser(fakeUser);
-      return true;
-    }
+    // Function to check if the user is authenticated
+    const checkAuth = async () => {
+        if (DEV_BYPASS_AUTH) {
+            // If bypassing authentication, set a fake user
+            const fakeUser = { email: "dev@example.com", user_type: "developer" };
+            setUser(fakeUser);
+            return fakeUser; // Return the fake user
+        }
 
-    try {
-      const res = await axios.get("http://localhost:8000/api/auth/me", {
-        withCredentials: true
-      });
-      console.log("Authenticated user data:", res.data.user); // Log the user data for debugging
-      setUser(res.data.user);
-      return true;
-    } catch {
-      setUser(null);
-      return false;
-    }
-  };
+        try {
+            // Fetch the authenticated user's data from the backend
+            const res = await axios.get(`${HOST}/api/auth/me`, {
+                withCredentials: true // Include cookies in the request
+            });
+            
+            setUser(res.data.user); // Set the user state with the fetched data
+            return res.data.user; // Return the user data
+        } catch {
+            setUser(null); // Clear the user state if authentication fails
+            return null; // Return null if authentication fails
+        }
+    };
 
-  useEffect(() => {
-    checkAuth().finally(() => setAuthLoading(false));
-  }, []);
+    // Run the authentication check when the component mounts
+    useEffect(() => {
+        checkAuth().finally(() => setAuthLoading(false)); // Set loading to false after the check
+    }, []);
 
-  const isAuthenticated = DEV_BYPASS_AUTH || !!user;
+    // Determine if the user is authenticated
+    const isAuthenticated = DEV_BYPASS_AUTH || !!user;
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, authLoading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        // Provide the authentication context to child components
+        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, authLoading }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
+// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);
 
 

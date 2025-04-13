@@ -1,0 +1,107 @@
+.make-reservation-page{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	gap: 10px;
+	height: calc(100vh - 60px - 60px - 50px);
+	overflow: scroll;
+}
+
+.make-reservation-left, .make-reservation-right{
+	width: 100%;
+	/* height: 100%; */
+	border-radius: 5px;
+	box-shadow: 0 1px 5px #d6dfe5;
+	background-color: #FDFDFD;
+}
+
+.make-reservation-left{
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	margin-left: 5px;
+	max-width: 620px;
+}
+
+.make-reservation-right{
+	max-width: 375px;
+	margin-right: 5px;
+}
+
+.make-reservation-lot-box{
+	/* margin: 10px; */
+	border-bottom: solid 1px #ADAEB2;
+}
+
+.make-reservation-lot-box:last-child{
+	border-bottom: none;
+}
+
+.make-reservation-lot-box > h3{
+	margin: 25px 25px 10px 25px;
+	font-size: 30px;
+}
+
+.make-reservation-lot-box > h4, .make-reservation-right > h4{
+	margin: 25px 25px 10px 25px;
+	font-size: 22px;
+}
+
+.make-reservation-info-row{
+	/* outline: black solid 1px; */
+	margin: 0 25px;
+	font-size: 20px;
+}
+
+.make-reservation-info-row > img{
+	height: 18px;
+	margin-right: 3px;
+}
+
+.make-reservation-right > div{
+	margin: 0 25px;
+}
+
+.make-reservation-payment-row{
+	display: flex;
+	justify-content: space-between;
+}
+
+.make-reservation-payment-row:not(:last-child){
+	margin-bottom: 5px;
+}
+
+.make-reservation-right .make-reservation-total{
+	margin: 0; 
+	padding: 10px 25px;
+	display: flex;
+	justify-content: space-between;
+	background-color: #F0F0F0;
+	font-weight: bold;
+	font-size: 17px;
+}
+
+.make-reservation-pay-btn{
+	--btn-color: var(--red);
+	--btn-color-hover: var(--bright-red);
+	--btn-color-active: var(--red);
+	background-color: var(--btn-color);
+	color: white;
+	padding: 10px;
+	margin: 15px 0px;
+	display: flex;
+	justify-self: center;
+	justify-content: center;
+	width: 100%;
+	border-radius: 6px;
+	box-shadow: 0 1px 5px #d6dfe5;
+	border: none;
+	font-size: 16px;
+}
+.make-reservation-pay-btn:hover{
+	background-color: var(--btn-color-hover);
+}
+.make-reservation-pay-btn:active{
+	background-color: var(--btn-color-active);
+}

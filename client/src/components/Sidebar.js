@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, setTimes }) {
   // State for rate type selection (hourly, daily, etc.)
   const [ rateType, setRateType ] = useState('hourly');
   
@@ -24,9 +23,6 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
   const [tempFilterUncovered, setTempFilterUncovered] = useState(filterUncovered);
   const [tempFilterEVCharging, setTempFilterEVCharging] = useState(filterEVCharging);
   const [tempFilterDisability, setTempFilterDisability] = useState(filterDisability);
-
-  // State for result sorting type
-  const [ resultType, setResultType ] = useState('Relevance');
   
   // State for search input value
   const [ value, setValue ] = useState('');
@@ -54,6 +50,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
     });
   }
   
+  // filter useEffect
   useEffect(() => {
     const filtered = applyFilters(baseLots);
     setLotResults(filtered);
@@ -64,6 +61,41 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
     filterDisability, 
     baseLots
   ]);  
+
+  // sorting useEffect
+  const [ availableSortMethods, setAvailableMethods ] = useState(['Alphabetical']);
+  const [ sortMethod, setSortMethod ] = useState('Alphabetical');
+  const [ resortToggle, setResortToggle ] = useState(false);
+  useEffect(() => {
+    if(!!selectedBuilding) {
+      setAvailableMethods(['Distance', 'Price', 'Alphabetical']);
+    } else { // if no building selected only alphabetical available
+      setAvailableMethods(['Alphabetical']);
+    }
+
+    let sortedLots;
+    switch(sortMethod){
+      case 'Alphabetical':
+        sortedLots = Array.from(lotResults).toSorted(function(a, b){
+          const [aName, bName] = [a.name.toLowerCase(), b.name.toLowerCase()];
+          if(aName < bName) return -1;
+          if(bName < aName) return 1;
+          return 0;
+        });
+        break;
+      case 'Distance':
+        sortedLots = lotResults.toSorted((a,b) => {
+          return a.distance_miles - b.distance_miles
+        });
+        break;
+      case 'Price':
+        sortedLots = lotResults.toSorted((a,b) => {
+          /* sort logic here */
+        });
+        break;
+    }
+    setLotResults(sortedLots);
+  }, [resortToggle, selectedBuilding]);
 
   return (
     <section className='sidebar'>
@@ -95,21 +127,6 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
             className={'type-hover '+(rateType==='daily' ? 'selected' : '')} 
             onClick={() => setRateType('daily')}
           >Daily</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='monthly' ? 'selected' : '')}
-            onClick={() => setRateType('monthly')}
-          >Monthly</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='semesterly' ? 'selected' : '')}
-            onClick={() => setRateType('semesterly')}
-          >Semesterly</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='yearly' ? 'selected' : '')}
-            onClick={() => setRateType('yearly')}
-          >Yearly</span>
         </div>
       </div>
 
@@ -119,78 +136,150 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
       { selectedLot 
         ? <LotDetails 
             lotObj={selectedLot}
+            rateType={rateType}
+            times={times}
           />
-        : (<>
-          {/* Toggle between building and lot search */}
-          <div className='hbox selection' id='building-lot-selection'>
-            <span 
-              className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
-              onClick={() => setBuildingLotType('building')}   
-            >Building</span>
-            <span>/</span>
-            <span 
-              className={'type-hover '+((buildingLotType==='lot') ? 'selected' : '')}
-              onClick={() => setBuildingLotType('lot')}
-            >Lot</span>
-          </div>
-
-          <div className='hbox'>
-            {/* Search component for buildings or lots */}
-            <Search 
-              searchType={buildingLotType}
-              buildings={buildings}
-              parkingLots={parkingLots}
-              value={value}
-              setValue={setValue}
-              setSelectedBuilding={setSelectedBuilding} 
-              setLotResults={setLotResults}
-              setBaseLots={setBaseLots}
-              setSelectedLot={setSelectedLot}
-            />
-            {/* Filter component for additional filtering options */}
-            <Filter 
-              showFilter={showFilter} 
-              setShowFilter={setShowFilter}
-              filters={[
-                tempFilterCovered, setTempFilterCovered,
-                tempFilterUncovered, setTempFilterUncovered,
-                tempFilterEVCharging, setTempFilterEVCharging,
-                tempFilterDisability, setTempFilterDisability
-              ]}
-              onApply={() => {
-                setFilterCovered(tempFilterCovered);
-                setFilterUncovered(tempFilterUncovered);
-                setFilterEVCharging(tempFilterEVCharging);
-                setFilterDisability(tempFilterDisability);
-                setShowFilter(false);
-              }}
-            />
-          </div>
-          
-          <hr/>  
-
-          {/* Display search results */}
-          <section className='results'>
-            <header id='results-header' className='hbox'>
-              Results
-              <span className='flex' key={1}/>
-              sort by
-            </header>
-            <section className='lot-results'>
-              {lotResults.map((lot,idx) => {
-                return <LotResult 
-                  lotObj={lot}
-                  key={idx}
-                  setSelectedLot={setSelectedLot}
-                  distance={selectedBuilding ? lot.distance_miles : ''}
-                />
-              })}
-            </section>
-          </section>
-        </>)
+        : <LotList 
+            buildingLotType={buildingLotType} setBuildingLotType={setBuildingLotType}
+            buildings={buildings}
+            parkingLots={parkingLots}
+            value={value} setValue={setValue}
+            selectedBuilding={selectedBuilding} setSelectedBuilding={setSelectedBuilding} 
+            lotResults={lotResults} setLotResults={setLotResults}
+            setBaseLots={setBaseLots}
+            setSelectedLot={setSelectedLot}
+            showFilter={showFilter} setShowFilter={setShowFilter}
+            tempFilterCovered={tempFilterCovered} setTempFilterCovered={setTempFilterCovered}
+            tempFilterUncovered={tempFilterUncovered} setTempFilterUncovered={setTempFilterUncovered}
+            tempFilterEVCharging={tempFilterEVCharging} setTempFilterEVCharging={setTempFilterEVCharging}
+            tempFilterDisability={tempFilterDisability} setTempFilterDisability={setTempFilterDisability}
+            setFilterCovered={setFilterCovered}
+            setFilterUncovered={setFilterUncovered}
+            setFilterEVCharging={setFilterEVCharging}
+            setFilterDisability={setFilterDisability}
+            rateType={rateType}
+            times={times}
+            availableSortMethods={availableSortMethods} setAvailableMethods={setAvailableMethods}
+            sortMethod={sortMethod} setSortMethod={setSortMethod}
+            toggleResort={() => setResortToggle(!resortToggle)} 
+          />
       }
     </section>
   )
+}
+
+// C89 style!
+// probaly needs better name than LotList
+//  -Only displays infomation needed to search lots and browse the list
+function LotList({
+  buildingLotType, setBuildingLotType,
+  buildings,
+  parkingLots,
+  value, setValue,
+  selectedBuilding, setSelectedBuilding,
+  lotResults, setLotResults,
+  setBaseLots,
+  setSelectedLot,
+  showFilter, setShowFilter,
+  tempFilterCovered, setTempFilterCovered,
+  tempFilterUncovered, setTempFilterUncovered,
+  tempFilterEVCharging, setTempFilterEVCharging,
+  tempFilterDisability, setTempFilterDisability,
+  setFilterCovered,
+  setFilterUncovered,
+  setFilterEVCharging,
+  setFilterDisability,
+  rateType,
+  times,
+  availableSortMethods, setAvailableMethods,
+  sortMethod, setSortMethod,
+  toggleResort,
+}){
+  const handleSortSelect = (event) => {
+    setSortMethod(event.target.value);
+    toggleResort();
+  };
+
+  return (<>
+    {/* Toggle between building and lot search */}
+    <div className='hbox selection' id='building-lot-selection'>
+      <span 
+        className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
+        onClick={() => setBuildingLotType('building')}   
+      >Building</span>
+      <span>/</span>
+      <span 
+        className={'type-hover '+((buildingLotType==='lot') ? 'selected' : '')}
+        onClick={() => setBuildingLotType('lot')}
+      >Lot</span>
+    </div>
+
+    <div className='hbox'>
+      {/* Search component for buildings or lots */}
+      <Search 
+        searchType={buildingLotType}
+        buildings={buildings}
+        parkingLots={parkingLots}
+        value={value}
+        setValue={setValue}
+        setSelectedBuilding={setSelectedBuilding} 
+        setLotResults={setLotResults}
+        setBaseLots={setBaseLots}
+        setSelectedLot={setSelectedLot}
+        setSort={() => setSortMethod('Distance')}
+      />
+      {/* Filter component for additional filtering options */}
+      <Filter 
+        showFilter={showFilter} 
+        setShowFilter={setShowFilter}
+        filters={[
+          tempFilterCovered, setTempFilterCovered,
+          tempFilterUncovered, setTempFilterUncovered,
+          tempFilterEVCharging, setTempFilterEVCharging,
+          tempFilterDisability, setTempFilterDisability
+        ]}
+        onApply={() => {
+          setFilterCovered(tempFilterCovered);
+          setFilterUncovered(tempFilterUncovered);
+          setFilterEVCharging(tempFilterEVCharging);
+          setFilterDisability(tempFilterDisability);
+          setShowFilter(false);
+        }}
+      />
+    </div>
+    
+    <hr/>  
+
+    {/* Display search results */}
+    <section className='results'>
+      <header id='results-header' className='hbox'>
+        Results
+        <span className='flex' key={1}/>
+        <span>sort by</span>
+        <span id='sort-by'>
+          <select value={sortMethod} onChange={handleSortSelect} id='sort-by-select'>
+            {availableSortMethods.map(method => {
+              return <option 
+                key={method} value={method}
+              >{method}</option>
+            })}
+          </select>
+        </span>
+      </header>
+      <section className='lot-results'>
+        {lotResults.map((lot,idx) => {
+          return <LotResult 
+            lotObj={lot}
+            key={idx}
+            setSelectedLot={setSelectedLot}
+            distance={selectedBuilding ? lot.distance_miles : ''}
+            rateType={rateType}
+            times={times}
+          />
+        })}
+      </section>
+    </section>
+  </>);
 }
 
 export default Sidebar;

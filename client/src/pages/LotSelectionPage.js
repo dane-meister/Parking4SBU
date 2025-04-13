@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import axios from 'axios';
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import { Sidebar, Map } from '../components';
+const HOST = "http://localhost:8000"
 
 const LotSelectionPage = () => {
   // State to store buildings and parking lots
@@ -12,6 +14,8 @@ const LotSelectionPage = () => {
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State to track any errors
 
+  const { times, setTimes } = useOutletContext(); // Get times from the parent component
+
   // Fetch buildings and parking lots on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -20,9 +24,9 @@ const LotSelectionPage = () => {
 
         // Fetch buildings and parking lots data concurrently
         const [buildingsRes, parkingLotsRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/buildings"),
-          axios.get("http://localhost:8000/api/parking-lots"),
-        ]);
+          axios.get(`${HOST}/api/buildings`, { withCredentials: true }),
+          axios.get(`${HOST}/api/parking-lots`, { withCredentials: true }),
+        ]);     
 
         // Update state with fetched data
         setBuildings(buildingsRes.data);
@@ -42,7 +46,7 @@ const LotSelectionPage = () => {
     <div className="main-container-lot-selection">
       {/* Left: Map container */}
       <div className="map-container">
-        <Map />
+        <Map selectedLot={selectedLot}/>
       </div>
 
       {/* Right: Results & selections container */}
@@ -61,6 +65,8 @@ const LotSelectionPage = () => {
               setSelectedLot={setSelectedLot} 
               buildings={buildings}
               parkingLots={parkingLots}
+              times
+              setTimes={setTimes}
             />
           </>
         )}

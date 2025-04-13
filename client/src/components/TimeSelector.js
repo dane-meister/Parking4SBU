@@ -1,75 +1,101 @@
 import React, { useState } from "react";
+import { validateAndFormatTimeSelection } from "../utils/validateAndFormatTimeSelection";
 import "../stylesheets/TimeSelector.css";
 
 const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
-    const [arrivalDate, setArrivalDate] = useState("");
-    const [arrivalTime, setArrivalTime] = useState("");
-    const [departureDate, setDepartureDate] = useState("");
-    const [departureTime, setDepartureTime] = useState("");
-    const [date, setDate] = useState("");
-    const [time, setTime] = useState("");
+  // State to store the selected date and time
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedHour, setSelectedHour] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSave = () => {
-        //fallback to initial times if not provided
-        if (!arrivalDate || !arrivalTime || !departureDate || !departureTime) {
-          alert("Please select both date and time for both arrival and departure.");
-          return;
-        }
-        
-        const newArrival = new Date(`${arrivalDate}T${arrivalTime}`);
-        const newDeparture = new Date(`${departureDate}T${departureTime}`);
-    
-        const options = { weekday: "short", month: "short", day: "numeric" };
-        const formattedArrivalDate = newArrival.toLocaleDateString("en-US", options);
-        const formattedDepartureDate = newDeparture.toLocaleDateString("en-US", options);
-    
-        const formattedArrivalTime = newArrival.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        });
-        const formattedDepartureTime = newDeparture.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        });
-        
-        const formattedArrival = `${formattedArrivalDate} | ${formattedArrivalTime}`;
-        const formattedDeparture = `${formattedDepartureDate} | ${formattedDepartureTime}`;
-    
-        onSelect(formattedArrival, formattedDeparture);
-      };
+  // Function to handle the save button click
+  const handleSave = () => {
+    const result = validateAndFormatTimeSelection({
+      selectedDate,
+      selectedHour,
+      mode,
+      initialTimes
+    });
+  
+    if (result.error) {
+      setErrorMessage(result.error);
+      return;
+    }
+
+    setErrorMessage(""); 
+  
+    // Update only the opposite field if autoAdjust exists
+    if (result.autoAdjust) {
+      onSelect(result.autoAdjust.mode, result.autoAdjust.value);
+    }
+  
+    // Update current field
+    if (!result.autoAdjust || result.autoAdjust.mode !== mode) {
+      onSelect(mode, result.formatted);
+    }
+  };
+  
+  const formatHour = (i) => {
+    if (i === 0) return "12:00 AM";
+    if (i < 12) return `${i}:00 AM`;
+    if (i === 12) return "12:00 PM";
+    return `${i - 12}:00 PM`;
+  };
 
 
-      return (
-        <div className="time-selector-overlay">
-          <div className="time-selector-card">
-            <h3>Select {mode === "arrival" ? "Arrival" : "Departure"} Date and Time</h3>
-            <div className="time-selector-inputs">
-              <label>
-                Arrival Date:
-                <input
-                  type="date"
-                  value={arrivalDate}
-                  onChange={(e) => setDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Arrival Time:
-                <input
-                  type="time"
-                  value={arrivalTime}
-                  onChange={(e) => setTime(e.target.value)}
-                />
-              </label>
+  return (
+    <div className="time-selector-overlay">
+      <div className="time-selector-card">
+        {/* Display the mode-specific title */}
+        <h3>Select {mode === "arrival" ? "Arrival" : "Departure"} Date & Time</h3>
+        <div className="time-selector-inputs">
+          {/* Input for selecting the date */}
+          <label>
+            Date:
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+          </label>
+          {/* Input for selecting the time */}
+          <label>
+            Hour:
+            <div className="custom-dropdown" onClick={() => setDropdownOpen(!dropdownOpen)}>
+              {selectedHour === ""
+                ? "-- Select Hour --"
+                : `${formatHour(parseInt(selectedHour))}`}
+              <div className="custom-arrow">▼</div>
+              {dropdownOpen && (
+                <ul className="dropdown-options">
+                  {[...Array(24)].map((_, i) => (
+                    <li
+                      key={i}
+                      onClick={() => {
+                        setSelectedHour(String(i));
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      {formatHour(i)}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-            <div className="time-selector-buttons">
-              <button onClick={handleSave}>Save</button>
-              <button onClick={onClose}>Cancel</button>
-            </div>
-          </div>
+          </label>
+          {/* Display error message if any */}
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>
-      );
+        <div className="time-selector-buttons">
+          {/* Button to save the selected date and time */}
+          <button onClick={handleSave}>Save</button>
+          {/* Button to cancel and close the selector */}
+          <button onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default TimeSelector;

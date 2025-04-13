@@ -1,14 +1,7 @@
 // Import the Sequelize instance from the database configuration file
-const sequelize = require("./db");
+const { sequelize } = require("./models");
 
-// Import the Building model
-const Building = require("./models/Building");
-
-// Import the ParkingLot model
-const ParkingLot = require("./models/ParkingLot");
-
-// Import the User model
-const User = require("./models/User");
+const { ParkingLot, Rate, Building, User, Reservation, Vehicle } = require('./models');
 
 // Immediately Invoked Async Function Expression (IIFE) to handle database synchronization
 (async () => {

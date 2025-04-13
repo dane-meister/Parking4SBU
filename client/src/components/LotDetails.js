@@ -1,8 +1,10 @@
 import '../stylesheets/LotDetails.css'
+import { formatTimeRange } from '../utils/formatTime';
+import { useNavigate } from 'react-router-dom';
 
-export default function InformationSystems(props) {
-	// Destructure props to extract lot image source and lot object
-	const { lotImgSrc, lotObj } = props;
+export default function LotDetails({ lotObj, rateType, times }) {
+
+	const navigate = useNavigate(); // Hook to programmatically navigate
 
 	// Destructure lotObj to extract individual lot details
 	const {
@@ -27,72 +29,144 @@ export default function InformationSystems(props) {
 		resident_availability,
 		resident_capacity,
 		resident_zone,
-		rate,
-		time
+		Rates = [],
 	} = lotObj;
+
+
+	const rateFields = {
+		hourly: 'Hourly',
+		daily: 'Daily',
+		monthly: 'Monthly',
+		semesterly_fall_spring: 'Semesterly (Fall/Spring)',
+		semesterly_summer: 'Semesterly (Summer)',
+		yearly: 'Yearly',
+	};
+
+	const formatRate = (value) => {
+		if (value === 0) return "Free";
+		if (value == null) return "N/A";
+		return `$${value.toFixed(2)}`;
+	};
+
+	const handleReservationClick = () => {
+		navigate('/reservation', {
+			state: {
+				lotId: id,
+				lotName: name,
+				covered,
+				ev_charging_availability,
+				ada_availability,
+				rates: Rates,
+				defaultTimeRange: times,
+			}
+		});
+	};
 
 	// Render the lot details section
 	return (
 		<section className='lot-details'>
-			{/* Section for displaying selected lot's basic information */}
+			{/* Basic Lot Info */}
 			<section className='selected-lot-info hbox wide'>
 				<div className='selected-lot-text flex'>
-					{/* Display lot name or fallback to 'Unknown Lot' */}
 					<div className='selected-lot-name'>{name ?? 'Unknown Lot'}</div>
 
-					{/* Display lot rate and time */}
-					<div className='selected-lot-price-time'>
-						<span className='selected-lot-price'>{rate ?? 'Rate'}</span>
-						<span className='selected-lot-time'>{time ?? 'Time'}</span>
-					</div>
-
-					{/* Display disability parking availability if applicable */}
+					{/* Display EV and ADA availability */}
 					{(ada_availability > 0) && (
 						<div className='selected-lot-disability'>
-							<img
-								className='selected-lot-icon'
-								src='/images/disability_icon.png'
-								alt='disability parking icon'
-							/>
+							<img className='selected-lot-icon' src='/images/disability_icon.png' alt='ADA icon' />
 							<span>Disability parking</span>
 						</div>
 					)}
-
-					{/* Display EV charger availability if applicable */}
 					{(ev_charging_capacity > 0) && (
 						<div className='selected-lot-ev'>
-							<img
-								className='selected-lot-icon'
-								src='/images/ev_icon.png'
-								alt='available ev chargers icon'
-							/>
+							<img className='selected-lot-icon' src='/images/ev_icon.png' alt='EV charger icon' />
 							<span>EV charger</span>
 						</div>
 					)}
 
-					{/* Display whether the lot is covered or uncovered */}
 					<div className='selected-lot-covered'>
-						{(covered ? 'Covered' : 'Uncovered') + ' Lot'}
+						{covered ? 'Covered Lot' : 'Uncovered Lot'}
 					</div>
 				</div>
-
-				{/* Placeholder for lot image (currently commented out) */}
-				{/* <img 
-					src={lotImgSrc ?? '/images/lots/placeholder_lot.png'} 
-					className='selected-lot-img'
-					alt='lot'
-				/> */}
 			</section>
 
 			<hr />
 
-			{/* Section for displaying extended lot information */}
-			<section className='selected-lot-extended-info'>
-				{/* Display available spots information */}
-				<div className='selected-lots-available'>20+ spots available now</div>
+			{/* Rate Info Section */}
+			<section className='lot-rates-section'>
+				<h4 className='lot-rates-title'>Rates</h4>
+				{Rates.length === 0 ? (
+					<div>No rate information available.</div>
+				) : (
+					Rates.map((rate, idx) => (
+						<div key={idx} className='lot-rate-block'>
+							<div className='rate-header'>
+								{rate.permit_type}
+								{rate.permit_type.toLowerCase().includes('resident') && lotObj.resident_zone
+								? ` (Zone ${Number(lotObj.resident_zone)})`
+								: ''}
+								<span className='rate-time'>
+									{formatTimeRange(rate.lot_start_time, rate.lot_end_time)}
+								</span>
+							</div>
+							<ul className='rate-list'>
+								{Object.entries(rateFields).map(([key, label]) => {
+									const value = rate[key];
+									if (value === null || value === undefined) return null;
+									return (
+									<li key={key}>
+										{label}: {formatRate(value)}
+									</li>
+									);
+								})}
+							</ul>
+						</div>
+					))
+				)}
+			</section>
 
-				{/* Button to book a reservation */}
-				<button className='selected-lot-book-btn pointer'>Book a reservation now!</button>
+			<hr />
+
+			{/* Lot Capacity Info Section */}
+			<section className='lot-capacity-section'>
+			<h4 className='lot-rates-title'>Capacity</h4>
+			<ul className='rate-list'>
+				{faculty_capacity > 0 && (
+				<li>Faculty: {faculty_availability} / {faculty_capacity}</li>
+				)}
+				{commuter_core_capacity > 0 && (
+				<li>Commuter Core: {commuter_core_availability} / {commuter_core_capacity}</li>
+				)}
+				{commuter_perimeter_capacity > 0 && (
+				<li>Commuter Perimeter: {commuter_perimeter_availability} / {commuter_perimeter_capacity}</li>
+				)}
+				{commuter_satellite_capacity > 0 && (
+				<li>Commuter Satellite: {commuter_satellite_availability} / {commuter_satellite_capacity}</li>
+				)}
+				{resident_capacity > 0 && (
+				<li>Resident: {resident_availability} / {resident_capacity}</li>
+				)}
+				{metered_capacity > 0 && (
+				<li>Metered: {metered_availability} / {metered_capacity}</li>
+				)}
+				{ada_capacity > 0 && (
+				<li>ADA: {ada_availability} / {ada_capacity}</li>
+				)}
+				{ev_charging_capacity > 0 && (
+				<li>EV Charging: {ev_charging_availability} / {ev_charging_capacity}</li>
+				)}
+				{capacity > 0 && (
+				<li><strong>Total: </strong>{capacity} Available Spaces</li>
+				)}
+			</ul>
+			</section>
+
+			{/* Booking / Action */}
+			<section className='selected-lot-extended-info'>
+				<button 
+					className='selected-lot-book-btn pointer'
+					onClick={handleReservationClick}
+				>Book a reservation now!</button>
 			</section>
 
 			<hr />

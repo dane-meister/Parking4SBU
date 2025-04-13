@@ -5,6 +5,7 @@
     padding: 20px;
     font-family: 'Barlow', sans-serif;
     color: #333;
+    min-height: calc(100vh - 60px - 60px - 50px);
   }
 
   .unpaid-banner {

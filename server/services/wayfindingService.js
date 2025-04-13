@@ -1,4 +1,4 @@
-const { Building, ParkingLot } = require("../models");
+const { Building, ParkingLot, Rate } = require("../models");
 
 // Function to compute Manhattan Distance in meters
 function manhattanDistance(coord1, coord2) {
@@ -38,7 +38,11 @@ async function getSortedParkingLots(buildingId) {
         }
 
         // Retrieve all parking lots from the database
-        const parkingLots = await ParkingLot.findAll();
+        const parkingLots = await ParkingLot.findAll({
+            include: [{
+                model: Rate
+            }]
+        });
 
         // Map parking lots to their distances from the building
         const lotDistances = parkingLots.map(lot => {
@@ -67,15 +71,34 @@ async function getSortedParkingLots(buildingId) {
             }
 
             // Return the parking lot with its computed distances
+            console.log("location", lot.location.coordinates[0]);
             return {
                 id: lot.id,
+                location: lot.location,
                 name: lot.name,
                 distance_meters: minDistance,
                 distance_miles: metersToMiles(minDistance),
                 covered: lot.covered,
                 ev_charging_availability: lot.ev_charging_availability,
+                ev_charging_capacity: lot.ev_charging_capacity,
                 ada_availability: lot.ada_availability,
-                
+                ada_capacity: lot.ada_capacity,
+                capacity: lot.capacity,
+                commuter_core_availability: lot.commuter_core_availability,
+                commuter_core_capacity: lot.commuter_core_capacity,
+                commuter_perimeter_availability: lot.commuter_perimeter_availability,
+                commuter_perimeter_capacity: lot.commuter_perimeter_capacity,
+                commuter_satellite_availability: lot.commuter_satellite_availability,
+                commuter_satellite_capacity: lot.commuter_satellite_capacity,
+                faculty_availability: lot.faculty_availability,
+                faculty_capacity: lot.faculty_capacity,
+                metered_availability: lot.metered_availability,
+                metered_capacity: lot.metered_capacity,
+                resident_availability: lot.resident_availability,
+                resident_capacity: lot.resident_capacity,
+                resident_zone: lot.resident_zone,
+                Rates: lot.Rates,
+                time: lot.time,
             };
         }).filter(lot => lot !== null); // Remove any skipped lots
 

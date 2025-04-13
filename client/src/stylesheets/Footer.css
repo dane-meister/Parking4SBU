@@ -5,8 +5,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  bottom: 0;
   width: 100%;
   height: 50px;
 }
+
+.footer-info > p {
+  margin: 0;
+  align-items: center;
+}
   
+.feedback-btn {
+  background-color: #ffffff;
+  color: #a00;
+  border: none;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.feedback-btn:hover {
+  background-color: #f1f1f1;
+  color: #800000;
+}

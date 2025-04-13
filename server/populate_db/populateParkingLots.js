@@ -1,8 +1,7 @@
-const ParkingLot = require("../models/ParkingLot"); // Import the ParkingLot model
-const sequelize = require("../db"); // Import the Sequelize instance
 const fs = require("fs"); // File system module for reading files
 const path = require("path"); // Path module for handling file paths
 const csv = require("csv-parser"); // CSV parser module for parsing CSV files
+const { ParkingLot, sequelize } = require("../models");
 
 // Function to parse CSV data and insert it into the database
 async function insertParkingLots() {
@@ -69,6 +68,7 @@ async function insertParkingLots() {
           // Insert the parsed data into the database
           await ParkingLot.bulkCreate(results);
           console.log("Data inserted successfully!");
+          sequelize.close();
         } catch (error) {
           // Log any errors encountered during database insertion
           console.error("Error inserting into database:", error);
