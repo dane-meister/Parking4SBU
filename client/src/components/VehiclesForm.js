@@ -147,7 +147,8 @@ function MyVehicles({ userId, vehicles, setCurrVehiclePage, setSelectedVehicle, 
           </div>
         </div>
         <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
-          <button 
+          <button
+            autoFocus // eslint-disable-line jsx-a11y/no-autofocus
             onClick={() => { setSelectedVehicle(null); setPopupVisible(false); }}
           >Cancel</button>
           <button id='car-delete-btn'
@@ -468,6 +469,7 @@ function EditVehicle({ setCurrVehiclePage, vehicle, selectedVehicle, setSelected
         </div>
         <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
           <button 
+            autoFocus // eslint-disable-line jsx-a11y/no-autofocus
             onClick={() => { setSelectedVehicle(null); setCurrVehiclePage('my_vehicles'); setPopupVisible(false); }}>Cancel</button>
           <button
             onClick={handleConfirmEdit}
