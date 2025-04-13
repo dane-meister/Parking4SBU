@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
-const HOST = "http://localhost:8000"
 
 const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLots, setSelectedBuilding, selectedBuilding, setLotResults, setBaseLots, setSelectedLot }) => {
   const [ suggestions, setSuggestions ] = useState([]);
@@ -77,6 +76,10 @@ const AutocompleteSearch = ({ value, setValue, searchType, buildings, parkingLot
 
     let suggestions;
     if (searchType === 'building') {
+      // Filter building names based on regex match
+      // suggestions = building_names.filter(building =>
+      //   regexes.every(regex => regex.test(building))
+      // );
       return buildings.filter(bldg =>
         regexes.every(regex => regex.test(bldg.building_name))
       );
