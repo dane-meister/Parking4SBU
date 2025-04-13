@@ -38,9 +38,7 @@ export const getInitialTimes = () => {
   };
 };
 
-const Header = ({ selectedLot, setSelectedLot }) => {
-  // State to manage arrival and departure times
-  const [times, setTimes] = useState(getInitialTimes());
+const Header = ({ times, setTimes }) => {
   // State to track which time (arrival or departure) is being edited
   const [editingMode, setEditingMode] = useState(null);
   // React Router hook to get the current location

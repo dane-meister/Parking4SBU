@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import axios from 'axios';
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
@@ -12,6 +13,8 @@ const LotSelectionPage = () => {
   const [parkingLots, setParkingLots] = useState([]);
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State to track any errors
+
+  const { times, setTimes } = useOutletContext(); // Get times from the parent component
 
   // Fetch buildings and parking lots on component mount
   useEffect(() => {
@@ -62,6 +65,8 @@ const LotSelectionPage = () => {
               setSelectedLot={setSelectedLot} 
               buildings={buildings}
               parkingLots={parkingLots}
+              times
+              setTimes={setTimes}
             />
           </>
         )}

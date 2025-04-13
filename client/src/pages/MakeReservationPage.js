@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import TimeSelector from '../components/TimeSelector';
 import { getInitialTimes } from '../components/Header';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDateWithTime } from '../utils/getDateWithTime';
 import Popup from '../components/Popup';
@@ -18,6 +18,8 @@ function Reservation(){
 	const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 	const [reservationSuccess, setReservationSuccess] = useState(null);
 
+	console.log("Full location.state", location.state);
+
 	// Destructure the lot details from the location state
 	const {
 		lotId,
@@ -25,9 +27,12 @@ function Reservation(){
 		covered,
 		ev_charging_availability,
 		ada_availability,
-		defaultTimeRange,
 		rates,
 	} = location.state || {};
+
+	const outletContext = useOutletContext();
+	const [times, setTimes] = useState(outletContext?.times ?? getInitialTimes()); // Initialize times with default values
+
 
 	const [vehicles, setVehicles] = useState([]);
 	const [selectedVehicleId, setSelectedVehicleId] = useState(null);
@@ -35,15 +40,6 @@ function Reservation(){
 	const [isEventParking, setIsEventParking] = useState(false);
 	const [spotCount, setSpotCount] = useState(1);
 	const [eventDescription, setEventDescription] = useState('');
-
-
-	// TODO: have this update from the users prev selected times
-	// State to manage arrival and departure times (default to initial times)
-	// Set default times based on the passed defaultTimeRange or use initial times
-	const [times, setTimes] = useState({
-		arrival: defaultTimeRange?.start ?? getInitialTimes().arrival,
-		departure: defaultTimeRange?.end ?? getInitialTimes().departure
-	});
 
 	// State to track which time (arrival or departure) is being edited
 	const [editingMode, setEditingMode] = useState(null); 

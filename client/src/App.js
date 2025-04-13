@@ -5,19 +5,22 @@ import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Outlet } from 'react-router-dom';
+import { getInitialTimes } from './components/Header';
 import "./stylesheets/App.css"; // Styles for layout
 import "./stylesheets/index.css"; // Global styles
 
 export default function App() {
+  const [times, setTimes] = useState(getInitialTimes()); // shared time state
+
   // Layout component to provide a consistent structure for all pages
   function Layout() {
     const location = useLocation(); // Get the current location
     const isHome = location.pathname === "/home"; // Check if the current path is home
     return (
       <div className="app-wrapper">
-        <Header /> {/* Header component */}
+        <Header times={times} setTimes={setTimes}/> {/* Header component */}
         <main className={`page-content ${isHome ? "home-padding" : "compact-padding"}`}>
-          <Outlet /> {/* This will render nested routes */}
+          <Outlet context={{ times, setTimes }}/> {/* This will render nested routes */}
         </main>
         <Footer /> {/* Footer component */}
       </div>

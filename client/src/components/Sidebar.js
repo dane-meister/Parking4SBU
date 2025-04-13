@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, setTimes }) {
   // State for rate type selection (hourly, daily, etc.)
   const [ rateType, setRateType ] = useState('hourly');
   
@@ -104,6 +104,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
         ? <LotDetails 
             lotObj={selectedLot}
             rateType={rateType}
+            times={times}
           />
         : (<>
           {/* Toggle between building and lot search */}
@@ -169,6 +170,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots }) {
                   setSelectedLot={setSelectedLot}
                   distance={selectedBuilding ? lot.distance_miles : ''}
                   rateType={rateType}
+                  times={times}
                 />
               })}
             </section>
