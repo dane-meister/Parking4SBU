@@ -6,4 +6,5 @@ export { default as TicketsPage } from './TicketsPage';
 export { default as CurrentReservationsPage } from './CurrentReservationsPage';
 export { default as MakeReservationPage } from './MakeReservationPage';
 export { default as AdminPage } from './AdminPage';
+export { default as FeedbackPage } from './FeedbackPage';
 export { default as AuthPage } from './AuthPage'; 
