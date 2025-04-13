@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import axios from 'axios';
 import Header from "../components/Header"; 
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import { Sidebar, Map } from '../components';
 import { getInitialTimes } from "../components/Header";
+const HOST = "http://localhost:8000"
 
 const LotSelectionPage = () => {
   // State to store buildings and parking lots
@@ -23,6 +25,8 @@ const LotSelectionPage = () => {
   const initialSearchType = searchParams.buildingLotType || "building"; 
   const initialTimes = searchParams.times || getInitialTimes();
 
+  const { times, setTimes } = useOutletContext(); // Get times from the parent component
+
   // Fetch buildings and parking lots on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -31,9 +35,9 @@ const LotSelectionPage = () => {
 
         // Fetch buildings and parking lots data concurrently
         const [buildingsRes, parkingLotsRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/buildings", { withCredentials: true }),
-          axios.get("http://localhost:8000/api/parking-lots", { withCredentials: true }),
-        ]);        
+          axios.get(`${HOST}/api/buildings`, { withCredentials: true }),
+          axios.get(`${HOST}/api/parking-lots`, { withCredentials: true }),
+        ]);     
 
         // Update state with fetched data
         setBuildings(buildingsRes.data);
@@ -82,6 +86,8 @@ const LotSelectionPage = () => {
               setSelectedBuilding={setSelectedBuilding}
               initialSearchValue={initialSearchValue}
               initialSearchType={initialSearchType}
+              times
+              setTimes={setTimes}
             />
           </>
         )}

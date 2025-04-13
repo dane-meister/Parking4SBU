@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType  }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, setTimes, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType  }) {
   // State for rate type selection (hourly, daily, etc.)
   const [ rateType, setRateType ] = useState('hourly');
   
@@ -98,21 +97,6 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
             className={'type-hover '+(rateType==='daily' ? 'selected' : '')} 
             onClick={() => setRateType('daily')}
           >Daily</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='monthly' ? 'selected' : '')}
-            onClick={() => setRateType('monthly')}
-          >Monthly</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='semesterly' ? 'selected' : '')}
-            onClick={() => setRateType('semesterly')}
-          >Semesterly</span>
-          <span>/</span>
-          <span 
-            className={'type-hover '+(rateType==='yearly' ? 'selected' : '')}
-            onClick={() => setRateType('yearly')}
-          >Yearly</span>
         </div>
       </div>
 
@@ -122,6 +106,8 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
       { selectedLot 
         ? <LotDetails 
             lotObj={selectedLot}
+            rateType={rateType}
+            times={times}
           />
         : (<>
           {/* Toggle between building and lot search */}
@@ -189,6 +175,8 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
                   key={idx}
                   setSelectedLot={setSelectedLot}
                   distance={selectedBuilding ? lot.distance_miles : ''}
+                  rateType={rateType}
+                  times={times}
                 />
               })}
             </section>

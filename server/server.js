@@ -4,10 +4,11 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
+const reservationRoutes = require('./routes/reservation');
+
 
 // Import models
-const Building = require("./models/Building");
-const ParkingLot = require("./models/ParkingLot");
+const { Building, ParkingLot, Rate, User } = require("./models");
 const { getSortedParkingLots } = require("./services/wayfindingService");
 
 const app = express();
@@ -21,8 +22,10 @@ app.use(cors({
   credentials: true // Allow cookies to be sent with requests
 }));
 
-// //authentication routes
+// Authentication routes
 app.use("/api/auth", authRoutes);
+
+app.use("/api/reservations", reservationRoutes);
 
 
 // API Routes
@@ -38,7 +41,11 @@ app.get("/api/buildings", async (req, res) => {
 // Endpoint to fetch all parking lots
 app.get("/api/parking-lots", async (req, res) => {
   try {
-    const parkingLots = await ParkingLot.findAll();
+    const parkingLots = await ParkingLot.findAll({
+      include: [{
+        model: Rate,
+      }]
+    });
     res.json(parkingLots);
   } catch (error) {
     res.status(500).json({ message: "Error fetching parking lots", error: error.message });
@@ -56,7 +63,14 @@ app.get("/api/wayfinding/:buildingId", async (req, res) => {
   }
 });
   
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+sequelize.authenticate()
+  .then(() => {
+    console.log("Database connected successfully.");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Unable to connect to the database:", error);
+  });

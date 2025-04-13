@@ -1,39 +1,127 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TimeSelector from '../components/TimeSelector';
 import { getInitialTimes } from '../components/Header';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { getDateWithTime } from '../utils/getDateWithTime';
+import Popup from '../components/Popup';
+import axios from 'axios';
 import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
 
-function Reservation(){
-	const [times, setTimes] = useState(getInitialTimes());
-  // State to track which time (arrival or departure) is being edited
-  const [editingMode, setEditingMode] = useState(null); 
-  // React Router hook to get the current location
-  // const location = useLocation(); 
+const HOST = "http://localhost:8000";
 
-  // Handles time selection from the TimeSelector component
-  const handleTimeSelect = (mode, formatted) => {
-    setTimes((prev) => ({
-      ...prev,
-      [mode]: formatted,
-    }));
-    setEditingMode(null); // Exit editing mode after selection
-  };
+function Reservation(){
+	const { user } = useAuth(); // Access the current user from AuthContext
+	const navigate = useNavigate(); // Hook to programmatically navigate
+	const location = useLocation(); // Get the current location from React Router
+
+	const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+	const [reservationSuccess, setReservationSuccess] = useState(null);
+
+	console.log("Full location.state", location.state);
+
+	// Destructure the lot details from the location state
+	const {
+		lotId,
+		lotName,
+		covered,
+		ev_charging_availability,
+		ada_availability,
+		rates,
+	} = location.state || {};
+
+	const outletContext = useOutletContext();
+	const [times, setTimes] = useState(outletContext?.times ?? getInitialTimes()); // Initialize times with default values
+
+
+	const [vehicles, setVehicles] = useState([]);
+	const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+
+	const [isEventParking, setIsEventParking] = useState(false);
+	const [spotCount, setSpotCount] = useState(1);
+	const [eventDescription, setEventDescription] = useState('');
+
+	// State to track which time (arrival or departure) is being edited
+	const [editingMode, setEditingMode] = useState(null); 
+
+	// Fetch vehicles and auto-select default on mount
+	useEffect(() => {
+		if (!user?.user_id) return; // Exit if user ID is not available
+		// Fetch vehicles associated with the user
+		axios.get(`${HOST}/api/auth/${user.user_id}/vehicles`, { withCredentials: true })
+			.then((res) => {
+				setVehicles(res.data.vehicles);
+				const defaultVehicle = res.data.vehicles.find(v => v.isDefault);
+				if (defaultVehicle) {
+					setSelectedVehicleId(defaultVehicle.vehicle_id);
+				} else if (res.data.vehicles.length > 0) {
+					setSelectedVehicleId(res.data.vehicles[0].vehicle_id); // fallback
+				}
+			})
+			.catch((err) => {
+				console.error("Failed to fetch vehicles", err);
+			});
+	}, [user?.user_id]);
+
+	// Handles time selection from the TimeSelector component
+	const handleTimeSelect = (mode, formatted) => {
+		setTimes((prev) => ({ ...prev, [mode]: formatted }));
+		setEditingMode(null);
+	};
+
+	const confirmReservation = async () => {
+		if (!selectedVehicleId) {
+			alert("Please select a vehicle.");
+			return;
+		}
+		if (isEventParking && !eventDescription.trim()) {
+			alert("Please enter an event description.");
+			return;
+		}  
+		try {
+			const startTime = getDateWithTime(times.arrival);
+			const endTime = getDateWithTime(times.departure);
+		
+			const payload = {
+				user_id: user?.user_id,
+				parking_lot_id: lotId,
+				vehicle_id: selectedVehicleId,
+				start_time: startTime,
+				end_time: endTime,
+				total_price: 10.5, // still static
+				spot_count: isEventParking ? spotCount : 1,
+				event_description: isEventParking ? eventDescription : null
+			};
+			const res = await axios.post(`${HOST}/api/reservations`, payload, { withCredentials: true });
+			console.log("Reservation successful:", res.data);
+			setReservationSuccess(true);
+		} catch (err) {
+			console.error("Reservation failed:", err.response?.data || err.message);
+			alert("Failed to create reservation. Please try again.");
+		}
+	};
 
 	return (<section className='make-reservation-page'>
 		<section className='make-reservation-left'>
 			<div className='make-reservation-lot-box'>
-				<h3>Lot 27B</h3>
-				<div className='make-reservation-info-row'>
-					<img src='/images/disability_icon.png' alt='has disability parking icon'/>
-					<span>Disability Parking</span>
-				</div>
-				<div className='make-reservation-info-row'>
-					<img src='/images/ev_icon.png' alt='has disability parking icon'/>
-					<span>EV Charging</span>
-				</div>
-				<div className='make-reservation-info-row'  style={{marginTop: '-1px', marginBottom: '20px'}}>
-					<span>Covered Lot</span>
-				</div>
+				<h3>{lotName ?? 'Selected Lot'}</h3>
+				{ada_availability > 0 && (
+					<div className='make-reservation-info-row'>
+						<img src='/images/disability_icon.png' alt='has disability parking icon'/>
+						<span>Disability Parking</span>
+					</div>
+				)}
+				{ev_charging_availability > 0 && (
+					<div className='make-reservation-info-row'>
+						<img src='/images/ev_icon.png' alt='has EV charger icon'/>
+						<span>EV Charging</span>
+					</div>
+				)}
+				{covered && (
+					<div className='make-reservation-info-row'>
+						<span>Covered Lot</span>
+					</div>
+				)}
 			</div>
 
 			<div className='make-reservation-lot-box' style={{paddingBottom: '20px', borderBottom: 'solid 1px #ADAEB2'}}>
@@ -66,12 +154,79 @@ function Reservation(){
 						</div>
 					</div>
 				</div>
+				<hr style={{ border: '1px solid #ADAEB2', margin: '20px 0' }} />
+				<label style={{ marginLeft: '20px' }}>
+					<input 
+					type="checkbox" 
+					checked={isEventParking} 
+					onChange={() => setIsEventParking(prev => !prev)} 
+					/>
+					<span style={{ marginLeft: '8px' }}>Event Parking</span>
+				</label>
 			</div>
 
-			<div className='make-reservation-lot-box' style={{paddingBottom: '20px'}}>
-				<h4>Vehicle Selection</h4>
-				<div style={{marginLeft: '25px', color: 'gray'}}>Vehicle Select To Be Implemented</div>
+
+		{isEventParking && (
+			<div className='make-reservation-lot-box'>
+				<h4>Event Details</h4>
+				
+				<label style={{ marginLeft: '20px' }}>
+				Spots Needed:
+				<input
+					type="number"
+					min="1"
+					value={spotCount}
+					onChange={(e) => setSpotCount(Number(e.target.value))}
+					style={{ marginLeft: '10px', width: '60px' }}
+				/>
+				</label>
+
+				<br /><br />
+
+				<label style={{ marginLeft: '20px' }}>
+				Description:
+				<textarea
+					required
+					rows="2"
+					style={{ marginTop: '10px', width: '90%' }}
+					value={eventDescription}
+					onChange={(e) => setEventDescription(e.target.value)}
+					placeholder="e.g. Football Game, Graduation, Guest Lecture..."
+				/>
+				</label>
 			</div>
+		)}
+
+		{!isEventParking && (
+			<div className='make-reservation-lot-box' style={{ paddingBottom: '20px' }}>
+				<h4>Vehicle Selection</h4>
+				{vehicles.length === 0 ? (
+					<div style={{ marginLeft: '25px', color: 'gray' }}>
+					No vehicles available.
+					</div>
+				) : (
+					<select
+					value={selectedVehicleId || ''}
+					onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
+					style={{
+						marginLeft: '25px',
+						width: '80%',
+						padding: '8px',
+						fontSize: '16px',
+						borderRadius: '5px',
+						border: '1px solid #ccc'
+					}}
+					>
+					{vehicles.map(vehicle => (
+						<option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
+						{vehicle.year} {vehicle.make} {vehicle.model} ({vehicle.plate})
+						</option>
+					))}
+					</select>
+				)}
+			</div>
+		)}
+
 		</section>
 
 		<section className='make-reservation-right'>
@@ -89,7 +244,17 @@ function Reservation(){
 				<span>${10.50 + Math.round(10.50 * .08725 * 100) / 100}</span>
 			</div>
 			<div>
-				<button className='make-reservation-pay-btn'>Pay with Card</button>
+			<button 
+				className='make-reservation-pay-btn'
+				onClick={() => {
+					if (!selectedVehicleId) return alert("Please select a vehicle.");
+					if (isEventParking && !eventDescription.trim()) return alert("Please enter an event description.");
+					setShowConfirmPopup(true);
+				}}
+			>
+				Pay with Card
+			</button>
+
 			</div>
 		</section>
 
@@ -100,8 +265,86 @@ function Reservation(){
 				onSelect={handleTimeSelect}
 				onClose={() => setEditingMode(null)}
 			/>
-    )}
+	)}
+	{showConfirmPopup && (
+		<Popup
+			name="reservation-confirm"
+			popupHeading="Confirm Reservation"
+			closeFunction={() => {
+				setShowConfirmPopup(false);
+				setReservationSuccess(null);
+			}}
+		>
+			{reservationSuccess === null ? (
+				<>
+					<div className="reservation-confirm-popup-body">
+						<p><strong>Lot:</strong> {lotName}</p>
+						<p><strong>Arrival:</strong> {times.arrival}</p>
+						<p><strong>Departure:</strong> {times.departure}</p>
+						<p><strong>Vehicle:</strong> {
+							vehicles.find(v => v.vehicle_id === selectedVehicleId)?.plate
+						}</p>
+						{isEventParking && (
+							<>
+								<p><strong>Spots:</strong> {spotCount}</p>
+								<p><strong>Event:</strong> {eventDescription}</p>
+							</>
+						)}
+						<p><strong>Total:</strong> ${(10.5 + Math.round(10.5 * 0.08725 * 100) / 100).toFixed(2)}</p>
+					</div>
+
+					<div className="reservation-confirm-popup-buttons">
+						<button 
+							onClick={confirmReservation} 
+							className="reservation-confirm-btn"
+						>
+							Confirm
+						</button>
+						<button 
+							onClick={() => setShowConfirmPopup(false)} 
+							className="reservation-cancel-btn"
+						>
+							Cancel
+						</button>
+					</div>
+				</>
+			) : reservationSuccess ? (
+				<div className="reservation-confirm-popup-body">
+					<p style={{ color: 'green' }}>Reservation successfully created!</p>
+					<div className="reservation-confirm-popup-buttons">
+						<button 
+							onClick={() => {
+								setShowConfirmPopup(false);
+								navigate("/reservations");
+							}} 
+							className="reservation-confirm-btn"
+						>
+							Go to My Reservations
+						</button>
+					</div>
+				</div>
+			) : (
+				<div className="reservation-confirm-popup-body">
+					<p style={{ color: 'red' }}>Reservation failed. Please try again.</p>
+					<div className="reservation-confirm-popup-buttons">
+						<button 
+							onClick={() => {
+								setShowConfirmPopup(false);
+								setReservationSuccess(null);
+							}} 
+							className="reservation-cancel-btn"
+						>
+							Close
+						</button>
+					</div>
+				</div>
+			)}
+		</Popup>
+	)}
+
+
 	</section>);
+	
 }
 
 export default Reservation; // Export the component for use in other parts of the application
