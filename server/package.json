@@ -9,9 +9,9 @@
     "populate:lots": "node populate_db/populateParkingLots.js",
     "populate:rates": "node populate_db/populateRates.js",
     "populate:users": "node populate_db/populateUsers.js",
-    "populate:all": "run-s populate:buildings populate:lots populate:rates populate:users",
+    "populate": "run-s populate:buildings populate:lots populate:rates populate:users",
     "sync": "node sync.js",
-    "sync-populate": "run-s sync populate:all"
+    "sync-populate": "run-s sync populate"
   },
   "keywords": [],
   "author": "",
