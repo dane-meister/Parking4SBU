@@ -169,81 +169,10 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
             sortMethod={sortMethod} setSortMethod={setSortMethod}
             toggleResort={() => setResortToggle(!resortToggle)} 
           />
-        : (<>
-          {/* Toggle between building and lot search */}
-          <div className='hbox selection' id='building-lot-selection'>
-            <span 
-              className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
-              onClick={() => setBuildingLotType('building')}   
-            >Building</span>
-            <span>/</span>
-            <span 
-              className={'type-hover '+((buildingLotType==='lot') ? 'selected' : '')}
-              onClick={() => {
-                setBuildingLotType('lot');
-                setSelectedBuilding(null);
-              }}
-            >Lot</span>
-          </div>
-
-          <div className='hbox'>
-            {/* Search component for buildings or lots */}
-            <Search 
-              searchType={buildingLotType}
-              buildings={buildings}
-              parkingLots={parkingLots}
-              value={value}
-              setValue={setValue}
-              setSelectedBuilding={setSelectedBuilding} 
-              setLotResults={setLotResults}
-              setBaseLots={setBaseLots}
-              setSelectedLot={setSelectedLot}
-            />
-            {/* Filter component for additional filtering options */}
-            <Filter 
-              showFilter={showFilter} 
-              setShowFilter={setShowFilter}
-              filters={[
-                tempFilterCovered, setTempFilterCovered,
-                tempFilterUncovered, setTempFilterUncovered,
-                tempFilterEVCharging, setTempFilterEVCharging,
-                tempFilterDisability, setTempFilterDisability
-              ]}
-              onApply={() => {
-                setFilterCovered(tempFilterCovered);
-                setFilterUncovered(tempFilterUncovered);
-                setFilterEVCharging(tempFilterEVCharging);
-                setFilterDisability(tempFilterDisability);
-                setShowFilter(false);
-              }}
-            />
-          </div>
-          
-          <hr/>  
-
-          {/* Display search results */}
-          <section className='results'>
-            <header id='results-header' className='hbox'>
-              Results
-              <span className='flex' key={1}/>
-              sort by
-            </header>
-            <section className='lot-results'>
-              {lotResults.map((lot,idx) => {
-                return <LotResult 
-                  lotObj={lot}
-                  key={idx}
-                  setSelectedLot={setSelectedLot}
-                  distance={selectedBuilding ? lot.distance_miles : ''}
-                />
-              })}
-            </section>
-          </section>
-        </>)
-      }
-    </section>
-  )
-}
+        }
+        </section>
+      )
+    }
 
 // C89 style!
 // probaly needs better name than LotList
