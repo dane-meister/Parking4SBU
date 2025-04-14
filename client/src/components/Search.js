@@ -139,41 +139,6 @@ const AutocompleteSearch = (props) => {
     return <div>{suggestion}</div>;
   };
 
-  const handleKeyDown = async (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent default form submission behavior
-
-      if (searchType === 'building') {
-        // Handle building search
-        if (building_names.includes(value)) {
-          const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
-          setSelectedBuilding(bldg);
-          try {
-            // Fetch lot results for the selected building
-            const response = await axios.get(`${HOST}/api/wayfinding/${bldg.id}`, {
-              withCredentials: true
-            });            
-            setBaseLots(response.data);
-            setLotResults(response.data);
-            setSort(); // sorts by distance
-          } catch (err) {
-            console.error("Error fetching lot results:", err);
-            alert('Error fetching lot results');
-          }
-        } else {
-          alert('INVALID bldg'); // Alert if the building is invalid
-        }
-      } else { // Handle parking lot search
-        if (lot_names.includes(value)) {
-          const lot = parkingLots.filter(lot => lot.name === value)[0];
-          setSelectedLot(lot);
-        } else {
-          alert('INVALID lot'); // Alert if the lot is invalid
-        }
-      }
-    }
-  };
-
   // Input properties for the Autosuggest component
   const inputProps = {
     placeholder: `Search for a ${searchType}`, // Dynamic placeholder based on search type

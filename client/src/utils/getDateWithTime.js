@@ -1,12 +1,23 @@
-export function getDateWithTime(timeStr) {
-    const today = new Date();
-    const [hourMin, meridian] = timeStr.split(' ');
-    let [hours, minutes] = hourMin.split(':').map(Number);
-  
-    if (meridian === 'PM' && hours < 12) hours += 12;
-    if (meridian === 'AM' && hours === 12) hours = 0;
-  
-    const result = new Date(today);
-    result.setHours(hours, minutes, 0, 0); // set to selected time
-    return result;
+export function getDateWithTime(displayStr) {
+  if (!displayStr) return null;
+
+  try {
+    // Expected format: "Mon, Apr 15 | 5:00 PM"
+    const [datePart, timePart] = displayStr.split(" | ");
+    if (!datePart || !timePart) return null;
+
+    // Append the current year (assuming it's not shown)
+    const fullString = `${datePart}, ${new Date().getFullYear()} ${timePart}`;
+
+    const parsedDate = new Date(fullString);
+    if (isNaN(parsedDate.getTime())) {
+      console.warn("Failed to parse date string:", fullString);
+      return null;
+    }
+
+    return parsedDate.toISOString(); // Convert to ISO for server
+  } catch (err) {
+    console.error("Error in getDateWithTime:", err);
+    return null;
   }
+}

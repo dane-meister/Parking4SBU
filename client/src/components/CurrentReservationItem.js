@@ -3,7 +3,14 @@ import React from 'react';
 // Component to display a single reservation item
 export default function CurrentReservationItem({ reservation }) {
   // Destructure reservation details from the reservation prop
-  const { lotName, date, time, permitNumber, status } = reservation;
+  const {
+    lotName,
+    date,
+    time,
+    licensePlate,
+    reservationId, 
+    status
+  } = reservation;
 
   return (
     <div className="reservation-item">
@@ -14,11 +21,14 @@ export default function CurrentReservationItem({ reservation }) {
         <span className={`status ${status.toLowerCase()}`}>{status}</span>
       </div>
 
-      {/* Details section displaying date, time, and permit number */}
+      {/* Details section displaying date, time, license plate, and reservation ID */}
       <div className="reservation-details">
         <p><strong>Date:</strong> {date}</p>
         <p><strong>Time:</strong> {time}</p>
-        <p><strong>Permit #:</strong> {permitNumber}</p>
+        <p><strong>License Plate:</strong> {licensePlate}</p>
+        {reservationId && (
+          <p><strong>Reservation ID:</strong> {reservationId}</p>
+        )}
       </div>
     </div>
   );

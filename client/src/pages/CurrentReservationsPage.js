@@ -5,6 +5,7 @@ import ReservationItem from '../components/CurrentReservationItem';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+
 const HOST = "http://localhost:8000";
 
 export default function CurrentReservationsPage() {
@@ -20,8 +21,15 @@ export default function CurrentReservationsPage() {
                     id: r.id,
                     lotName: r.ParkingLot?.name || 'Unknown Lot',
                     date: new Date(r.start_time).toLocaleDateString(),
-                    time: `${new Date(r.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(r.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-                    permitNumber: r.Vehicle?.plate || 'N/A',
+                    time: `${new Date(r.start_time).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })} - ${new Date(r.end_time).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}`,
+                    licensePlate: r.Vehicle?.plate || 'N/A', // 🔄 Renamed from permitNumber
+                    reservationId: r.id, // ✅ New field for true reservation ID
                     status: getStatus(r.start_time, r.end_time)
                 }));
                 setReservations(formatted);
@@ -38,19 +46,13 @@ export default function CurrentReservationsPage() {
         if (now >= startTime && now <= endTime) return 'Active';
         return 'Past';
     }
-  
 
     return (
-        <>
-            {/* Main container for the reservations page */}
-            <main className="reservation-page">
-                {/* Page title */}
-                <h1>My Reservations</h1>
-                {/* Render a list of ReservationItem components for each reservation */}
-                {reservations.map(reservation => (
-                    <ReservationItem key={reservation.id} reservation={reservation} />
-                ))}
-            </main>
-        </>
+        <main className="reservation-page">
+            <h1>My Reservations</h1>
+            {reservations.map(reservation => (
+                <ReservationItem key={reservation.id} reservation={reservation} />
+            ))}
+        </main>
     );
 }
