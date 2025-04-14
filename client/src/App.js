@@ -15,7 +15,7 @@ export default function App() {
   // Layout component to provide a consistent structure for all pages
   function Layout() {
     const location = useLocation(); // Get the current location
-    const isHome = location.pathname === "/home"; // Check if the current path is home
+    const isHome = location.pathname === "/lotselection"; // Check if the current path is home
     return (
       <div className="app-wrapper">
         <Header times={times} setTimes={setTimes}/> {/* Header component */}
