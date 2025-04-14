@@ -223,7 +223,13 @@ export default function Admin() {
                             )}
                         </div>
                     </>
-                )}                {adminOption === 'events' && <div>Events Management</div>}
+                )}
+                {adminOption === 'events' && (
+                    <div>
+                        <h2>Events Management</h2>
+                        <p>Event management tools will be available here.</p>
+                    </div>
+                )}
                 {adminOption === 'analysis' && (
                     <div>
                         <h2>Analysis</h2>
