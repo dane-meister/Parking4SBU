@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import Header from "../components/Header.js";
 import Search from "../components/Search.js";
+import { useOutletContext } from "react-router-dom";
 import "../stylesheets/LandingPage.css"; 
 import TimeSelector from "../components/TimeSelector";
 import { getInitialTimes } from "../components/Header"; 
@@ -28,7 +29,8 @@ function LandingPage() {
   const [error, setError] = useState(null);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
 
-  const [times, setTimes] = useState(getInitialTimes());
+  // Inside your component
+  const { times, setTimes } = useOutletContext();
   const [editingMode, setEditingMode] = useState(null);
 
   // Fetch buildings and parking lots on component mount
