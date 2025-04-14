@@ -1,6 +1,6 @@
 /* Footer styles for the application */
 .footer {
-  background-color: #a00; 
+  background-color: #990000; 
   color: white;
   display: flex;
   justify-content: space-between;
@@ -16,7 +16,7 @@
   
 .feedback-btn {
   background-color: #ffffff;
-  color: #a00;
+  color: #990000;
   border: none;
   padding: 5px 12px;
   font-size: 13px;
