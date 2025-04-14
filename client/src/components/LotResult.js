@@ -87,7 +87,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     const formatDistance = (distance) => {
       const MILE_FOOT_THRESHOLD = 0.15;
       return (distance < MILE_FOOT_THRESHOLD)
-        ? `${Math.round(distance * 5280)} ft` // to feet
+        ? `${Math.round((distance * 5280) / 5) * 5} ft` // to feet (nearest 5ft)
         : `${distance.toFixed(3)} mi`; // remain in miles
     }
 

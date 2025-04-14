@@ -335,7 +335,10 @@ export default function ProfileForm({ userData }) {
               </div>})}
           </div>
           <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
-            <button onClick={() => setPopupVisible(false)}>Cancel</button>
+            <button 
+              autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+              onClick={() => setPopupVisible(false)}
+            >Cancel</button>
             <button
               onClick={handleEditConfirmation}
             >Confirm Edits</button>
