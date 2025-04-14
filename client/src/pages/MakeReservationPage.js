@@ -334,16 +334,17 @@ function Reservation(){
 
 					<div className="reservation-confirm-popup-buttons">
 						<button 
+							onClick={() => setShowConfirmPopup(false)} 
+							className="reservation-cancel-btn"
+							autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+						>
+							Cancel
+						</button>
+						<button 
 							onClick={confirmReservation} 
 							className="reservation-confirm-btn"
 						>
 							Confirm
-						</button>
-						<button 
-							onClick={() => setShowConfirmPopup(false)} 
-							className="reservation-cancel-btn"
-						>
-							Cancel
 						</button>
 					</div>
 				</>
