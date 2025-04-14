@@ -170,6 +170,7 @@ export default function Admin() {
                         <input
                             type="text"
                             className="user-search"
+                            name='user-search'
                             placeholder="Search by name or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -202,7 +203,7 @@ export default function Admin() {
                                 <p>No parking lots found.</p>
                             ) : (
                                 lots.map(lot => (
-                                    <div className="user-card" key={lot.lot_id}>
+                                    <div className="user-card" key={lot.id}>
                                         <div className="user-info">
                                             <strong>{lot.name}</strong><br />
                                             ID: {lot.id}<br />
