@@ -4,6 +4,7 @@ import { getInitialTimes } from '../components/Header';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDateWithTime } from '../utils/getDateWithTime';
+import { calculateReservationCharge } from '../utils/calculateRate';
 import Popup from '../components/Popup';
 import axios from 'axios';
 import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
@@ -44,6 +45,9 @@ function Reservation(){
 	// State to track which time (arrival or departure) is being edited
 	const [editingMode, setEditingMode] = useState(null); 
 
+	const [calculatedPrice, setCalculatedPrice] = useState(0);
+
+
 	// Fetch vehicles and auto-select default on mount
 	useEffect(() => {
 		if (!user?.user_id) return; // Exit if user ID is not available
@@ -63,6 +67,34 @@ function Reservation(){
 			});
 	}, [user?.user_id]);
 
+	useEffect(() => {
+		if (!times.arrival || !times.departure || !Array.isArray(rates) || rates.length === 0) return;
+	
+		const rate = rates[0]; // TODO: replace with actual rate selection logic if needed
+	
+		if (!rate.lot_start_time || !rate.lot_end_time || rate.hourly == null || rate.daily == null || rate.max_hours == null) {
+			console.warn("Incomplete rate data");
+			return;
+		}
+	
+		const startTime = getDateWithTime(times.arrival);
+		const endTime = getDateWithTime(times.departure);
+	
+		const { subtotal } = calculateReservationCharge({
+			startTime,
+			endTime,
+			rateStart: rate.lot_start_time,
+			rateEnd: rate.lot_end_time,
+			hourlyRate: rate.hourly,
+			maxHours: rate.max_hours,
+			dailyMaxRate: rate.daily
+		});
+	
+		setCalculatedPrice(subtotal);
+	}, [times, rates]);
+	
+	
+
 	// Handles time selection from the TimeSelector component
 	const handleTimeSelect = (mode, formatted) => {
 		setTimes((prev) => ({ ...prev, [mode]: formatted }));
@@ -81,14 +113,25 @@ function Reservation(){
 		try {
 			const startTime = getDateWithTime(times.arrival);
 			const endTime = getDateWithTime(times.departure);
-		
+			
+			const rate = rates[0] || {};
+			const { subtotal } = calculateReservationCharge({
+				startTime,
+				endTime,
+				rateStart: rate.lot_start_time,
+				rateEnd: rate.lot_end_time,
+				hourlyRate: rate.hourly,
+				maxHours: rate.max_hours,
+				dailyMaxRate: rate.daily
+			});
+
 			const payload = {
 				user_id: user?.user_id,
 				parking_lot_id: lotId,
 				vehicle_id: selectedVehicleId,
 				start_time: startTime,
 				end_time: endTime,
-				total_price: 10.5, // still static
+				total_price: subtotal,
 				spot_count: isEventParking ? spotCount : 1,
 				event_description: isEventParking ? eventDescription : null
 			};
@@ -233,15 +276,11 @@ function Reservation(){
 			<h4>Payment Summary</h4>
 			<div className='make-reservation-payment-row'>
 				<span>Subtotal</span>
-				<span>$10.50</span>
-			</div>
-			<div className='make-reservation-payment-row'>
-				<span>Taxes</span>
-				<span>${Math.round(10.50 * .08725 * 100) / 100}</span>
+				<span>${calculatedPrice.toFixed(2)}</span>
 			</div>
 			<div className='make-reservation-total'>
 				<span>Order Total</span>
-				<span>${10.50 + Math.round(10.50 * .08725 * 100) / 100}</span>
+				<span>${calculatedPrice.toFixed(2)}</span>
 			</div>
 			<div>
 			<button 
@@ -290,7 +329,7 @@ function Reservation(){
 								<p><strong>Event:</strong> {eventDescription}</p>
 							</>
 						)}
-						<p><strong>Total:</strong> ${(10.5 + Math.round(10.5 * 0.08725 * 100) / 100).toFixed(2)}</p>
+						<p><strong>Total:</strong> ${(calculatedPrice * 1.08725).toFixed(2)}</p>
 					</div>
 
 					<div className="reservation-confirm-popup-buttons">

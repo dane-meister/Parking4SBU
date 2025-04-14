@@ -169,10 +169,10 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
             sortMethod={sortMethod} setSortMethod={setSortMethod}
             toggleResort={() => setResortToggle(!resortToggle)} 
           />
-        }
-        </section>
-      )
-    }
+      }
+    </section>
+  );
+}
 
 // C89 style!
 // probaly needs better name than LotList

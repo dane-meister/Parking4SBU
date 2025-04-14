@@ -54,11 +54,6 @@ const LotSelectionPage = () => {
 
   return (
     <>
-    <Header 
-        selectedLot={selectedLot} 
-        setSelectedLot={setSelectedLot}
-        initialTimes={initialTimes} 
-      />
     <div className="main-container-lot-selection">
       {/* Left: Map container */}
       <div className="map-container">
