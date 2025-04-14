@@ -10,6 +10,7 @@ export default function Admin() {
     const [editingUser, setEditingUser] = useState(null);
     const [lots, setLots] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [feedbackList, setFeedbackList] = useState([]);
 
     // Fetch users when 'Users' tab is selected
     useEffect(() => {
@@ -31,6 +32,14 @@ export default function Admin() {
                 .catch(err => {
                     console.error("Failed to fetch lots", err);
                     setLots([]);
+                });
+        }
+        if (adminOption === 'feedback') {
+            axios.get(`${HOST}/api/auth/admin/feedback`, { withCredentials: true })
+                .then(res => setFeedbackList(res.data))
+                .catch(err => {
+                    console.error("Failed to fetch feedback", err);
+                    setFeedbackList([]);
                 });
         }
     }, [adminOption]);
@@ -110,6 +119,11 @@ export default function Admin() {
                         className={'type-hover ' + (adminOption === 'analysis' ? 'selected' : '')}
                         onClick={() => setAdminOption('analysis')}
                     >Analysis</span>
+                    <span>/</span>
+                    <span
+                        className={'type-hover ' + (adminOption === 'feedback' ? 'selected' : '')}
+                        onClick={() => setAdminOption('feedback')}
+                    >Feedback</span>
                 </div>
             </div>
             <div className='admin-content'>
@@ -210,7 +224,33 @@ export default function Admin() {
                         </div>
                     </>
                 )}                {adminOption === 'events' && <div>Events Management</div>}
-                {adminOption === 'analysis' && <div>Analysis Management</div>}
+                {adminOption === 'analysis' && (
+                    <div>
+                        <h2>Analysis</h2>
+                        <p>Data analysis tools will be available here.</p>
+                    </div>
+                )}
+                {adminOption === 'feedback' && (
+                    <>
+                        <h2>User Feedback</h2>
+                        <div className="user-list">
+                            {feedbackList.length === 0 ? (
+                                <p>No feedback found.</p>
+                            ) : (
+                                feedbackList.map(feedback => (
+                                    <div className="user-card" key={feedback.feedback_id}>
+                                        <div className="user-info">
+                                            ID: {feedback.user_id}<br />
+                                            Feedback: {feedback.feedback_text}<br />
+                                            Rating: {feedback.rating}<br />
+                                            {/* If admin has read the feedback Read: {feedback.isRead ? 'Yes' : 'No'}<br /> */}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
+                )}
             </div>
             {editingUser && (
                 <div className="edit-modal" onClick={() => setEditingUser(null)}>

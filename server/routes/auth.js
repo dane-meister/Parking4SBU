@@ -26,7 +26,7 @@ router.get("/me", authenticate, async (req, res) => {
 router.post("/register", async (req, res) => {
     try {
         // Destructure required fields from the request body
-        const { 
+        const {
             email,
             password,
             first_name,
@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
             city,
             state_region,
             postal_zip_code,
-            country 
+            country
         } = req.body;
 
         // Basic validation to ensure all required fields are provided
@@ -112,10 +112,10 @@ router.post("/login", async (req, res) => {
         }
 
         // Generate a JWT token with user details
-        const token = jwt.sign({ 
-            user_id: user.user_id, 
-            email: user.email, 
-            user_type: user.user_type 
+        const token = jwt.sign({
+            user_id: user.user_id,
+            email: user.email,
+            user_type: user.user_type
         },
             process.env.JWT_SECRET,
             { expiresIn: "2h" }
@@ -126,7 +126,7 @@ router.post("/login", async (req, res) => {
             secure: process.env.NODE_ENV === 'production', // true in prod (HTTPS), false in dev
             sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
             maxAge: 2 * 60 * 60 * 1000, // 2 hours
-          });          
+        });
 
         res.json({ message: "Login successful" });
     } catch (error) {
@@ -177,7 +177,7 @@ router.get("/:userId/vehicles", authenticate, async (req, res) => {
         if (requestingUser.user_id !== parseInt(userId) && requestingUser.user_type !== "admin") {
             return res.status(403).json({ message: "Forbidden: You can only view your own vehicles" });
         }
-        
+
         // Find the user and include their associated vehicles
         const user = await User.findByPk(userId, {
             include: [{ model: Vehicle }], // Assumes you've set up the User.hasMany(Vehicle) association
@@ -200,26 +200,26 @@ router.post("/:userId/add-vehicle", authenticate, async (req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user; // From auth middleware
-        const { 
-            plate, 
-            model, 
-            make, 
-            year, 
-            color 
+        const {
+            plate,
+            model,
+            make,
+            year,
+            color
         } = req.body;
 
         // 1. Authorization Check
         // Only the user themselves or an admin can add a vehicle
         if (requestingUser.user_id !== parseInt(userId) && requestingUser.user_type !== "admin") {
-            return res.status(403).json({ 
-                message: "Forbidden: You can only add vehicles to your own account" 
+            return res.status(403).json({
+                message: "Forbidden: You can only add vehicles to your own account"
             });
         }
 
         // 2. Input Validation
         if (!plate || !model || !make || !year || !color) {
-            return res.status(400).json({ 
-                message: "All fields required to add vehicle" 
+            return res.status(400).json({
+                message: "All fields required to add vehicle"
             });
         }
 
@@ -240,15 +240,15 @@ router.post("/:userId/add-vehicle", authenticate, async (req, res) => {
         });
 
         // 5. Return the created vehicle (excluding sensitive fields if needed)
-        res.status(201).json({ 
+        res.status(201).json({
             message: "Vehicle added successfully",
-            vehicle: newVehicle 
+            vehicle: newVehicle
         });
 
     } catch (error) {
-        res.status(500).json({ 
-            message: "Error adding vehicle", 
-            error: error.message 
+        res.status(500).json({
+            message: "Error adding vehicle",
+            error: error.message
         });
     }
 });
@@ -257,19 +257,19 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
     try {
         const { vehicleId } = req.params;
         const requestingUser = req.user; // From auth middleware
-        const { 
-            plate, 
-            model, 
-            make, 
-            year, 
+        const {
+            plate,
+            model,
+            make,
+            year,
             color,
             isDefault
         } = req.body;
 
         // verify all information present
         if (!plate || !model || !make || !year || !color) {
-            return res.status(400).json({ 
-                message: "All fields required to edit vehicle" 
+            return res.status(400).json({
+                message: "All fields required to edit vehicle"
             });
         }
 
@@ -281,8 +281,8 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
 
         // verify user has permission to edit this vehicle
         if (requestingUser.user_id !== vehicle.user_id && requestingUser.user_type !== "admin") {
-            return res.status(403).json({ 
-                message: "Forbidden: You can only edit your own vehicles" 
+            return res.status(403).json({
+                message: "Forbidden: You can only edit your own vehicles"
             });
         }
 
@@ -293,8 +293,8 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
         if (isDefaultValue) {
             await Vehicle.update(
                 { isDefault: false },
-                { 
-                    where: { 
+                {
+                    where: {
                         user_id: vehicle.user_id,
                         vehicle_id: { [Op.ne]: vehicleId } // All vehicles except this one
                     }
@@ -302,14 +302,14 @@ router.put("/edit-vehicle/:vehicleId", authenticate, async (req, res) => {
             );
         }
 
-        res.status(200).json({ 
+        res.status(200).json({
             message: "Vehicle edited successfully",
         });
 
     } catch (error) {
-        res.status(500).json({ 
-            message: "Error editing vehicle", 
-            error: error.message 
+        res.status(500).json({
+            message: "Error editing vehicle",
+            error: error.message
         });
     }
 });
@@ -327,22 +327,22 @@ router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
 
         // verify user has permission to edit this vehicle
         if (requestingUser.user_id !== vehicle.user_id && requestingUser.user_type !== "admin") {
-            return res.status(403).json({ 
-                message: "Forbidden: You can only edit your own vehicles" 
+            return res.status(403).json({
+                message: "Forbidden: You can only edit your own vehicles"
             });
         }
 
         await vehicle.destroy();
 
-        res.status(200).json({ 
+        res.status(200).json({
             message: "Vehicle deleted successfully",
         });
 
     } catch (error) {
         console.error(error)
-        res.status(500).json({ 
-            message: "Error deleting vehicle", 
-            error: error.message 
+        res.status(500).json({
+            message: "Error deleting vehicle",
+            error: error.message
         });
     }
 });
@@ -392,14 +392,14 @@ router.delete("/user/:user_id/remove", authenticate, async (req, res) => {
 });
 
 router.put("/edit-profile/:userId", authenticate, async (req, res) => {
-    try{
+    try {
         const { userId } = req.params;
         const requestingUser = req.user; // From auth middleware
 
         // verify user has permission to edit this profile
         if (requestingUser.user_id !== parseInt(userId) && requestingUser.user_type !== "admin") {
-            return res.status(403).json({ 
-                message: "Forbidden: You can only edit your own account!" 
+            return res.status(403).json({
+                message: "Forbidden: You can only edit your own account!"
             });
         }
 
@@ -418,19 +418,19 @@ router.put("/edit-profile/:userId", authenticate, async (req, res) => {
             country
         } = req.body;
 
-        if(!email || !first_name || !last_name || !phone_number || !driver_license_number ||
-        !dl_state || !address_line || !city || !state_region || !postal_zip_code || !country
-        ){
-            return res.status(400).json({ 
-                message: "All fields must be present to update profile!" 
+        if (!email || !first_name || !last_name || !phone_number || !driver_license_number ||
+            !dl_state || !address_line || !city || !state_region || !postal_zip_code || !country
+        ) {
+            return res.status(400).json({
+                message: "All fields must be present to update profile!"
             });
         }
 
         // verify user exists
         const user = await User.findByPk(userId);
-        if(!user){
-            return res.status(404).json({ 
-                message: "User not found!" 
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found!"
             });
         }
 
@@ -449,10 +449,10 @@ router.put("/edit-profile/:userId", authenticate, async (req, res) => {
             country
         });
 
-        return res.status(200).json({ 
+        return res.status(200).json({
             message: "Profile edited successfully",
         });
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(500).json({
             message: 'Error editing profile!',
@@ -463,24 +463,85 @@ router.put("/edit-profile/:userId", authenticate, async (req, res) => {
 
 router.put("/users/:userId/edit", authenticate, async (req, res) => {
     try {
-      if (req.user.user_type !== "admin") {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-  
-      const user = await User.findByPk(req.params.userId);
-      if (!user) return res.status(404).json({ message: "User not found" });
-  
-      const allowedUpdates = ['email', 'user_type', 'permit_type'];
-      allowedUpdates.forEach(field => {
-        if (req.body[field]) user[field] = req.body[field];
-      });
-  
-      await user.save();
-      res.json({ message: "User updated successfully", user });
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const user = await User.findByPk(req.params.userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const allowedUpdates = ['email', 'user_type', 'permit_type'];
+        allowedUpdates.forEach(field => {
+            if (req.body[field]) user[field] = req.body[field];
+        });
+
+        await user.save();
+        res.json({ message: "User updated successfully", user });
     } catch (err) {
-      console.error("Error updating user:", err);
-      res.status(500).json({ message: "Update failed", error: err.message });
+        console.error("Error updating user:", err);
+        res.status(500).json({ message: "Update failed", error: err.message });
     }
-  });
+});
+
+const { Feedback } = require("../models");
+
+router.post("/feedback/add", authenticate, async (req, res) => {
+    try {
+        const { feedback_text, rating } = req.body;
+
+        if (!feedback_text || !rating) {
+            return res.status(400).json({ message: "Feedback and rating are required." });
+        }
+
+        const feedback = await Feedback.create({
+            user_id: req.user.user_id,
+            feedback_text,
+            rating
+        });
+
+        res.status(201).json({ message: "Feedback submitted", feedback });
+    } catch (error) {
+        res.status(500).json({ message: "Error submitting feedback", error: error.message });
+    }
+});
+
+router.get("/admin/feedback", authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const feedbacks = await Feedback.findAll({
+            include: [{ model: User, attributes: ["first_name", "last_name", "email"] }]
+        });
+
+        res.json(feedbacks);
+    } catch (error) {
+        res.status(500).json({ message: "Error retrieving feedback", error: error.message });
+    }
+});
+
+router.put("/admin/feedback/:feedback_id/respond", authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== "admin") {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const { feedback_id } = req.params;
+        const { response_text } = req.body;
+
+        const feedback = await Feedback.findByPk(feedback_id);
+        if (!feedback) {
+            return res.status(404).json({ message: "Feedback not found" });
+        }
+
+        feedback.admin_response = response_text;
+        await feedback.save();
+
+        res.status(200).json({ message: "Response saved", feedback });
+    } catch (err) {
+        res.status(500).json({ message: "Error saving response", error: err.message });
+    }
+});
 
 module.exports = router;
