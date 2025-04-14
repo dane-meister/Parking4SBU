@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useLocation } from "react-router-dom";
 import axios from 'axios';
+import Header from "../components/Header"; 
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
 import { Sidebar, Map } from '../components';
+import { getInitialTimes } from "../components/Header";
 const HOST = "http://localhost:8000"
 
 const LotSelectionPage = () => {
@@ -13,6 +15,14 @@ const LotSelectionPage = () => {
   const [parkingLots, setParkingLots] = useState([]);
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State to track any errors
+  const [selectedBuilding, setSelectedBuilding] = useState(null);
+
+
+  const location = useLocation();
+  const searchParams = location.state; 
+  const initialSearchValue = searchParams.searchValue || "";
+  const initialSearchType = searchParams.buildingLotType || "building"; 
+  const initialTimes = searchParams.times || getInitialTimes();
 
   const { times, setTimes } = useOutletContext(); // Get times from the parent component
 
@@ -39,14 +49,15 @@ const LotSelectionPage = () => {
       }
     };
 
-    fetchData(); // Call the fetch function
+    fetchData(); 
   }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
+    <>
     <div className="main-container-lot-selection">
       {/* Left: Map container */}
       <div className="map-container">
-        <Map selectedLot={selectedLot}/>
+        <Map selectedLot={selectedLot} selectedBuilding={selectedBuilding}/>
       </div>
 
       {/* Right: Results & selections container */}
@@ -65,6 +76,10 @@ const LotSelectionPage = () => {
               setSelectedLot={setSelectedLot} 
               buildings={buildings}
               parkingLots={parkingLots}
+              selectedBuilding={selectedBuilding}
+              setSelectedBuilding={setSelectedBuilding}
+              initialSearchValue={initialSearchValue}
+              initialSearchType={initialSearchType}
               times
               setTimes={setTimes}
             />
@@ -72,6 +87,7 @@ const LotSelectionPage = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

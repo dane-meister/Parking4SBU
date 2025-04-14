@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, AdminPage, FeedbackPage } from './pages'
+import { ProfilePage, NoPage, LotSelectionPage, TicketsPage, CurrentReservationsPage, AuthPage, MakeReservationPage, AdminPage, FeedbackPage, LandingPage } from './pages'
 import { Header, Footer } from './components'
 import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
@@ -15,7 +15,7 @@ export default function App() {
   // Layout component to provide a consistent structure for all pages
   function Layout() {
     const location = useLocation(); // Get the current location
-    const isHome = location.pathname === "/home"; // Check if the current path is home
+    const isHome = location.pathname === "/lotselection"; // Check if the current path is home
     return (
       <div className="app-wrapper">
         <Header times={times} setTimes={setTimes}/> {/* Header component */}
@@ -35,7 +35,8 @@ export default function App() {
           {/* Protected route wrapper */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             {/* Route for the lot selection page, passing selectedLot and setSelectedLot as props */}
-            <Route path="/home" element={<LotSelectionPage />} />
+            <Route path="/home" element={<LandingPage />} />
+            <Route path="/lotselection" element={<LotSelectionPage />} />
             {/* Route for the profile page */}
             <Route path="/profile" element={<ProfilePage />} />
             {/* Route for the tickets page */}

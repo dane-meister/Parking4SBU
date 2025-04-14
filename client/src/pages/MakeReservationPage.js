@@ -4,6 +4,7 @@ import { getInitialTimes } from '../components/Header';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDateWithTime } from '../utils/getDateWithTime';
+import { calculateReservationCharge } from '../utils/calculateRate';
 import Popup from '../components/Popup';
 import axios from 'axios';
 import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
@@ -17,8 +18,6 @@ function Reservation(){
 
 	const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 	const [reservationSuccess, setReservationSuccess] = useState(null);
-
-	console.log("Full location.state", location.state);
 
 	// Destructure the lot details from the location state
 	const {
@@ -44,6 +43,9 @@ function Reservation(){
 	// State to track which time (arrival or departure) is being edited
 	const [editingMode, setEditingMode] = useState(null); 
 
+	const [calculatedPrice, setCalculatedPrice] = useState(0);
+
+
 	// Fetch vehicles and auto-select default on mount
 	useEffect(() => {
 		if (!user?.user_id) return; // Exit if user ID is not available
@@ -63,6 +65,34 @@ function Reservation(){
 			});
 	}, [user?.user_id]);
 
+	useEffect(() => {
+		if (!times.arrival || !times.departure || !Array.isArray(rates) || rates.length === 0) return;
+	
+		const rate = rates[0]; // TODO: replace with actual rate selection logic if needed
+	
+		if (!rate.lot_start_time || !rate.lot_end_time || rate.hourly == null || rate.daily == null || rate.max_hours == null) {
+			console.warn("Incomplete rate data");
+			return;
+		}
+	
+		const startTime = getDateWithTime(times.arrival);
+		const endTime = getDateWithTime(times.departure);
+	
+		const { subtotal } = calculateReservationCharge({
+			startTime,
+			endTime,
+			rateStart: rate.lot_start_time,
+			rateEnd: rate.lot_end_time,
+			hourlyRate: rate.hourly,
+			maxHours: rate.max_hours,
+			dailyMaxRate: rate.daily
+		});
+	
+		setCalculatedPrice(subtotal);
+	}, [times, rates]);
+	
+	
+
 	// Handles time selection from the TimeSelector component
 	const handleTimeSelect = (mode, formatted) => {
 		setTimes((prev) => ({ ...prev, [mode]: formatted }));
@@ -81,14 +111,25 @@ function Reservation(){
 		try {
 			const startTime = getDateWithTime(times.arrival);
 			const endTime = getDateWithTime(times.departure);
-		
+			
+			const rate = rates[0] || {};
+			const { subtotal } = calculateReservationCharge({
+				startTime,
+				endTime,
+				rateStart: rate.lot_start_time,
+				rateEnd: rate.lot_end_time,
+				hourlyRate: rate.hourly,
+				maxHours: rate.max_hours,
+				dailyMaxRate: rate.daily
+			});
+
 			const payload = {
 				user_id: user?.user_id,
 				parking_lot_id: lotId,
 				vehicle_id: selectedVehicleId,
 				start_time: startTime,
 				end_time: endTime,
-				total_price: 10.5, // still static
+				total_price: subtotal,
 				spot_count: isEventParking ? spotCount : 1,
 				event_description: isEventParking ? eventDescription : null
 			};
@@ -154,12 +195,13 @@ function Reservation(){
 						</div>
 					</div>
 				</div>
-				<hr style={{ border: '1px solid #ADAEB2', margin: '20px 0' }} />
-				<label style={{ marginLeft: '20px' }}>
+				{/* <hr style={{ border: '1px solid #ADAEB2', margin: '20px 0' }} /> */}
+				<label style={{ display: 'inline-block', margin: '20px 0 0 20px' }}>
 					<input 
-					type="checkbox" 
-					checked={isEventParking} 
-					onChange={() => setIsEventParking(prev => !prev)} 
+						type="checkbox" 
+						checked={isEventParking} 
+						onChange={() => setIsEventParking(prev => !prev)}
+						id='event-parking'
 					/>
 					<span style={{ marginLeft: '8px' }}>Event Parking</span>
 				</label>
@@ -178,21 +220,23 @@ function Reservation(){
 					value={spotCount}
 					onChange={(e) => setSpotCount(Number(e.target.value))}
 					style={{ marginLeft: '10px', width: '60px' }}
+					id='spots-needed'
 				/>
 				</label>
 
 				<br /><br />
 
-				<label style={{ marginLeft: '20px' }}>
-				Description:
-				<textarea
-					required
-					rows="2"
-					style={{ marginTop: '10px', width: '90%' }}
-					value={eventDescription}
-					onChange={(e) => setEventDescription(e.target.value)}
-					placeholder="e.g. Football Game, Graduation, Guest Lecture..."
-				/>
+				<label style={{ padding: '0 20px', width: '100%', display: 'inline-block' }}>
+					Description:
+					<textarea
+						required
+						rows="2"
+						style={{ marginTop: '10px'}}
+						value={eventDescription}
+						onChange={(e) => setEventDescription(e.target.value)}
+						placeholder="e.g. Football Game, Graduation, Guest Lecture..."
+						id='event-details'
+					/>
 				</label>
 			</div>
 		)}
@@ -206,16 +250,17 @@ function Reservation(){
 					</div>
 				) : (
 					<select
-					value={selectedVehicleId || ''}
-					onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
-					style={{
-						marginLeft: '25px',
-						width: '80%',
-						padding: '8px',
-						fontSize: '16px',
-						borderRadius: '5px',
-						border: '1px solid #ccc'
-					}}
+						value={selectedVehicleId || ''}
+						onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
+						style={{
+							marginLeft: '25px',
+							width: '80%',
+							padding: '8px',
+							fontSize: '16px',
+							borderRadius: '5px',
+							border: '1px solid #ccc'
+						}}
+						id='vehicle-select'
 					>
 					{vehicles.map(vehicle => (
 						<option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
@@ -233,15 +278,11 @@ function Reservation(){
 			<h4>Payment Summary</h4>
 			<div className='make-reservation-payment-row'>
 				<span>Subtotal</span>
-				<span>$10.50</span>
-			</div>
-			<div className='make-reservation-payment-row'>
-				<span>Taxes</span>
-				<span>${Math.round(10.50 * .08725 * 100) / 100}</span>
+				<span>${calculatedPrice.toFixed(2)}</span>
 			</div>
 			<div className='make-reservation-total'>
 				<span>Order Total</span>
-				<span>${10.50 + Math.round(10.50 * .08725 * 100) / 100}</span>
+				<span>${calculatedPrice.toFixed(2)}</span>
 			</div>
 			<div>
 			<button 
@@ -290,21 +331,22 @@ function Reservation(){
 								<p><strong>Event:</strong> {eventDescription}</p>
 							</>
 						)}
-						<p><strong>Total:</strong> ${(10.5 + Math.round(10.5 * 0.08725 * 100) / 100).toFixed(2)}</p>
+						<p><strong>Total:</strong> ${(calculatedPrice * 1.08725).toFixed(2)}</p>
 					</div>
 
 					<div className="reservation-confirm-popup-buttons">
+						<button 
+							onClick={() => setShowConfirmPopup(false)} 
+							className="reservation-cancel-btn"
+							autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+						>
+							Cancel
+						</button>
 						<button 
 							onClick={confirmReservation} 
 							className="reservation-confirm-btn"
 						>
 							Confirm
-						</button>
-						<button 
-							onClick={() => setShowConfirmPopup(false)} 
-							className="reservation-cancel-btn"
-						>
-							Cancel
 						</button>
 					</div>
 				</>

@@ -16,6 +16,8 @@ router.post('/', async (req, res) => {
             event_description
         } = req.body;
 
+        console.log("Received reservation data:", req.body);
+
         if (!user_id || !parking_lot_id || !vehicle_id || !start_time || !end_time) {
             return res.status(400).json({ message: "Missing required reservation fields." });
         }

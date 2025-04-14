@@ -55,6 +55,8 @@ const Header = ({ times, setTimes }) => {
     setEditingMode(null); // Exit editing mode after selection
   };
 
+  const isLotSelectionPage = location.pathname === "/lotselection";
+
   return (
     <>
       <header className="header">
@@ -78,9 +80,10 @@ const Header = ({ times, setTimes }) => {
         </div>
       </header>
 
-      <nav className={`nav-banner ${location.pathname !== "/home" ? "nav-shrink" : ""}`}>
+      {/* nav-banner only expands on /lotselection */}
+      <nav className={`nav-banner ${isLotSelectionPage ? "nav-expanded" : "nav-shrink"}`}>
         {/* Show time selection only on the home page */}
-        {location.pathname === "/home" && (
+        {location.pathname === "/lotselection" && (
           <div className="time-selector-container">
             <div className="time-input">
               <span className="time-label">Arrive After:</span>

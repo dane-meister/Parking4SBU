@@ -1,5 +1,5 @@
 // AutocompleteSearch.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
@@ -29,22 +29,71 @@ const AutocompleteSearch = (props) => {
     .filter(lot => lot.capacity > 0)
     .map(lot => lot.name);
 
+     // Function that performs the search logic
+  const performSearch = async () => {
+    if (!value.trim()) {
+      setSelectedBuilding(null);
+      return;
+    }
+    if (searchType === "building") {
+      if (building_names.includes(value)) {
+        const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
+        setSelectedBuilding(bldg);
+        try {
+          const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
+            withCredentials: true
+          });
+          setBaseLots(response.data);
+          setLotResults(response.data);
+        } catch (err) {
+          console.error("Error fetching lot results:", err);
+          alert("Error fetching lot results");
+        }
+      } else {
+        alert("INVALID bldg");
+      }
+    } else { // For parking lot search
+      if (lot_names.includes(value)) {
+        const lot = parkingLots.filter(lot => lot.name === value)[0];
+        setSelectedLot(lot);
+      } else {
+        alert("INVALID lot");
+      }
+    }
+  };
+
+  const handleKeyDown = async (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      await performSearch();
+    }
+  };
+
+  useEffect(() => {
+    if (value && value.trim() !== "") {
+      performSearch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
   // Function to get suggestions based on user input
   const getSuggestions = (inputValue) => {
     // Escape special characters in the input string
     const escapeRegex = (str) => str.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
-
     // Split input into words and escape each word
     const words = inputValue.trim().split(/\s+/).map(escapeRegex);
-
     // Create regex for each word
     const regexes = words.map(word => new RegExp(word, 'i'));
 
     let suggestions;
     if (searchType === 'building') {
       // Filter building names based on regex match
-      suggestions = building_names.filter(building =>
-        regexes.every(regex => regex.test(building))
+      // suggestions = building_names.filter(building =>
+      //   regexes.every(regex => regex.test(building))
+      // );
+      return buildings.filter(bldg =>
+        regexes.every(regex => regex.test(bldg.building_name))
       );
     } else { // For parking lots
       // Filter lot names based on regex match
@@ -75,50 +124,19 @@ const AutocompleteSearch = (props) => {
     setValue(newValue);
   };
 
-  // Get the value of a suggestion
   const getSuggestionValue = (suggestion) => {
+    if (searchType === 'building') {
+      return suggestion.building_name;
+    }
     return suggestion === "No results found" ? "" : suggestion;
   };
 
-  // Render a single suggestion
+
   const renderSuggestion = (suggestion) => {
-    return <div>{suggestion}</div>;
-  };
-
-  // Handle the Enter key press for search
-  const handleKeyDown = async (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent default form submission behavior
-
-      if (searchType === 'building') {
-        // Handle building search
-        if (building_names.includes(value)) {
-          const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
-          setSelectedBuilding(bldg);
-          try {
-            // Fetch lot results for the selected building
-            const response = await axios.get(`${HOST}/api/wayfinding/${bldg.id}`, {
-              withCredentials: true
-            });            
-            setBaseLots(response.data);
-            setLotResults(response.data);
-            setSort(); // sorts by distance
-          } catch (err) {
-            console.error("Error fetching lot results:", err);
-            alert('Error fetching lot results');
-          }
-        } else {
-          alert('INVALID bldg'); // Alert if the building is invalid
-        }
-      } else { // Handle parking lot search
-        if (lot_names.includes(value)) {
-          const lot = parkingLots.filter(lot => lot.name === value)[0];
-          setSelectedLot(lot);
-        } else {
-          alert('INVALID lot'); // Alert if the lot is invalid
-        }
-      }
+    if (searchType === 'building') {
+      return <div>{suggestion.building_name}</div>;
     }
+    return <div>{suggestion}</div>;
   };
 
   // Input properties for the Autosuggest component

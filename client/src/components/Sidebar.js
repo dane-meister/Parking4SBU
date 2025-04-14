@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, setTimes }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType, times, setTimes  }) {
   // State for rate type selection (hourly, daily, etc.)
   const [ rateType, setRateType ] = useState('hourly');
   
   // State for toggling between building and lot selection
-  const [ buildingLotType, setBuildingLotType ] = useState('building');
+  const [ buildingLotType, setBuildingLotType ] = useState(initialSearchType || 'building');
   
   // State for the currently selected building
-  const [ selectedBuilding, setSelectedBuilding ] = useState(null);
+  // const [ selectedBuilding, setSelectedBuilding ] = useState(null);
 
   // States for filter visibility and individual filter options
   const [ showFilter, setShowFilter ] = useState(false);
@@ -25,7 +25,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
   const [tempFilterDisability, setTempFilterDisability] = useState(filterDisability);
   
   // State for search input value
-  const [ value, setValue ] = useState('');
+  const [ value, setValue ] = useState(initialSearchValue || '');
 
   // State for the list of parking lot results
   const [ lotResults, setLotResults ] = useState(parkingLots);
@@ -107,7 +107,10 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
               src='/images/arrow.png' 
               alt='back' 
               className='back-arrow' 
-              onClick={() => setSelectedLot(null)}
+              onClick={() => {
+                setSelectedLot(null);
+                setValue("");
+              }}
             />
           </div>
         }
@@ -165,7 +168,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, times, s
           />
       }
     </section>
-  )
+  );
 }
 
 // C89 style!
