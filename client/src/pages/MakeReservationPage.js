@@ -19,8 +19,6 @@ function Reservation(){
 	const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 	const [reservationSuccess, setReservationSuccess] = useState(null);
 
-	console.log("Full location.state", location.state);
-
 	// Destructure the lot details from the location state
 	const {
 		lotId,
@@ -197,12 +195,13 @@ function Reservation(){
 						</div>
 					</div>
 				</div>
-				<hr style={{ border: '1px solid #ADAEB2', margin: '20px 0' }} />
-				<label style={{ marginLeft: '20px' }}>
+				{/* <hr style={{ border: '1px solid #ADAEB2', margin: '20px 0' }} /> */}
+				<label style={{ display: 'inline-block', margin: '20px 0 0 20px' }}>
 					<input 
-					type="checkbox" 
-					checked={isEventParking} 
-					onChange={() => setIsEventParking(prev => !prev)} 
+						type="checkbox" 
+						checked={isEventParking} 
+						onChange={() => setIsEventParking(prev => !prev)}
+						id='event-parking'
 					/>
 					<span style={{ marginLeft: '8px' }}>Event Parking</span>
 				</label>
@@ -221,21 +220,23 @@ function Reservation(){
 					value={spotCount}
 					onChange={(e) => setSpotCount(Number(e.target.value))}
 					style={{ marginLeft: '10px', width: '60px' }}
+					id='spots-needed'
 				/>
 				</label>
 
 				<br /><br />
 
-				<label style={{ marginLeft: '20px' }}>
-				Description:
-				<textarea
-					required
-					rows="2"
-					style={{ marginTop: '10px', width: '90%' }}
-					value={eventDescription}
-					onChange={(e) => setEventDescription(e.target.value)}
-					placeholder="e.g. Football Game, Graduation, Guest Lecture..."
-				/>
+				<label style={{ padding: '0 20px', width: '100%', display: 'inline-block' }}>
+					Description:
+					<textarea
+						required
+						rows="2"
+						style={{ marginTop: '10px'}}
+						value={eventDescription}
+						onChange={(e) => setEventDescription(e.target.value)}
+						placeholder="e.g. Football Game, Graduation, Guest Lecture..."
+						id='event-details'
+					/>
 				</label>
 			</div>
 		)}
@@ -249,16 +250,17 @@ function Reservation(){
 					</div>
 				) : (
 					<select
-					value={selectedVehicleId || ''}
-					onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
-					style={{
-						marginLeft: '25px',
-						width: '80%',
-						padding: '8px',
-						fontSize: '16px',
-						borderRadius: '5px',
-						border: '1px solid #ccc'
-					}}
+						value={selectedVehicleId || ''}
+						onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
+						style={{
+							marginLeft: '25px',
+							width: '80%',
+							padding: '8px',
+							fontSize: '16px',
+							borderRadius: '5px',
+							border: '1px solid #ccc'
+						}}
+						id='vehicle-select'
 					>
 					{vehicles.map(vehicle => (
 						<option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>

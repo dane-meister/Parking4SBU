@@ -104,3 +104,13 @@
 .make-reservation-pay-btn:active{
 	background-color: var(--btn-color-active);
 }
+
+.make-reservation-lot-box .time-selector-container{
+	border-bottom: 1px solid #ADAEB2;
+	margin: 0;
+	padding: 0px 20px 25px 20px;
+}
+
+#event-details{
+	width: 100%;	
+}

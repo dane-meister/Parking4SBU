@@ -28,3 +28,9 @@ html, body, #root {
 .compact-padding {
   padding-top: 90px; /* header (60px) + nav-banner (shrunk to 30px) */
 }
+
+textarea{
+  resize: none;
+  height: 50px;
+  margin-bottom: 15px;
+}
