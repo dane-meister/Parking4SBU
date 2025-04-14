@@ -154,3 +154,30 @@
   margin-bottom: 1rem;
   background-color: #f8f8f8;
 }
+
+
+.capacity-collapsible{
+  height: auto;
+}
+
+.capacity-img, .rates-img, .location-img{
+  height: 20px;
+}
+
+.capacity-collapsible-name, .rates-collapsible-name, .location-collapsible-name, .lot-lbl{
+  font-weight: bold;
+  font-size: 18px;
+  padding-left: 5px;
+}
+
+#lot-form-modal input{
+  width: 100%;
+}
+
+#lot-form-modal > div{
+  margin-bottom: 10px;
+}
+
+.overlay-modal{
+  filter: brightness(0.8);
+}
