@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
+import LotFormModal from '../components/LotFormModal';
 const HOST = "http://localhost:8000"
 
 export default function Admin() {
@@ -9,6 +10,7 @@ export default function Admin() {
     const [users, setUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
     const [lots, setLots] = useState([]);
+    const [editingLot, setEditingLot] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [feedbackList, setFeedbackList] = useState([]);
 
@@ -170,6 +172,7 @@ export default function Admin() {
                         <input
                             type="text"
                             className="user-search"
+                            name='user-search'
                             placeholder="Search by name or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -202,7 +205,7 @@ export default function Admin() {
                                 <p>No parking lots found.</p>
                             ) : (
                                 lots.map(lot => (
-                                    <div className="user-card" key={lot.lot_id}>
+                                    <div className="user-card" key={lot.id} onClick={() => setEditingLot({...lot})}>
                                         <div className="user-info">
                                             <strong>{lot.name}</strong><br />
                                             ID: {lot.id}<br />
@@ -338,6 +341,13 @@ export default function Admin() {
                     </div>
                 </div>
             )}
+
+            <LotFormModal
+                isOpen={!!editingLot}
+                lot={editingLot}  
+                onRequestClose={() => setEditingLot(false)}      
+            ></LotFormModal>
+
         </main>
     );
 }
