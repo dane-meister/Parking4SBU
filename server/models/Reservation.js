@@ -48,6 +48,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 1
         },
 
+        // Type of parking spot reserved (e.g., faculty, commuter, etc.)
+        spot_type: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+
         // Optional event description
         event_description: {
             type: DataTypes.STRING,

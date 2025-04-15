@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDateWithTime } from '../utils/getDateWithTime';
 import { calculateReservationCharge } from '../utils/calculateRate';
+import { fetchLotAvailability } from '../utils/fetchLotAvailability';
 import Popup from '../components/Popup';
 import axios from 'axios';
 import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
@@ -19,7 +20,8 @@ function Reservation(){
 	const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 	const [reservationSuccess, setReservationSuccess] = useState(null);
 
-	console.log("Full location.state", location.state);
+	const [selectedSpotType, setSelectedSpotType] = useState('');
+
 
 	// Destructure the lot details from the location state
 	const {
@@ -27,8 +29,23 @@ function Reservation(){
 		lotName,
 		covered,
 		ev_charging_availability,
+		ev_charging_capacity,
 		ada_availability,
+		ada_capacity,
+		faculty_capacity,
+		faculty_availability,
+		commuter_perimeter_capacity,
+		commuter_perimeter_availability,
+		commuter_core_capacity,
+		commuter_core_availability,
+		commuter_satellite_capacity,
+		commuter_satellite_availability,
+		resident_capacity,
+		resident_availability,
+		metered_capacity,
+		metered_availability,
 		rates,
+		availability: initialAvailability = {},
 	} = location.state || {};
 
 	const outletContext = useOutletContext();
@@ -46,6 +63,8 @@ function Reservation(){
 	const [editingMode, setEditingMode] = useState(null); 
 
 	const [calculatedPrice, setCalculatedPrice] = useState(0);
+
+	const [availability, setAvailability] = useState(initialAvailability);
 
 
 	// Fetch vehicles and auto-select default on mount
@@ -70,29 +89,105 @@ function Reservation(){
 	useEffect(() => {
 		if (!times.arrival || !times.departure || !Array.isArray(rates) || rates.length === 0) return;
 	
-		const rate = rates[0]; // TODO: replace with actual rate selection logic if needed
-	
-		if (!rate.lot_start_time || !rate.lot_end_time || rate.hourly == null || rate.daily == null || rate.max_hours == null) {
-			console.warn("Incomplete rate data");
-			return;
-		}
-	
 		const startTime = getDateWithTime(times.arrival);
 		const endTime = getDateWithTime(times.departure);
+
+		const selectedRate = rates.find(r =>
+			r.hourly != null &&
+			r.lot_start_time &&
+			r.lot_end_time &&
+			r.max_hours != null &&
+			r.daily != null
+		);
+
+		if (!selectedRate) {
+			console.warn("No valid rate found for calculation.");
+			setCalculatedPrice(0);
+			return;
+		}
 	
 		const { subtotal } = calculateReservationCharge({
 			startTime,
 			endTime,
-			rateStart: rate.lot_start_time,
-			rateEnd: rate.lot_end_time,
-			hourlyRate: rate.hourly,
-			maxHours: rate.max_hours,
-			dailyMaxRate: rate.daily
+			rateStart: selectedRate.lot_start_time,
+			rateEnd: selectedRate.lot_end_time,
+			hourlyRate: selectedRate.hourly,
+			maxHours: selectedRate.max_hours,
+			dailyMaxRate: selectedRate.daily
 		});
 	
 		setCalculatedPrice(subtotal);
 	}, [times, rates]);
-	
+
+	useEffect(() => {
+		const fetchAvailability = async () => {
+			try {
+				const startTime = getDateWithTime(times.arrival);
+				const endTime = getDateWithTime(times.departure);
+
+				const freshData = await fetchLotAvailability(startTime, endTime);  
+				const match = freshData.find(entry => entry.lotId === lotId);
+				if (match?.hourlyAvailability) {
+					setAvailability(match.hourlyAvailability);
+				} else {
+					setAvailability({});
+					console.warn("No availability data found for selected lot.");
+				}
+			} catch (err) {
+				console.error("Failed to fetch updated availability:", err);
+				setAvailability({});
+			}
+		};
+		if (lotId && times.arrival && times.departure) {
+			fetchAvailability();
+		}
+	}, [times, lotId]);  
+
+	// Compute min availability during selected range
+	const [minAvailability, setMinAvailability] = useState({});
+
+	useEffect(() => {
+	const start = new Date(getDateWithTime(times.arrival));
+	const end = new Date(getDateWithTime(times.departure));
+
+	const buckets = Object.keys(availability)
+		.map(key => new Date(key))
+		.filter(date => date >= start && date < end)
+		.sort((a, b) => a - b);
+
+	const minMap = {
+		faculty: Infinity,
+		commuter_core: Infinity,
+		commuter_perimeter: Infinity,
+		commuter_satellite: Infinity,
+		resident: Infinity,
+		metered: Infinity,
+		ada: Infinity,
+		ev_charging: Infinity,
+	};
+
+	for (const hour of buckets) {
+		const hourKey = hour.toISOString();
+		const hourAvailability = availability[hourKey];
+
+		if (!hourAvailability) continue;
+
+		for (const [key, value] of Object.entries(minMap)) {
+		const count = hourAvailability[key];
+		if (typeof count === "number") {
+			minMap[key] = Math.min(minMap[key], count);
+		}
+		}
+	}
+
+	// Replace Infinity with null for spot types that were not present
+	Object.entries(minMap).forEach(([key, val]) => {
+		if (val === Infinity) minMap[key] = null;
+	});
+
+	setMinAvailability(minMap);
+	}, [times, availability]);
+
 	
 
 	// Handles time selection from the TimeSelector component
@@ -110,20 +205,44 @@ function Reservation(){
 			alert("Please enter an event description.");
 			return;
 		}  
+		if (!selectedSpotType) {
+			alert("Please select a spot type.");
+			return;
+		}
+		if (minAvailability[selectedSpotType] === 0) {
+			alert(`No ${selectedSpotType.replace('_', ' ')} spots available during that time range.`);
+			return;
+		}		  
+		
 		try {
 			const startTime = getDateWithTime(times.arrival);
 			const endTime = getDateWithTime(times.departure);
 			
-			const rate = rates[0] || {};
-			const { subtotal } = calculateReservationCharge({
-				startTime,
-				endTime,
-				rateStart: rate.lot_start_time,
-				rateEnd: rate.lot_end_time,
-				hourlyRate: rate.hourly,
-				maxHours: rate.max_hours,
-				dailyMaxRate: rate.daily
-			});
+			const selectedRate = rates.find(r =>
+				r.hourly != null &&
+				r.lot_start_time &&
+				r.lot_end_time &&
+				r.max_hours != null &&
+				r.daily != null
+			);
+
+			let subtotal = 0;
+
+			if (selectedRate) {
+				const result = calculateReservationCharge({
+					startTime,
+					endTime,
+					rateStart: selectedRate.lot_start_time,
+					rateEnd: selectedRate.lot_end_time,
+					hourlyRate: selectedRate.hourly,
+					maxHours: selectedRate.max_hours,
+					dailyMaxRate: selectedRate.daily
+				});
+				subtotal = result.subtotal;
+			} else {
+				console.warn("No valid rate found for reservation. Defaulting to free.");
+			}
+
 
 			const payload = {
 				user_id: user?.user_id,
@@ -133,7 +252,8 @@ function Reservation(){
 				end_time: endTime,
 				total_price: subtotal,
 				spot_count: isEventParking ? spotCount : 1,
-				event_description: isEventParking ? eventDescription : null
+				event_description: isEventParking ? eventDescription : null,
+				spot_type: selectedSpotType
 			};
 			const res = await axios.post(`${HOST}/api/reservations`, payload, { withCredentials: true });
 			console.log("Reservation successful:", res.data);
@@ -269,6 +389,43 @@ function Reservation(){
 				)}
 			</div>
 		)}
+		<div className='make-reservation-lot-box'>
+			<h4>Spot Type</h4>
+			<select
+				value={selectedSpotType}
+				onChange={(e) => setSelectedSpotType(e.target.value)}
+				style={{
+					marginLeft: '25px',
+					width: '80%',
+					padding: '8px',
+					fontSize: '16px',
+					borderRadius: '5px',
+					border: '1px solid #ccc'
+				}}
+			>
+				<option value="">-- Select Spot Type --</option>
+				{[
+					{ key: 'faculty', label: 'Faculty', capacity: faculty_capacity },
+					{ key: 'commuter_core', label: 'Commuter Core', capacity: commuter_core_capacity },
+					{ key: 'commuter_perimeter', label: 'Commuter Perimeter', capacity: commuter_perimeter_capacity },
+					{ key: 'commuter_satellite', label: 'Commuter Satellite', capacity: commuter_satellite_capacity },
+					{ key: 'resident', label: 'Resident', capacity: resident_capacity },
+					{ key: 'metered', label: 'Metered', capacity: metered_capacity },
+					{ key: 'ada', label: 'ADA', capacity: ada_capacity },
+					{ key: 'ev_charging', label: 'EV Charging', capacity: ev_charging_capacity },
+					]
+					.filter(type => type.capacity > 0)
+					.map(({ key, label, capacity }) => {
+						const available = minAvailability[key];
+						const display = available != null ? `${available} / ${capacity}` : `unknown / ${capacity}`;
+						return (
+						<option key={key} value={key}>
+							{label} ({display} available)
+						</option>
+						);
+				})}
+			</select>
+		</div>
 
 		</section>
 
@@ -323,6 +480,7 @@ function Reservation(){
 						<p><strong>Vehicle:</strong> {
 							vehicles.find(v => v.vehicle_id === selectedVehicleId)?.plate
 						}</p>
+						<p><strong>Spot Type:</strong> {selectedSpotType}</p>
 						{isEventParking && (
 							<>
 								<p><strong>Spots:</strong> {spotCount}</p>
