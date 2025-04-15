@@ -33,7 +33,6 @@ app.use("/api/reservations", reservationRoutes);
 // Lot availability routes
 app.use('/api/lot-availability', availabilityRoutes);
 
-
 // API Routes
 app.get("/api/buildings", async (req, res) => {
   try {
@@ -93,3 +92,5 @@ sequelize.authenticate()
   .catch((error) => {
     console.error("Unable to connect to the database:", error);
   });
+
+  module.exports = app
