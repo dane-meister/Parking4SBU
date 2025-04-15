@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
 import LotFormModal from '../components/LotFormModal';
+import Popup from '../components/Popup';
 const HOST = "http://localhost:8000"
 
 export default function Admin() {
@@ -13,6 +14,10 @@ export default function Admin() {
     const [editingLot, setEditingLot] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [feedbackList, setFeedbackList] = useState([]);
+    const [eventReservations, setEventReservations] = useState([]);
+    const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
+    const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
+    const [activeFeedback, setActiveFeedback] = useState(null);
 
     // Fetch users when 'Users' tab is selected
     useEffect(() => {
@@ -36,6 +41,16 @@ export default function Admin() {
                     setLots([]);
                 });
         }
+        if (adminOption === 'events') {
+            axios.get(`${HOST}/api/auth/admin/event-reservations`, {
+                withCredentials: true
+            })
+                .then(res => setEventReservations(res.data))
+                .catch(err => {
+                    console.error("Failed to fetch event reservations", err);
+                    setEventReservations([]);
+                });
+        }
         if (adminOption === 'feedback') {
             axios.get(`${HOST}/api/auth/admin/feedback`, { withCredentials: true })
                 .then(res => setFeedbackList(res.data))
@@ -44,7 +59,7 @@ export default function Admin() {
                     setFeedbackList([]);
                 });
         }
-    }, [adminOption]);
+    }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh]);
 
     // Handle user approval or rejection
     const handleApproval = (userId, approve) => {
@@ -91,6 +106,43 @@ export default function Admin() {
                 console.error('Failed to update user', err);
                 alert('Update failed');
             });
+    };
+
+    const handleFeedbackResponse = async (feedbackId, responseText) => {
+        axios.put(`${HOST}/api/auth/admin/feedback/${feedbackId}/respond`, {
+            response_text: responseText
+        }, { withCredentials: true })
+            .then(() => {
+                setToggleFeedbackResponseRefresh(prev => !prev);
+            })
+            .catch(err => {
+                console.error('Failed to respond to feedback', err);
+                alert('Failed to save response');
+            });
+    };
+
+    // Handle event reservation approval
+    const handleApproveEvent = (reservationId) => {
+        axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/approve`, {}, {
+            withCredentials: true
+        })
+            .then(() => {
+                setToggleEventRefresh(prev => !prev);
+            })
+            .catch(err => console.error('Failed to approve reservation', err));
+    };
+
+    // Handle event reservation rejection
+    const handleRejectEvent = (reservationId) => {
+        axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/reject`, {}, {
+            withCredentials: true
+        })
+            .then(() => {
+                setEventReservations(prev =>
+                    prev.filter(r => r.id !== reservationId)
+                );
+            })
+            .catch(err => console.error('Failed to reject reservation', err));
     };
 
     return (
@@ -205,7 +257,7 @@ export default function Admin() {
                                 <p>No parking lots found.</p>
                             ) : (
                                 lots.map(lot => (
-                                    <div className="user-card" key={lot.id} onClick={() => setEditingLot({...lot})}>
+                                    <div className="user-card" key={lot.id} onClick={() => setEditingLot({ ...lot })}>
                                         <div className="user-info">
                                             <strong>{lot.name}</strong><br />
                                             ID: {lot.id}<br />
@@ -228,10 +280,63 @@ export default function Admin() {
                     </>
                 )}
                 {adminOption === 'events' && (
-                    <div>
-                        <h2>Events Management</h2>
-                        <p>Event management tools will be available here.</p>
-                    </div>
+                    <>
+                        <h2>Pending Event Parking Requests</h2>
+                        <div className="user-list">
+                            {eventReservations.filter(reservation => reservation.status === 'pending').length === 0 ? (
+                                <p>No pending event reservations found.</p>
+                            ) : (
+                                eventReservations.filter(reservation => reservation.status === 'pending')
+                                    .map(reservation => (
+                                        <div key={reservation.id} className="user-card">
+                                            <div className="user-info">
+                                                <strong>Reservation #{reservation.id}</strong><br />
+                                                User ID: {reservation.user_id}<br />
+                                                Lot ID: {reservation.parking_lot_id}<br />
+                                                Spots: {reservation.spot_count}<br />
+                                                Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
+                                                Description: {reservation.event_description || "N/A"}
+                                            </div>
+                                            <div className="user-actions">
+                                                <img
+                                                    src="/images/check.png"
+                                                    alt="Approve"
+                                                    className="icon"
+                                                    onClick={() => handleApproveEvent(reservation.id)}
+                                                />
+                                                <img
+                                                    src="/images/x.png"
+                                                    alt="Reject"
+                                                    className="icon"
+                                                    onClick={() => handleRejectEvent(reservation.id)}
+                                                />
+
+                                            </div>
+                                        </div>
+                                    ))
+                            )}
+                        </div>
+                        <h2>All Event Parking</h2>
+                        <div className="user-list">
+                            {eventReservations.length === 0 ? (
+                                <p>No event reservations found.</p>
+                            ) : (
+                                eventReservations.map(reservation => (
+                                    <div key={reservation.id} className="user-card">
+                                        <div className="user-info">
+                                            <strong>Reservation #{reservation.id}</strong><br />
+                                            User ID: {reservation.user_id}<br />
+                                            Lot ID: {reservation.parking_lot_id}<br />
+                                            Spots: {reservation.spot_count}<br />
+                                            Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
+                                            Description: {reservation.event_description || "N/A"}<br />
+                                            Status: {reservation.status}<br />
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
                 )}
                 {adminOption === 'analysis' && (
                     <div>
@@ -249,10 +354,14 @@ export default function Admin() {
                                 feedbackList.map(feedback => (
                                     <div className="user-card" key={feedback.feedback_id}>
                                         <div className="user-info">
-                                            ID: {feedback.user_id}<br />
+                                            User ID: {feedback.user_id}<br />
+                                            Lot ID: {feedback.parking_lot_id}<br />
                                             Feedback: {feedback.feedback_text}<br />
                                             Rating: {feedback.rating}<br />
-                                            {/* If admin has read the feedback Read: {feedback.isRead ? 'Yes' : 'No'}<br /> */}
+                                            Response: {feedback.admin_response || "No response yet"}<br />
+                                            <button className="respond-button" onClick={() => setActiveFeedback(feedback)}>
+                                                Respond
+                                            </button>
                                         </div>
                                     </div>
                                 ))
@@ -341,11 +450,36 @@ export default function Admin() {
                     </div>
                 </div>
             )}
+            {activeFeedback && (
+                <Popup
+                    name="feedback-response"
+                    popupHeading={`Respond to Feedback #${activeFeedback.feedback_id}`}
+                    closeFunction={() => setActiveFeedback(null)}
+                >
+                    <textarea
+                        value={activeFeedback.admin_response || ""}
+                        onChange={(e) =>
+                            setActiveFeedback(prev => ({ ...prev, admin_response: e.target.value }))
+                        }
+                        rows={5}
+                        style={{ width: "100%", marginTop: "1rem" }}
+                    />
+                    <div className="form-buttons" style={{ marginTop: "1rem" }}>
+                        <button onClick={() => setActiveFeedback(null)}>Cancel</button>
+                        <button
+                            className="save-button"
+                            onClick={() => handleFeedbackResponse(activeFeedback.feedback_id, activeFeedback.admin_response)}
+                        >
+                            Save Response
+                        </button>
+                    </div>
+                </Popup>
+            )}
 
             <LotFormModal
                 isOpen={!!editingLot}
-                lot={editingLot}  
-                onRequestClose={() => setEditingLot(false)}      
+                lot={editingLot}
+                onRequestClose={() => setEditingLot(false)}
             ></LotFormModal>
 
         </main>
