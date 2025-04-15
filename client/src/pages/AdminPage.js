@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
 import LotFormModal from '../components/LotFormModal';
+import Popup from '../components/Popup';
 const HOST = "http://localhost:8000"
 
 export default function Admin() {
@@ -14,6 +15,7 @@ export default function Admin() {
     const [searchTerm, setSearchTerm] = useState('');
     const [feedbackList, setFeedbackList] = useState([]);
     const [eventReservations, setEventReservations] = useState([]);
+    const [activeFeedback, setActiveFeedback] = useState(null);
 
     // Fetch users when 'Users' tab is selected
     useEffect(() => {
@@ -102,6 +104,19 @@ export default function Admin() {
                 console.error('Failed to update user', err);
                 alert('Update failed');
             });
+    };
+
+    const handleFeedbackResponse = async (feedbackId, responseText) => {
+        try {
+            await axios.put(`${HOST}/api/auth/admin/feedback/${feedbackId}/respond`, {
+                response_text: responseText
+            }, { withCredentials: true });
+
+            alert("Response saved successfully!");
+        } catch (err) {
+            console.error("Failed to save feedback response", err);
+            alert("Failed to save response.");
+        }
     };
 
     // Handle event reservation approval
@@ -339,10 +354,15 @@ export default function Admin() {
                                 feedbackList.map(feedback => (
                                     <div className="user-card" key={feedback.feedback_id}>
                                         <div className="user-info">
-                                            ID: {feedback.user_id}<br />
+                                            User ID: {feedback.user_id}<br />
+                                            Lot ID: {feedback.parking_lot_id}<br />
                                             Feedback: {feedback.feedback_text}<br />
                                             Rating: {feedback.rating}<br />
-                                            {/* If admin has read the feedback Read: {feedback.isRead ? 'Yes' : 'No'}<br /> */}
+                                            Response: {feedback.admin_response || "No response yet"}<br />
+                                            Status: {feedback.isRead ? "Read" : "Unread"}<br />
+                                            <button className="save-button" onClick={() => setActiveFeedback(feedback)}>
+                                                Respond
+                                            </button>
                                         </div>
                                     </div>
                                 ))
@@ -430,6 +450,31 @@ export default function Admin() {
                         </div>
                     </div>
                 </div>
+            )}
+            {activeFeedback && (
+                <Popup
+                    name="feedback-response"
+                    popupHeading={`Respond to Feedback #${activeFeedback.feedback_id}`}
+                    closeFunction={() => setActiveFeedback(null)}
+                >
+                    <textarea
+                        value={activeFeedback.admin_response || ""}
+                        onChange={(e) =>
+                            setActiveFeedback(prev => ({ ...prev, admin_response: e.target.value }))
+                        }
+                        rows={5}
+                        style={{ width: "100%", marginTop: "1rem" }}
+                    />
+                    <div className="form-buttons" style={{ marginTop: "1rem" }}>
+                        <button onClick={() => setActiveFeedback(null)}>Cancel</button>
+                        <button
+                            className="save-button"
+                            onClick={() => handleFeedbackResponse(activeFeedback.feedback_id, activeFeedback.admin_response)}
+                        >
+                            Save Response
+                        </button>
+                    </div>
+                </Popup>
             )}
 
             <LotFormModal
