@@ -41,6 +41,11 @@ async function populateReservations() {
 
         const reservationsData = [];
 
+        const spotTypes = [
+            'faculty', 'commuter_core', 'commuter_perimeter', 'commuter_satellite',
+            'resident', 'visitor', 'metered', 'ada', 'ev_charging'
+        ];
+
         // Create 100 random reservations within the last month.
         for (let i = 0; i < 100; i++) {
             //random date between monthAgo and now.
@@ -59,6 +64,7 @@ async function populateReservations() {
             const randomVehicle = vehicles[randomIndex];
 
             const randomUser = users[faker.number.int({ min: 0, max: users.length - 1 })];
+            const randomSpotType = spotTypes[Math.floor(Math.random() * spotTypes.length)];
 
             reservationsData.push({
                 user_id: randomUser.user_id,
@@ -70,6 +76,7 @@ async function populateReservations() {
                 spot_count: 1,
                 event_description: null,
                 status: 'confirmed',
+                spot_type: randomSpotType
             });
         }
 

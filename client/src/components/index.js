@@ -16,3 +16,4 @@ export { default as CurrentReservationItem } from './CurrentReservationItem';
 export { default as Login } from './Login';
 export { default as Register } from './Register';
 export { default as Popup } from './Popup';
+export { default as PopularTimes } from './PopularTimes';

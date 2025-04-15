@@ -226,10 +226,10 @@ export default function LotDetails({ lotObj, rateType }) {
 					)}
 				</ul>
 			</section>
-	    <section className="lot-popular-times">
+			<section className="lot-popular-times">
 				<h4>Popular Times Forecast</h4>
 				<PopularTimes lotId={id} selectedDay={new Date(times.arrival).toLocaleDateString('en-US', { weekday: 'long' })} />
-      </section>
+			</section>
 			{/* Booking / Action */}
 			<section className='selected-lot-extended-info'>
 				<button
