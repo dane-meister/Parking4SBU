@@ -13,6 +13,7 @@ export default function Admin() {
     const [editingLot, setEditingLot] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [feedbackList, setFeedbackList] = useState([]);
+    const [eventReservations, setEventReservations] = useState([]);
 
     // Fetch users when 'Users' tab is selected
     useEffect(() => {
@@ -34,6 +35,16 @@ export default function Admin() {
                 .catch(err => {
                     console.error("Failed to fetch lots", err);
                     setLots([]);
+                });
+        }
+        if (adminOption === 'events') {
+            axios.get(`${HOST}/api/auth/admin/event-reservations`, {
+                withCredentials: true
+            })
+                .then(res => setEventReservations(res.data))
+                .catch(err => {
+                    console.error("Failed to fetch event reservations", err);
+                    setEventReservations([]);
                 });
         }
         if (adminOption === 'feedback') {
@@ -91,6 +102,32 @@ export default function Admin() {
                 console.error('Failed to update user', err);
                 alert('Update failed');
             });
+    };
+
+    // Handle event reservation approval
+    const handleApproveEvent = (reservationId) => {
+        axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/approve`, {}, {
+            withCredentials: true
+        })
+            .then(() => {
+                setEventReservations(prev =>
+                    prev.filter(r => r.id !== reservationId)
+                );
+            })
+            .catch(err => console.error('Failed to approve reservation', err));
+    };
+
+    // Handle event reservation rejection
+    const handleRejectEvent = (reservationId) => {
+        axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/reject`, {}, {
+            withCredentials: true
+        })
+            .then(() => {
+                setEventReservations(prev =>
+                    prev.filter(r => r.id !== reservationId)
+                );
+            })
+            .catch(err => console.error('Failed to reject reservation', err));
     };
 
     return (
@@ -205,7 +242,7 @@ export default function Admin() {
                                 <p>No parking lots found.</p>
                             ) : (
                                 lots.map(lot => (
-                                    <div className="user-card" key={lot.id} onClick={() => setEditingLot({...lot})}>
+                                    <div className="user-card" key={lot.id} onClick={() => setEditingLot({ ...lot })}>
                                         <div className="user-info">
                                             <strong>{lot.name}</strong><br />
                                             ID: {lot.id}<br />
@@ -228,10 +265,63 @@ export default function Admin() {
                     </>
                 )}
                 {adminOption === 'events' && (
-                    <div>
-                        <h2>Events Management</h2>
-                        <p>Event management tools will be available here.</p>
-                    </div>
+                    <>
+                        <h2>Pending Event Parking Requests</h2>
+                        <div className="user-list">
+                            {eventReservations.filter(reservation => reservation.status === 'pending').length === 0 ? (
+                                <p>No pending event reservations found.</p>
+                            ) : (
+                                eventReservations.filter(reservation => reservation.status === 'pending')
+                                    .map(reservation => (
+                                        <div key={reservation.id} className="user-card">
+                                            <div className="user-info">
+                                                <strong>Reservation #{reservation.id}</strong><br />
+                                                User ID: {reservation.user_id}<br />
+                                                Lot ID: {reservation.parking_lot_id}<br />
+                                                Spots: {reservation.spot_count}<br />
+                                                Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
+                                                Description: {reservation.event_description || "N/A"}
+                                            </div>
+                                            <div className="user-actions">
+                                                <img
+                                                    src="/images/check.png"
+                                                    alt="Approve"
+                                                    className="icon"
+                                                    onClick={() => handleApproveEvent(reservation.id)}
+                                                />
+                                                <img
+                                                    src="/images/x.png"
+                                                    alt="Reject"
+                                                    className="icon"
+                                                    onClick={() => handleRejectEvent(reservation.id)}
+                                                />
+
+                                            </div>
+                                        </div>
+                                    ))
+                            )}
+                        </div>
+                        <h2>All Event Parking</h2>
+                        <div className="user-list">
+                            {eventReservations.length === 0 ? (
+                                <p>No event reservations found.</p>
+                            ) : (
+                                eventReservations.map(reservation => (
+                                    <div key={reservation.id} className="user-card">
+                                        <div className="user-info">
+                                            <strong>Reservation #{reservation.id}</strong><br />
+                                            User ID: {reservation.user_id}<br />
+                                            Lot ID: {reservation.parking_lot_id}<br />
+                                            Spots: {reservation.spot_count}<br />
+                                            Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
+                                            Description: {reservation.event_description || "N/A"}<br />
+                                            Status: {reservation.status}<br />
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
                 )}
                 {adminOption === 'analysis' && (
                     <div>
@@ -344,8 +434,8 @@ export default function Admin() {
 
             <LotFormModal
                 isOpen={!!editingLot}
-                lot={editingLot}  
-                onRequestClose={() => setEditingLot(false)}      
+                lot={editingLot}
+                onRequestClose={() => setEditingLot(false)}
             ></LotFormModal>
 
         </main>

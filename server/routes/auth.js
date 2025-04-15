@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-const { User, Vehicle } = require("../models");
+const { User, Vehicle, Feedback, Reservation } = require("../models");
 const router = express.Router();
 const { Op } = require('sequelize');
 
@@ -483,8 +483,6 @@ router.put("/users/:userId/edit", authenticate, async (req, res) => {
     }
 });
 
-const { Feedback } = require("../models");
-
 router.post("/feedback/add", authenticate, async (req, res) => {
     try {
         const { feedback_text, rating } = req.body;
@@ -541,6 +539,69 @@ router.put("/admin/feedback/:feedback_id/respond", authenticate, async (req, res
         res.status(200).json({ message: "Response saved", feedback });
     } catch (err) {
         res.status(500).json({ message: "Error saving response", error: err.message });
+    }
+});
+
+router.get('/admin/event-reservations', authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
+        const events = await Reservation.findAll({
+            where: {
+                spot_count: {
+                    [Op.gt]: 1
+                },
+            }
+        });
+        console.log("Fetched event reservations:", events);
+        res.json(events);
+    } catch (err) {
+        console.error("Error fetching event reservations:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.put('/admin/event-reservations/:id/approve', authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
+        const reservation = await Reservation.findByPk(req.params.id);
+        if (!reservation || reservation.spot_count <= 1 || reservation.status !== 'pending') {
+            return res.status(404).json({ message: 'Reservation not found or not valid for approval' });
+        }
+
+        reservation.status = 'confirmed';
+        await reservation.save();
+
+        res.json({ message: 'Reservation approved', reservation });
+    } catch (err) {
+        console.error("Approval failed:", err);
+        res.status(500).json({ message: "Failed to approve reservation", error: err.message });
+    }
+});
+
+router.put('/admin/event-reservations/:id/reject', authenticate, async (req, res) => {
+    try {
+        if (req.user.user_type !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
+        const reservation = await Reservation.findByPk(req.params.id);
+        if (!reservation || reservation.spot_count <= 1 || reservation.status !== 'pending') {
+            return res.status(404).json({ message: 'Reservation not found or not valid for rejection' });
+        }
+
+        reservation.status = 'cancelled';
+        await reservation.save();
+
+        res.json({ message: 'Reservation rejected', reservation });
+    } catch (err) {
+        console.error("Rejection failed:", err);
+        res.status(500).json({ message: "Failed to reject reservation", error: err.message });
     }
 });
 
