@@ -399,10 +399,11 @@ function Reservation(){
 				style={{
 					marginLeft: '25px',
 					width: '80%',
-					padding: '8px',
+					padding: '10px',
 					fontSize: '16px',
 					borderRadius: '5px',
-					border: '1px solid #ccc'
+					border: '1px solid #ccc',
+					marginBottom: '20px'
 				}}
 			>
 				<option value="">-- Select Spot Type --</option>
