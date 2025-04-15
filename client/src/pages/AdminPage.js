@@ -16,6 +16,7 @@ export default function Admin() {
     const [feedbackList, setFeedbackList] = useState([]);
     const [eventReservations, setEventReservations] = useState([]);
     const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
+    const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
     const [activeFeedback, setActiveFeedback] = useState(null);
 
     // Fetch users when 'Users' tab is selected
@@ -58,7 +59,7 @@ export default function Admin() {
                     setFeedbackList([]);
                 });
         }
-    }, [adminOption, toggleEventRefresh]);
+    }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh]);
 
     // Handle user approval or rejection
     const handleApproval = (userId, approve) => {
@@ -108,16 +109,16 @@ export default function Admin() {
     };
 
     const handleFeedbackResponse = async (feedbackId, responseText) => {
-        try {
-            await axios.put(`${HOST}/api/auth/admin/feedback/${feedbackId}/respond`, {
-                response_text: responseText
-            }, { withCredentials: true });
-
-            alert("Response saved successfully!");
-        } catch (err) {
-            console.error("Failed to save feedback response", err);
-            alert("Failed to save response.");
-        }
+        axios.put(`${HOST}/api/auth/admin/feedback/${feedbackId}/respond`, {
+            response_text: responseText
+        }, { withCredentials: true })
+            .then(() => {
+                setToggleFeedbackResponseRefresh(prev => !prev);
+            })
+            .catch(err => {
+                console.error('Failed to respond to feedback', err);
+                alert('Failed to save response');
+            });
     };
 
     // Handle event reservation approval
@@ -126,7 +127,7 @@ export default function Admin() {
             withCredentials: true
         })
             .then(() => {
-                setToggleEventRefresh (prev => !prev);
+                setToggleEventRefresh(prev => !prev);
             })
             .catch(err => console.error('Failed to approve reservation', err));
     };
@@ -358,8 +359,7 @@ export default function Admin() {
                                             Feedback: {feedback.feedback_text}<br />
                                             Rating: {feedback.rating}<br />
                                             Response: {feedback.admin_response || "No response yet"}<br />
-                                            Status: {feedback.isRead ? "Read" : "Unread"}<br />
-                                            <button className="save-button" onClick={() => setActiveFeedback(feedback)}>
+                                            <button className="respond-button" onClick={() => setActiveFeedback(feedback)}>
                                                 Respond
                                             </button>
                                         </div>
