@@ -1,8 +1,11 @@
 import '../stylesheets/LotDetails.css'
 import { formatTimeRange } from '../utils/formatTime';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useState } from 'react';
+import { getInitialTimes } from './Header';
+import PopularTimes from '../components/PopularTimes';
 
-export default function LotDetails({ lotObj, rateType, times }) {
+export default function LotDetails({ lotObj, rateType }) {
 
 	const navigate = useNavigate(); // Hook to programmatically navigate
 
@@ -108,6 +111,25 @@ export default function LotDetails({ lotObj, rateType, times }) {
 	};
 	console.log("availability", availability);
 
+	const outletContext = useOutletContext();
+	const [times, setTimes] = useState(outletContext?.times ?? getInitialTimes());
+
+	function parseCustomDate(dateStr) {
+
+		const [dayPart] = dateStr.split('|');
+		const trimmed = dayPart.trim();
+
+		const currentYear = new Date().getFullYear();
+
+		const reformatted = `${trimmed}, ${currentYear}`;
+
+		return new Date(reformatted);
+	}
+
+	const defaultDay = parseCustomDate(times.arrival).toLocaleDateString('en-US', { weekday: 'long' })
+
+
+
 	// Render the lot details section
 	return (
 		<section className='lot-details'>
@@ -149,8 +171,8 @@ export default function LotDetails({ lotObj, rateType, times }) {
 							<div className='rate-header'>
 								{rate.permit_type}
 								{rate.permit_type.toLowerCase().includes('resident') && lotObj.resident_zone
-								? ` (Zone ${Number(lotObj.resident_zone)})`
-								: ''}
+									? ` (Zone ${Number(lotObj.resident_zone)})`
+									: ''}
 								<span className='rate-time'>
 									{formatTimeRange(rate.lot_start_time, rate.lot_end_time)}
 								</span>
@@ -160,9 +182,9 @@ export default function LotDetails({ lotObj, rateType, times }) {
 									const value = rate[key];
 									if (value === null || value === undefined) return null;
 									return (
-									<li key={key}>
-										{label}: {formatRate(value)}
-									</li>
+										<li key={key}>
+											{label}: {formatRate(value)}
+										</li>
 									);
 								})}
 							</ul>
@@ -203,12 +225,14 @@ export default function LotDetails({ lotObj, rateType, times }) {
 						<li><strong>Total:</strong> {minAvailability.total ?? 'unknown'} / {capacity} Available</li>
 					)}
 				</ul>
-
 			</section>
-
+	    <section className="lot-popular-times">
+				<h4>Popular Times Forecast</h4>
+				<PopularTimes lotId={id} selectedDay={new Date(times.arrival).toLocaleDateString('en-US', { weekday: 'long' })} />
+      </section>
 			{/* Booking / Action */}
 			<section className='selected-lot-extended-info'>
-				<button 
+				<button
 					className='selected-lot-book-btn pointer'
 					onClick={handleReservationClick}
 				>Book a reservation now!</button>

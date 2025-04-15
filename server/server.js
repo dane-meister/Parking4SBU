@@ -5,6 +5,7 @@ require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
 const reservationRoutes = require('./routes/reservation');
+const popularTimesRoutes = require('./routes/popularTimes');
 const availabilityRoutes = require('./routes/availability');
 const { computeAvailability } = require('./routes/availability');
 
@@ -28,6 +29,8 @@ app.use("/api/auth", authRoutes);
 
 // Reservation routes
 app.use("/api/reservations", reservationRoutes);
+
+app.use("/api/popular-times", popularTimesRoutes);
 
 
 // Lot availability routes
