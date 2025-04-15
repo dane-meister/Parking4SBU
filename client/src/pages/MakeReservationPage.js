@@ -64,6 +64,13 @@ function Reservation(){
 
 	const [availability, setAvailability] = useState(initialAvailability);
 
+	const [errorMessages, setErrorMessages] = useState({
+		vehicle: '',
+		eventDescription: '',
+		spotType: '',
+		availability: '',
+		general: ''
+	});
 
 	// Fetch vehicles and auto-select default on mount
 	useEffect(() => {
@@ -186,8 +193,6 @@ function Reservation(){
 	setMinAvailability(minMap);
 	}, [times, availability]);
 
-	
-
 	// Handles time selection from the TimeSelector component
 	const handleTimeSelect = (mode, formatted) => {
 		setTimes((prev) => ({ ...prev, [mode]: formatted }));
@@ -195,22 +200,34 @@ function Reservation(){
 	};
 
 	const confirmReservation = async () => {
+		const errors = {
+			vehicle: '',
+			eventDescription: '',
+			spotType: '',
+			availability: '',
+			general: ''
+		};
+		let hasError = false;
+
 		if (!selectedVehicleId) {
-			alert("Please select a vehicle.");
-			return;
+			errors.vehicle = "Please select a vehicle.";
+			hasError = true;
 		}
 		if (isEventParking && !eventDescription.trim()) {
-			alert("Please enter an event description.");
-			return;
-		}  
+			errors.eventDescription = "Event description is required for event parking.";
+			hasError = true;
+		}
 		if (!selectedSpotType) {
-			alert("Please select a spot type.");
-			return;
+			errors.spotType = "Please select a spot type.";
+			hasError = true;
 		}
 		if (minAvailability[selectedSpotType] === 0) {
-			alert(`No ${selectedSpotType.replace('_', ' ')} spots available during that time range.`);
-			return;
-		}		  
+			errors.availability = `No ${selectedSpotType.replace('_', ' ')} spots available during the selected time range.`;
+			hasError = true;
+		}
+
+		setErrorMessages(errors);  
+		if (hasError) return;	  
 		
 		try {
 			const startTime = getDateWithTime(times.arrival);
@@ -358,6 +375,9 @@ function Reservation(){
 						id='event-details'
 					/>
 				</label>
+				{errorMessages.eventDescription && (
+					<div className="error-text">{errorMessages.eventDescription}</div>
+				)}
 			</div>
 		)}
 
@@ -389,6 +409,9 @@ function Reservation(){
 					))}
 					</select>
 				)}
+				{errorMessages.vehicle && (
+					<div className="error-text">{errorMessages.vehicle}</div>
+				)}
 			</div>
 		)}
 		<div className='make-reservation-lot-box'>
@@ -403,7 +426,6 @@ function Reservation(){
 					fontSize: '16px',
 					borderRadius: '5px',
 					border: '1px solid #ccc',
-					marginBottom: '20px'
 				}}
 			>
 				<option value="">-- Select Spot Type --</option>
@@ -428,8 +450,14 @@ function Reservation(){
 						);
 				})}
 			</select>
+			{errorMessages.spotType && (
+				<div className="error-text">{errorMessages.spotType}</div>
+			)}
+			{errorMessages.availability && (
+			<div className="error-text">{errorMessages.availability}</div>
+		)}
+		<div style={{margin:'20px'}}></div>
 		</div>
-
 		</section>
 
 		<section className='make-reservation-right'>
@@ -446,13 +474,42 @@ function Reservation(){
 			<button 
 				className='make-reservation-pay-btn'
 				onClick={() => {
-					if (!selectedVehicleId) return alert("Please select a vehicle.");
-					if (isEventParking && !eventDescription.trim()) return alert("Please enter an event description.");
-					setShowConfirmPopup(true);
+					const errors = {
+						vehicle: '',
+						eventDescription: '',
+						spotType: '',
+						availability: '',
+						general: ''
+					};
+					let hasError = false;
+
+					if (!selectedVehicleId) {
+						errors.vehicle = "Please select a vehicle.";
+						hasError = true;
+					}
+					if (isEventParking && !eventDescription.trim()) {
+						errors.eventDescription = "Event description is required for event parking.";
+						hasError = true;
+					}
+					if (!selectedSpotType) {
+						errors.spotType = "Please select a spot type.";
+						hasError = true;
+					}
+					if (minAvailability[selectedSpotType] === 0) {
+						errors.availability = `No ${selectedSpotType.replace('_', ' ')} spots available during the selected time range.`;
+						hasError = true;
+					}
+
+					setErrorMessages(errors);
+
+					if (!hasError) {
+						setShowConfirmPopup(true);
+					}
 				}}
 			>
 				Make Reservation
 			</button>
+
 
 			</div>
 		</section>
