@@ -5,7 +5,7 @@ require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
 const reservationRoutes = require('./routes/reservation');
-
+const popularTimesRoutes = require('./routes/popularTimes');
 
 // Import models
 const { Building, ParkingLot, Rate, User } = require("./models");
@@ -26,6 +26,8 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 
 app.use("/api/reservations", reservationRoutes);
+
+app.use("/api/popular-times", popularTimesRoutes);
 
 
 // API Routes

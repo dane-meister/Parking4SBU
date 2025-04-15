@@ -216,7 +216,10 @@ function LotList({
       <span>/</span>
       <span 
         className={'type-hover '+((buildingLotType==='lot') ? 'selected' : '')}
-        onClick={() => setBuildingLotType('lot')}
+        onClick={() => {
+          setBuildingLotType('lot');
+          setSelectedBuilding(null);
+        }}
       >Lot</span>
     </div>
 
