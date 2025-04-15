@@ -15,6 +15,7 @@ export default function Admin() {
     const [searchTerm, setSearchTerm] = useState('');
     const [feedbackList, setFeedbackList] = useState([]);
     const [eventReservations, setEventReservations] = useState([]);
+    const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
     const [activeFeedback, setActiveFeedback] = useState(null);
 
     // Fetch users when 'Users' tab is selected
@@ -57,7 +58,7 @@ export default function Admin() {
                     setFeedbackList([]);
                 });
         }
-    }, [adminOption]);
+    }, [adminOption, toggleEventRefresh]);
 
     // Handle user approval or rejection
     const handleApproval = (userId, approve) => {
@@ -125,9 +126,7 @@ export default function Admin() {
             withCredentials: true
         })
             .then(() => {
-                setEventReservations(prev =>
-                    prev.filter(r => r.id !== reservationId)
-                );
+                setToggleEventRefresh (prev => !prev);
             })
             .catch(err => console.error('Failed to approve reservation', err));
     };
