@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
             spot_count: spot_count ?? 1,
             event_description: event_description ?? null,
             spot_type,
-            status: 'confirmed'
+            status: event_description ? 'pending' : 'confirmed'
         });
     
         res.status(201).json({ message: "Reservation created", reservation });
