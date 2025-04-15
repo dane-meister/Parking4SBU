@@ -142,6 +142,7 @@
     cursor: pointer;
     padding-bottom: 0.25rem;
     transition: color 0.3s, border-bottom 0.3s;
+    height: 27px;
   }
   
   /* Underline selected option */
@@ -159,7 +160,7 @@
   .find-parking-btn button {
     padding: 1rem 2rem;
     font-size: 1.2rem;
-    background-color: #d9534f;   /* Red color */
+    background-color: var(--red);   /* Red color */
     color: #fff;
     border: none;
     border-radius: 30px;         /* Oval-ish curved corners */
@@ -170,8 +171,9 @@
     gap: 0.5rem;
     /* Optionally, add a box-shadow for extra visual pop */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin: 8px;
   }
   
   .find-parking-btn button:hover {
-    background-color: #c9302c;
+    background-color: var(--dark-red);
   }
