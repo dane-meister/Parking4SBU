@@ -273,6 +273,12 @@ function Reservation(){
 			const res = await axios.post(`${HOST}/api/reservations`, payload, { withCredentials: true });
 			console.log("Reservation successful:", res.data);
 			setReservationSuccess(true);
+			// Immediately fetch latest availability after a successful reservation
+			const updatedData = await fetchLotAvailability(startTime, endTime);
+			const updatedMatch = updatedData.find(entry => entry.lotId === lotId);
+			if (updatedMatch?.hourlyAvailability) {
+			setAvailability(updatedMatch.hourlyAvailability);
+}
 		} catch (err) {
 			console.error("Reservation failed:", err.response?.data || err.message);
 			alert("Failed to create reservation. Please try again.");
@@ -473,6 +479,8 @@ function Reservation(){
 			<div>
 			<button 
 				className='make-reservation-pay-btn'
+				disabled={reservationSuccess === true}
+				title={reservationSuccess === true ? "Reservation already made." : ""}
 				onClick={() => {
 					const errors = {
 						vehicle: '',
@@ -528,7 +536,9 @@ function Reservation(){
 			popupHeading="Confirm Reservation"
 			closeFunction={() => {
 				setShowConfirmPopup(false);
-				setReservationSuccess(null);
+				if (reservationSuccess !== true) {
+					setReservationSuccess(null);
+				}
 			}}
 		>
 			{reservationSuccess === null ? (
