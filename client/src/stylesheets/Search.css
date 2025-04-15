@@ -49,6 +49,7 @@ ul[role="listbox"]{
   list-style-type: none;
   margin: 0;
   padding: 0;
+  z-index: 100;
 }
 
 ul[role="listbox"] > li{
@@ -58,4 +59,7 @@ ul[role="listbox"] > li{
 
 ul[role="listbox"] > li:nth-child(odd){
   background-color: #fafafa;
+}
+ul[role="listbox"] > li:nth-child(even){
+  background-color: #fff;
 }

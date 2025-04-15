@@ -23,7 +23,7 @@ const AutocompleteSearch = (props) => {
 
   const times = outletContext?.times;
 
-  const [ suggestions, setSuggestions ] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
 
   // Extract building names from the buildings array
   const building_names = buildings.map(bldg => bldg.building_name);
@@ -109,12 +109,12 @@ const AutocompleteSearch = (props) => {
     let suggestions;
     if (searchType === 'building') {
       // Filter building names based on regex match
-      // suggestions = building_names.filter(building =>
-      //   regexes.every(regex => regex.test(building))
-      // );
-      return buildings.filter(bldg =>
-        regexes.every(regex => regex.test(bldg.building_name))
-      );
+      suggestions = buildings
+        .map(bldg => bldg.building_name)
+        .filter(bldg_name =>
+          regexes.every(regex => regex.test(bldg_name))
+        );
+      console.log("suggestions:",suggestions)
     } else { // For parking lots
       // Filter lot names based on regex match
       suggestions = lot_names.filter(lot =>
@@ -124,6 +124,7 @@ const AutocompleteSearch = (props) => {
 
     const MAX_RETURN = 5; // Limit the number of suggestions returned
     if (suggestions.length === 0) {
+      console.log("0 length!")
       return ['No results found']; // Return a default message if no matches
     }
     return suggestions.slice(0, MAX_RETURN);
@@ -145,17 +146,11 @@ const AutocompleteSearch = (props) => {
   };
 
   const getSuggestionValue = (suggestion) => {
-    if (searchType === 'building') {
-      return suggestion.building_name;
-    }
     return suggestion === "No results found" ? "" : suggestion;
   };
 
 
   const renderSuggestion = (suggestion) => {
-    if (searchType === 'building') {
-      return <div>{suggestion.building_name}</div>;
-    }
     return <div>{suggestion}</div>;
   };
 
