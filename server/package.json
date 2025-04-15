@@ -9,7 +9,9 @@
     "populate:lots": "node populate_db/populateParkingLots.js",
     "populate:rates": "node populate_db/populateRates.js",
     "populate:users": "node populate_db/populateUsers.js",
-    "populate": "run-s populate:buildings populate:lots populate:rates populate:users",
+    "populate:vehicles": "node populate_db/populateVehicles.js",
+    "populate:reservations": "node populate_db/populateReservations.js",
+    "populate": "run-s populate:buildings populate:lots populate:rates populate:users populate:vehicles populate:reservations",
     "sync": "node sync.js",
     "sync-populate": "run-s sync populate"
   },
@@ -17,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.7.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -37,6 +40,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "supertest": "^7.1.0"
   }
 }

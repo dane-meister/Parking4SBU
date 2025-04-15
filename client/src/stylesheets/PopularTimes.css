@@ -1,0 +1,59 @@
+.popular-times {
+    margin: 20px 0;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+  }
+  
+  .popular-times-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; 
+    white-space: nowrap;  
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+  }
+
+  .popular-times-tabs::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .popular-times-tabs::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .popular-times-tabs::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+  }
+  
+  .tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 8px 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .tab-button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .tab-button.active {
+    background-color: #4285f4;
+    color: #fff;
+  }
+  
+  .popular-times-graph {
+    padding: 0 10px;
+    /* max-width: 100%; */
+    overflow-x: auto;  /* Enables horizontal scrolling */
+    padding: 0 10px;
+  }
+  

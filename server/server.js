@@ -5,6 +5,7 @@ require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
 const reservationRoutes = require('./routes/reservation');
+const popularTimesRoutes = require('./routes/popularTimes');
 const availabilityRoutes = require('./routes/availability');
 const { computeAvailability } = require('./routes/availability');
 
@@ -29,10 +30,11 @@ app.use("/api/auth", authRoutes);
 // Reservation routes
 app.use("/api/reservations", reservationRoutes);
 
+app.use("/api/popular-times", popularTimesRoutes);
+
 
 // Lot availability routes
 app.use('/api/lot-availability', availabilityRoutes);
-
 
 // API Routes
 app.get("/api/buildings", async (req, res) => {
@@ -93,3 +95,5 @@ sequelize.authenticate()
   .catch((error) => {
     console.error("Unable to connect to the database:", error);
   });
+
+  module.exports = app

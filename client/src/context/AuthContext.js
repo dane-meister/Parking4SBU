@@ -58,7 +58,8 @@ export const AuthProvider = ({ children }) => {
             
             setUser(res.data.user); // Set the user state with the fetched data
             return res.data.user; // Return the user data
-        } catch {
+        } catch(err) {
+            console.warn("Auth expired or invalid:", err?.response?.status);
             setUser(null); // Clear the user state if authentication fails
             return null; // Return null if authentication fails
         }
@@ -67,6 +68,12 @@ export const AuthProvider = ({ children }) => {
     // Run the authentication check when the component mounts
     useEffect(() => {
         checkAuth().finally(() => setAuthLoading(false)); // Set loading to false after the check
+
+        const interval = setInterval(() => {
+            checkAuth();
+        }, 5 * 60 * 1000); // every 5 minutes
+    
+        return () => clearInterval(interval);
     }, []);
 
     // Determine if the user is authenticated

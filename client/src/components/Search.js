@@ -4,7 +4,6 @@ import Autosuggest from 'react-autosuggest';
 import { useOutletContext } from 'react-router-dom';
 import { getDateWithTime } from '../utils/getDateWithTime';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
-const HOST = "http://localhost:8000"
 
 const AutocompleteSearch = (props) => {
   const { 
@@ -158,7 +157,6 @@ const AutocompleteSearch = (props) => {
   const inputProps = {
     placeholder: `Search for a ${searchType}`, // Dynamic placeholder based on search type
     value,
-    id: 'search-input',
     onChange,
     onKeyDown: handleKeyDown
   };
