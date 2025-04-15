@@ -450,7 +450,7 @@ function Reservation(){
 					setShowConfirmPopup(true);
 				}}
 			>
-				Pay with Card
+				Make Reservation
 			</button>
 
 			</div>
@@ -489,7 +489,7 @@ function Reservation(){
 								<p><strong>Event:</strong> {eventDescription}</p>
 							</>
 						)}
-						<p><strong>Total:</strong> ${(calculatedPrice * 1.08725).toFixed(2)}</p>
+						<p><strong>Total:</strong> ${(calculatedPrice).toFixed(2)}</p>
 					</div>
 
 					<div className="reservation-confirm-popup-buttons">

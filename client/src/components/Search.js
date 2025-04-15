@@ -1,7 +1,8 @@
-// AutocompleteSearch.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
+import { useOutletContext } from 'react-router-dom';
+import { getDateWithTime } from '../utils/getDateWithTime';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 const HOST = "http://localhost:8000"
 
@@ -15,9 +16,12 @@ const AutocompleteSearch = (props) => {
     setLotResults, 
     setBaseLots, 
     setSelectedLot,
-    setSort
+    setSort,
   } = props
 
+  const outletContext = useOutletContext();
+
+  const times = outletContext?.times;
 
   const [ suggestions, setSuggestions ] = useState([]);
 
@@ -29,7 +33,10 @@ const AutocompleteSearch = (props) => {
     .filter(lot => lot.capacity > 0)
     .map(lot => lot.name);
 
-     // Function that performs the search logic
+  const startTime = times?.arrival ? getDateWithTime(times.arrival) : null;
+  const endTime = times?.departure ? getDateWithTime(times.departure) : null;
+
+  // Function that performs the search logic
   const performSearch = async () => {
     if (!value.trim()) {
       setSelectedBuilding(null);
@@ -39,8 +46,21 @@ const AutocompleteSearch = (props) => {
       if (building_names.includes(value)) {
         const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
         setSelectedBuilding(bldg);
+
+        const startDate = new Date(startTime);
+        const endDate = new Date(endTime);
+
         try {
+          if (!startTime || !endTime || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            console.error("[AutocompleteSearch] Invalid times!", startTime, endTime);
+            return;
+          }
+
           const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
+            params: {
+              start: startDate.toISOString(),
+              end: endDate.toISOString(),
+            },
             withCredentials: true
           });
           setBaseLots(response.data);
