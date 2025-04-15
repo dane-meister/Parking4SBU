@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
+import LotFormModal from '../components/LotFormModal';
 const HOST = "http://localhost:8000"
 
 export default function Admin() {
@@ -9,7 +10,9 @@ export default function Admin() {
     const [users, setUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
     const [lots, setLots] = useState([]);
+    const [editingLot, setEditingLot] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [feedbackList, setFeedbackList] = useState([]);
 
     // Fetch users when 'Users' tab is selected
     useEffect(() => {
@@ -31,6 +34,14 @@ export default function Admin() {
                 .catch(err => {
                     console.error("Failed to fetch lots", err);
                     setLots([]);
+                });
+        }
+        if (adminOption === 'feedback') {
+            axios.get(`${HOST}/api/auth/admin/feedback`, { withCredentials: true })
+                .then(res => setFeedbackList(res.data))
+                .catch(err => {
+                    console.error("Failed to fetch feedback", err);
+                    setFeedbackList([]);
                 });
         }
     }, [adminOption]);
@@ -110,6 +121,11 @@ export default function Admin() {
                         className={'type-hover ' + (adminOption === 'analysis' ? 'selected' : '')}
                         onClick={() => setAdminOption('analysis')}
                     >Analysis</span>
+                    <span>/</span>
+                    <span
+                        className={'type-hover ' + (adminOption === 'feedback' ? 'selected' : '')}
+                        onClick={() => setAdminOption('feedback')}
+                    >Feedback</span>
                 </div>
             </div>
             <div className='admin-content'>
@@ -156,6 +172,7 @@ export default function Admin() {
                         <input
                             type="text"
                             className="user-search"
+                            name='user-search'
                             placeholder="Search by name or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -188,7 +205,7 @@ export default function Admin() {
                                 <p>No parking lots found.</p>
                             ) : (
                                 lots.map(lot => (
-                                    <div className="user-card" key={lot.lot_id}>
+                                    <div className="user-card" key={lot.id} onClick={() => setEditingLot({...lot})}>
                                         <div className="user-info">
                                             <strong>{lot.name}</strong><br />
                                             ID: {lot.id}<br />
@@ -209,8 +226,40 @@ export default function Admin() {
                             )}
                         </div>
                     </>
-                )}                {adminOption === 'events' && <div>Events Management</div>}
-                {adminOption === 'analysis' && <div>Analysis Management</div>}
+                )}
+                {adminOption === 'events' && (
+                    <div>
+                        <h2>Events Management</h2>
+                        <p>Event management tools will be available here.</p>
+                    </div>
+                )}
+                {adminOption === 'analysis' && (
+                    <div>
+                        <h2>Analysis</h2>
+                        <p>Data analysis tools will be available here.</p>
+                    </div>
+                )}
+                {adminOption === 'feedback' && (
+                    <>
+                        <h2>User Feedback</h2>
+                        <div className="user-list">
+                            {feedbackList.length === 0 ? (
+                                <p>No feedback found.</p>
+                            ) : (
+                                feedbackList.map(feedback => (
+                                    <div className="user-card" key={feedback.feedback_id}>
+                                        <div className="user-info">
+                                            ID: {feedback.user_id}<br />
+                                            Feedback: {feedback.feedback_text}<br />
+                                            Rating: {feedback.rating}<br />
+                                            {/* If admin has read the feedback Read: {feedback.isRead ? 'Yes' : 'No'}<br /> */}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
+                )}
             </div>
             {editingUser && (
                 <div className="edit-modal" onClick={() => setEditingUser(null)}>
@@ -292,6 +341,13 @@ export default function Admin() {
                     </div>
                 </div>
             )}
+
+            <LotFormModal
+                isOpen={!!editingLot}
+                lot={editingLot}  
+                onRequestClose={() => setEditingLot(false)}      
+            ></LotFormModal>
+
         </main>
     );
 }

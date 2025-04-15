@@ -143,6 +143,7 @@ export default function RegisterPage() {
                     value={form.first_name}
                     onChange={handleChange}
                     required
+                    autoComplete='given-name'
                   />
                 </div>
                 <div>
@@ -153,6 +154,7 @@ export default function RegisterPage() {
                     value={form.last_name}
                     onChange={handleChange}
                     required
+                    autoComplete='family-name'
                   />
                 </div>
               </div>
@@ -165,6 +167,7 @@ export default function RegisterPage() {
                 value={form.email}
                 onChange={handleChange}
                 required
+                autoComplete='email'
               />
 
               <label htmlFor="password" style={{ marginTop: '16px' }}>Password</label>
@@ -202,6 +205,7 @@ export default function RegisterPage() {
                 value={form.phone_number}
                 onChange={handleChange}
                 required
+                autoComplete='tel'
               />
             </>
           )}
@@ -350,6 +354,7 @@ export default function RegisterPage() {
                     value={form.country}
                     onChange={handleChange}
                     required
+                    autoComplete='country'
                   />
                 </div>
               </div>

@@ -1,55 +1,71 @@
 .feedback-page {
-    padding: 30px 50px;
-    background-color: #f9f9f9;
-    min-height: calc(100vh - 60px - 60px - 50px); /* header + nav + footer spacing */
-    font-family: 'Barlow Medium', sans-serif;
-  }
-  
-  .feedback-page h1 {
-    font-size: 36px;
-    margin-bottom: 30px;
-    color: #333;
-    text-align: left;
-  }
-  
-  .feedback-page textarea {
-    width: 100%;
-    max-width: 600px;
-    padding: 15px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    resize: vertical;
-    margin-bottom: 20px;
-    font-family: inherit;
-  }
-  
-  .feedback-page label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .feedback-page select {
-    width: 100px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-family: inherit;
-  }
-  
-  .feedback-page button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
+  padding: 30px 50px;
+  background-color: #f9f9f9;
+  min-height: calc(100vh - 60px - 60px - 50px);
+  font-family: 'Barlow Medium', sans-serif;
+}
+
+.feedback-page h1 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: #333;
+  text-align: left;
+}
+
+.feedback-page textarea {
+  width: 100%;
+  max-width: 600px;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  margin-bottom: 20px;
+  font-family: inherit;
+}
+
+.feedback-page label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.feedback-page select {
+  width: 100px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+}
+
+.feedback-page button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.feedback-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background-color: #f8f8f8;
+}
+
+.feedback-card textarea {
+  resize: vertical;
+}
+
+.feedback-card button {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}

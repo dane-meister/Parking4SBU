@@ -28,6 +28,7 @@ db.Rate = require("./Rate")(sequelize, Sequelize.DataTypes);
 db.User = require("./User")(sequelize, Sequelize.DataTypes);
 db.Vehicle = require("./Vehicle")(sequelize, Sequelize.DataTypes);
 db.Reservation = require("./Reservation")(sequelize, Sequelize.DataTypes);
+db.Feedback = require("./Feedback")(sequelize, Sequelize.DataTypes);
 
 // Setup associations
 db.ParkingLot.hasMany(db.Rate, {
@@ -69,6 +70,14 @@ db.User.hasMany(db.Reservation, { foreignKey: "user_id" });
 db.ParkingLot.hasMany(db.Reservation, { foreignKey: "parking_lot_id" });
 db.Vehicle.hasMany(db.Reservation, { foreignKey: "vehicle_id" });
 
+// Feedback belongs to User
+db.User.hasMany(db.Feedback, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE"
+});
+db.Feedback.belongsTo(db.User, {
+  foreignKey: "user_id"
+});
 
 // Add Sequelize instance and constructor to the `db` object
 db.sequelize = sequelize;
