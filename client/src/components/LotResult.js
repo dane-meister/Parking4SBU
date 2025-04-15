@@ -91,6 +91,14 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
         : `${distance.toFixed(3)} mi`; // remain in miles
     }
 
+    const hourlyMap = lotObj.availability || {};
+    const hourlyTotals = Object.values(hourlyMap)
+      .map(hour => hour?.total)
+      .filter(n => typeof n === 'number'); // Filters out undefined or null
+
+    const minAvailable = hourlyTotals.length ? Math.min(...hourlyTotals) : null;
+
+
   return (
     <section 
       className="lot-result hbox" 
@@ -114,7 +122,9 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
             <span className="result-time">{timeRange}</span>
           </div>
           <div className="result-available-row">
-            {availableCapacity ? `${availableCapacity} spots available` : 'unknown capacity'} {/* Display available capacity or fallback */}
+            {minAvailable != null
+              ? `${minAvailable} spots available`
+              : 'unknown capacity'}
           </div>
         </div>
         <div className="flex"/> {/* Spacer for layout adjustment */}

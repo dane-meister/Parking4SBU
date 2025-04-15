@@ -5,6 +5,7 @@ require("dotenv").config();
 const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
 const reservationRoutes = require('./routes/reservation');
+const availabilityRoutes = require('./routes/availability');
 
 
 // Import models
@@ -25,7 +26,12 @@ app.use(cors({
 // Authentication routes
 app.use("/api/auth", authRoutes);
 
+// Reservation routes
 app.use("/api/reservations", reservationRoutes);
+
+
+// Lot availability routes
+app.use('/api/lot-availability', availabilityRoutes);
 
 
 // API Routes

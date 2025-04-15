@@ -30,8 +30,38 @@ export default function LotDetails({ lotObj, rateType, times }) {
 		resident_capacity,
 		resident_zone,
 		Rates = [],
+		availability = {},
 	} = lotObj;
 
+	console.log("lotObj", lotObj);
+
+	// Compute minimum available per spot type across entire selected range
+	const minAvailability = {
+		faculty: Infinity,
+		commuter_core: Infinity,
+		commuter_perimeter: Infinity,
+		commuter_satellite: Infinity,
+		resident: Infinity,
+		metered: Infinity,
+		ada: Infinity,
+		ev_charging: Infinity,
+		total: Infinity,
+	};
+
+	Object.values(availability).forEach(hourBlock => {
+		for (const [key, value] of Object.entries(hourBlock)) {
+			if (minAvailability[key] !== undefined) {
+				minAvailability[key] = Math.min(minAvailability[key], value);
+			}
+		}
+	});
+
+	// Replace Infinity with null if no data was found
+	Object.keys(minAvailability).forEach(key => {
+		if (minAvailability[key] === Infinity) {
+			minAvailability[key] = null;
+		}
+	});
 
 	const rateFields = {
 		hourly: 'Hourly',
@@ -55,12 +85,28 @@ export default function LotDetails({ lotObj, rateType, times }) {
 				lotName: name,
 				covered,
 				ev_charging_availability,
+				ev_charging_capacity,
 				ada_availability,
+				ada_capacity,
+				faculty_capacity,
+				faculty_availability,
+				commuter_perimeter_capacity,
+				commuter_perimeter_availability,
+				commuter_core_capacity,
+				commuter_core_availability,
+				commuter_satellite_capacity,
+				commuter_satellite_availability,
+				resident_capacity,
+				resident_availability,
+				metered_capacity,
+				metered_availability,
 				rates: Rates,
+				availability,
 				defaultTimeRange: times,
 			}
 		});
 	};
+	console.log("availability", availability);
 
 	// Render the lot details section
 	return (
@@ -129,36 +175,37 @@ export default function LotDetails({ lotObj, rateType, times }) {
 
 			{/* Lot Capacity Info Section */}
 			<section className='lot-capacity-section'>
-			<h4 className='lot-rates-title'>Capacity</h4>
-			<ul className='rate-list'>
-				{faculty_capacity > 0 && (
-				<li>Faculty: {faculty_availability} / {faculty_capacity}</li>
-				)}
-				{commuter_core_capacity > 0 && (
-				<li>Commuter Core: {commuter_core_availability} / {commuter_core_capacity}</li>
-				)}
-				{commuter_perimeter_capacity > 0 && (
-				<li>Commuter Perimeter: {commuter_perimeter_availability} / {commuter_perimeter_capacity}</li>
-				)}
-				{commuter_satellite_capacity > 0 && (
-				<li>Commuter Satellite: {commuter_satellite_availability} / {commuter_satellite_capacity}</li>
-				)}
-				{resident_capacity > 0 && (
-				<li>Resident: {resident_availability} / {resident_capacity}</li>
-				)}
-				{metered_capacity > 0 && (
-				<li>Metered: {metered_availability} / {metered_capacity}</li>
-				)}
-				{ada_capacity > 0 && (
-				<li>ADA: {ada_availability} / {ada_capacity}</li>
-				)}
-				{ev_charging_capacity > 0 && (
-				<li>EV Charging: {ev_charging_availability} / {ev_charging_capacity}</li>
-				)}
-				{capacity > 0 && (
-				<li><strong>Total: </strong>{capacity} Available Spaces</li>
-				)}
-			</ul>
+				<h4 className='lot-rates-title'>Capacity</h4>
+				<ul className='rate-list'>
+					{faculty_capacity > 0 && (
+						<li>Faculty: {minAvailability.faculty ?? faculty_availability} / {faculty_capacity}</li>
+					)}
+					{commuter_core_capacity > 0 && (
+						<li>Commuter Core: {minAvailability.commuter_core ?? commuter_core_availability} / {commuter_core_capacity}</li>
+					)}
+					{commuter_perimeter_capacity > 0 && (
+						<li>Commuter Perimeter: {minAvailability.commuter_perimeter ?? commuter_perimeter_availability} / {commuter_perimeter_capacity}</li>
+					)}
+					{commuter_satellite_capacity > 0 && (
+						<li>Commuter Satellite: {minAvailability.commuter_satellite ?? commuter_satellite_availability} / {commuter_satellite_capacity}</li>
+					)}
+					{resident_capacity > 0 && (
+						<li>Resident: {minAvailability.resident ?? resident_availability} / {resident_capacity}</li>
+					)}
+					{metered_capacity > 0 && (
+						<li>Metered: {minAvailability.metered ?? metered_availability} / {metered_capacity}</li>
+					)}
+					{ada_capacity > 0 && (
+						<li>ADA: {minAvailability.ada ?? ada_availability} / {ada_capacity}</li>
+					)}
+					{ev_charging_capacity > 0 && (
+						<li>EV Charging: {minAvailability.ev_charging ?? ev_charging_availability} / {ev_charging_capacity}</li>
+					)}
+					{capacity > 0 && (
+						<li><strong>Total:</strong> {minAvailability.total ?? 'unknown'} / {capacity} Available</li>
+					)}
+				</ul>
+
 			</section>
 
 			{/* Booking / Action */}

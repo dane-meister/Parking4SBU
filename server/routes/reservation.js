@@ -13,12 +13,13 @@ router.post('/', async (req, res) => {
             end_time,
             total_price,
             spot_count,
-            event_description
+            event_description,
+            spot_type
         } = req.body;
 
         console.log("Received reservation data:", req.body);
 
-        if (!user_id || !parking_lot_id || !vehicle_id || !start_time || !end_time) {
+        if (!user_id || !parking_lot_id || !vehicle_id || !start_time || !end_time || !spot_type) {
             return res.status(400).json({ message: "Missing required reservation fields." });
         }
   
@@ -31,7 +32,8 @@ router.post('/', async (req, res) => {
             total_price: total_price ?? 0,
             spot_count: spot_count ?? 1,
             event_description: event_description ?? null,
-            status: 'pending'
+            spot_type,
+            status: event_description ? 'pending' : 'confirmed'
         });
     
         res.status(201).json({ message: "Reservation created", reservation });
