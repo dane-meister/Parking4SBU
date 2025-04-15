@@ -230,6 +230,7 @@ function LotList({
         setBaseLots={setBaseLots}
         setSelectedLot={setSelectedLot}
         setSort={() => setSortMethod('Distance')}
+        times={times}
       />
       {/* Filter component for additional filtering options */}
       <Filter 
