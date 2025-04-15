@@ -1,7 +1,8 @@
-// AutocompleteSearch.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
+import { useOutletContext } from 'react-router-dom';
+import { getDateWithTime } from '../utils/getDateWithTime';
 import '../stylesheets/Search.css'; // Import CSS file for custom styling
 
 const AutocompleteSearch = (props) => {
@@ -14,11 +15,14 @@ const AutocompleteSearch = (props) => {
     setLotResults, 
     setBaseLots, 
     setSelectedLot,
-    setSort
+    setSort,
   } = props
 
+  const outletContext = useOutletContext();
 
-  const [ suggestions, setSuggestions ] = useState([]);
+  const times = outletContext?.times;
+
+  const [suggestions, setSuggestions] = useState([]);
 
   // Extract building names from the buildings array
   const building_names = buildings.map(bldg => bldg.building_name);
@@ -28,7 +32,10 @@ const AutocompleteSearch = (props) => {
     .filter(lot => lot.capacity > 0)
     .map(lot => lot.name);
 
-     // Function that performs the search logic
+  const startTime = times?.arrival ? getDateWithTime(times.arrival) : null;
+  const endTime = times?.departure ? getDateWithTime(times.departure) : null;
+
+  // Function that performs the search logic
   const performSearch = async () => {
     if (!value.trim()) {
       setSelectedBuilding(null);
@@ -38,8 +45,21 @@ const AutocompleteSearch = (props) => {
       if (building_names.includes(value)) {
         const bldg = buildings.filter(bldg => bldg.building_name === value)[0];
         setSelectedBuilding(bldg);
+
+        const startDate = new Date(startTime);
+        const endDate = new Date(endTime);
+
         try {
+          if (!startTime || !endTime || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            console.error("[AutocompleteSearch] Invalid times!", startTime, endTime);
+            return;
+          }
+
           const response = await axios.get(`http://localhost:8000/api/wayfinding/${bldg.id}`, {
+            params: {
+              start: startDate.toISOString(),
+              end: endDate.toISOString(),
+            },
             withCredentials: true
           });
           setBaseLots(response.data);
@@ -88,12 +108,12 @@ const AutocompleteSearch = (props) => {
     let suggestions;
     if (searchType === 'building') {
       // Filter building names based on regex match
-      // suggestions = building_names.filter(building =>
-      //   regexes.every(regex => regex.test(building))
-      // );
-      return buildings.filter(bldg =>
-        regexes.every(regex => regex.test(bldg.building_name))
-      );
+      suggestions = buildings
+        .map(bldg => bldg.building_name)
+        .filter(bldg_name =>
+          regexes.every(regex => regex.test(bldg_name))
+        );
+      console.log("suggestions:",suggestions)
     } else { // For parking lots
       // Filter lot names based on regex match
       suggestions = lot_names.filter(lot =>
@@ -103,6 +123,7 @@ const AutocompleteSearch = (props) => {
 
     const MAX_RETURN = 5; // Limit the number of suggestions returned
     if (suggestions.length === 0) {
+      console.log("0 length!")
       return ['No results found']; // Return a default message if no matches
     }
     return suggestions.slice(0, MAX_RETURN);
@@ -124,17 +145,11 @@ const AutocompleteSearch = (props) => {
   };
 
   const getSuggestionValue = (suggestion) => {
-    if (searchType === 'building') {
-      return suggestion.building_name;
-    }
     return suggestion === "No results found" ? "" : suggestion;
   };
 
 
   const renderSuggestion = (suggestion) => {
-    if (searchType === 'building') {
-      return <div>{suggestion.building_name}</div>;
-    }
     return <div>{suggestion}</div>;
   };
 

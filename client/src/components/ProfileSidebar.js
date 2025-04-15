@@ -1,6 +1,7 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getInitialTimes } from "../components/Header";
 
 // ProfileSidebar component displays a sidebar for account management
 // Props:
@@ -10,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 export default function ProfileSidebar({ username, activeTab, setActiveTab, setCurrVehiclePage, setSelectedVehicle }) {
   const { logout } = useAuth(); // Access the logout function from AuthContext
   const navigate = useNavigate(); // Hook to programmatically navigate
+  const { setTimes } = useOutletContext();
 
   const handleSignOut = async () => {
     try {
@@ -20,6 +22,7 @@ export default function ProfileSidebar({ username, activeTab, setActiveTab, setC
       });
 
       logout(); // Clear frontend state
+      setTimes(getInitialTimes()); // Reset times to initial state
       navigate("/auth/login");
     } catch (err) {
       console.error("Sign out failed:", err);

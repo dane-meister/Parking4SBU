@@ -6,6 +6,8 @@ const sequelize = require("./db");
 const authRoutes = require('./routes/auth');
 const reservationRoutes = require('./routes/reservation');
 const popularTimesRoutes = require('./routes/popularTimes');
+const availabilityRoutes = require('./routes/availability');
+const { computeAvailability } = require('./routes/availability');
 
 // Import models
 const { Building, ParkingLot, Rate, User } = require("./models");
@@ -25,10 +27,14 @@ app.use(cors({
 // Authentication routes
 app.use("/api/auth", authRoutes);
 
+// Reservation routes
 app.use("/api/reservations", reservationRoutes);
 
 app.use("/api/popular-times", popularTimesRoutes);
 
+
+// Lot availability routes
+app.use('/api/lot-availability', availabilityRoutes);
 
 // API Routes
 app.get("/api/buildings", async (req, res) => {
@@ -58,8 +64,21 @@ app.get("/api/parking-lots", async (req, res) => {
 app.get("/api/wayfinding/:buildingId", async (req, res) => {
   try {
       const { buildingId } = req.params;
+      const { start, end } = req.query;
+
+      if (!start || !end) {
+        return res.status(400).json({ message: "Missing start or end query params." });
+      }
+
       const sortedLots = await getSortedParkingLots(buildingId);
-      res.json(sortedLots);
+      const availabilityMap = await computeAvailability(start, end);
+
+     const enrichedLots = sortedLots.map(lot => ({
+      ...lot,
+      availability: availabilityMap[lot.id]?.hourlyAvailability ?? {}
+    }));
+
+    res.json(enrichedLots);
   } catch (error) {
       res.status(500).json({ message: "Error computing wayfinding distances", error: error.message });
   }
@@ -76,3 +95,5 @@ sequelize.authenticate()
   .catch((error) => {
     console.error("Unable to connect to the database:", error);
   });
+
+  module.exports = app

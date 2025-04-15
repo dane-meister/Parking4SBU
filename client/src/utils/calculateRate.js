@@ -7,6 +7,14 @@ export function calculateReservationCharge({
     maxHours,     
     dailyMaxRate  
   }) {
+    console.log("Calculating reservation charge...");
+    console.log("Start Time:", startTime);
+    console.log("End Time:", endTime);
+    console.log("Rate Start:", rateStart);
+    console.log("Rate End:", rateEnd);
+    console.log("Hourly Rate:", hourlyRate);
+    console.log("Max Hours:", maxHours);
+    console.log("Daily Max Rate:", dailyMaxRate);
     const msPerHour = 1000 * 60 * 60;
     const start = new Date(startTime);
     const end = new Date(endTime);

@@ -9,6 +9,22 @@ export default function FeedbackPage() {
     const [feedback, setFeedback] = useState("");
     const [rating, setRating] = useState(5);
 
+    const handleSubmit = async () => {
+        try {
+            const res = await axios.post(`${HOST}/api/auth/feedback/add`, {
+                feedback_text: feedback,
+                rating: rating,
+            }, { withCredentials: true });
+
+            alert("Feedback submitted successfully!"); // Keep as an alert?
+            setFeedback("");
+            setRating(5);
+        } catch (error) {
+            console.error("Error submitting feedback:", error.response?.data || error.message);
+            alert("Failed to submit feedback."); // Keep as an alert?
+        }
+    };
+
     return (
         <main className="feedback-page">
             <h1>Leave Feedback</h1>
@@ -28,7 +44,7 @@ export default function FeedbackPage() {
                     ))}
                 </select>
             </label>
-            <button type="submit">Submit</button>
+            <button type="submit" onClick={handleSubmit}>Submit</button>
 
         </main>
     );

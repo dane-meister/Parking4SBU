@@ -4,8 +4,6 @@
 	justify-content: center;
 	padding: 0;
 	gap: 10px;
-	height: calc(100vh - 60px - 60px - 50px);
-	overflow: scroll;
 }
 
 .make-reservation-left, .make-reservation-right{
@@ -22,6 +20,7 @@
 	justify-content: space-around;
 	margin-left: 5px;
 	max-width: 620px;
+	margin-bottom: 20px;;
 }
 
 .make-reservation-right{
@@ -105,3 +104,21 @@
 .make-reservation-pay-btn:active{
 	background-color: var(--btn-color-active);
 }
+
+.make-reservation-lot-box .time-selector-container{
+	border-bottom: 1px solid #ADAEB2;
+	margin: 0;
+	padding: 0px 20px 25px 20px;
+}
+
+#event-details{
+	width: 100%;	
+}
+
+.error-text {
+	color: red;
+	margin-left: 25px;
+	margin-top: 5px;
+	font-size: 14px;
+  }
+  

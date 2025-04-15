@@ -126,19 +126,19 @@ function LandingPage() {
         </div>
 
 
-        <div className="search-container">
-          <Search 
-            searchType={buildingLotType}
-            buildings={buildings}
-            parkingLots={parkingLots}
-            value={value}
-            setValue={setValue}
-            setSelectedBuilding={setSelectedBuilding} 
-            setLotResults={setLotResults}
-            setBaseLots={setBaseLots}
-            setSelectedLot={setSelectedLot}
-          />
-        </div>
+        {/* <div className="search-container"> */}
+        <Search 
+          searchType={buildingLotType}
+          buildings={buildings}
+          parkingLots={parkingLots}
+          value={value}
+          setValue={setValue}
+          setSelectedBuilding={setSelectedBuilding} 
+          setLotResults={setLotResults}
+          setBaseLots={setBaseLots}
+          setSelectedLot={setSelectedLot}
+        />
+        {/* </div> */}
 
 
         {/* Time selection bar */}
