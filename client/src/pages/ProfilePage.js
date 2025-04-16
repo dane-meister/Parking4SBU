@@ -5,7 +5,8 @@ import '../stylesheets/ProfilePopup.css';
 import { ProfileSidebar, ProfileForm, VehiclesForm } from '../components'
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-const HOST = "http://localhost:8000"
+// const HOST = "http://localhost:8000"
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function ProfilePage() {
   // State to track the currently active tab ('profile' or 'vehicles')
