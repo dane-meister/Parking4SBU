@@ -1,5 +1,4 @@
-const { Vehicle } = require('../models');
-const sequelize = require('../db');
+const { Vehicle, sequelize } = require('../models');
 const { faker } = require('@faker-js/faker');
 
 async function populateVehicles() {
@@ -35,7 +34,7 @@ async function populateVehicles() {
   } catch (error) {
     console.error("Error seeding vehicles:", error);
   } finally {
-    await sequelize.close();
+
   }
 }
 

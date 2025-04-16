@@ -1,5 +1,4 @@
-const { Reservation, ParkingLot, Vehicle, User } = require('../models');
-const sequelize = require('../db'); // make sure to import your sequelize instance
+const { Reservation, ParkingLot, Vehicle, User, sequelize } = require('../models');
 const { faker } = require('@faker-js/faker');
 
 
@@ -86,8 +85,6 @@ async function populateReservations() {
     } catch (error) {
         console.error("Error seeding reservations:", error);
     } finally {
-        //close the database connection.
-        await sequelize.close();
     }
 }
 

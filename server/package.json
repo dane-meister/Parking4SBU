@@ -11,7 +11,8 @@
     "populate:users": "node populate_db/populateUsers.js",
     "populate:vehicles": "node populate_db/populateVehicles.js",
     "populate:reservations": "node populate_db/populateReservations.js",
-    "populate": "run-s populate:buildings populate:lots populate:rates populate:users populate:vehicles populate:reservations",
+    "finalize": "node populate_db/finalize.js",
+    "populate": "run-s populate:buildings populate:lots populate:rates populate:users populate:vehicles populate:reservations finalize",
     "sync": "node sync.js",
     "sync-populate": "run-s sync populate"
   },
