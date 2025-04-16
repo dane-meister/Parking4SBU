@@ -35,7 +35,7 @@ export default function App() {
           {/* Protected route wrapper */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             {/* Route for the lot selection page, passing selectedLot and setSelectedLot as props */}
-            <Route path="/home" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/lotselection" element={<LotSelectionPage />} />
             {/* Route for the profile page */}
             <Route path="/profile" element={<ProfilePage />} />

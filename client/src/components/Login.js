@@ -24,7 +24,7 @@ export default function LoginPage() {
           console.log("Your account is not approved yet.");
           return;
         } else {
-          navigate('/home'); // Navigate to the home page on successful login
+          navigate('/'); // Navigate to the home page on successful login
         }
       } else {
         setError("Invalid email or password."); // Set error message for invalid credentials
