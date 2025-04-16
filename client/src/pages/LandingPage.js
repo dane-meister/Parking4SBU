@@ -7,6 +7,7 @@ import { useOutletContext } from "react-router-dom";
 import "../stylesheets/LandingPage.css"; 
 import TimeSelector from "../components/TimeSelector";
 import { getInitialTimes } from "../components/Header"; 
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 function LandingPage() {
   //"hourly" or "daily"
@@ -41,8 +42,8 @@ function LandingPage() {
 
         // Fetch buildings and parking lots data concurrently
         const [buildingsRes, parkingLotsRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/buildings", { withCredentials: true }),
-          axios.get("http://localhost:8000/api/parking-lots", { withCredentials: true }),
+          axios.get(`${HOST}/api/buildings`, { withCredentials: true }),
+          axios.get(`${HOST}/api/parking-lots`, { withCredentials: true }),
         ]);        
 
         // Update state with fetched data

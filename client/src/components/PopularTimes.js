@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';  // ensures that all chart components are registered
 import '../stylesheets/PopularTimes.css';
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 export default function PopularTimes({ lotId, initialSelectedDay }) {
     const [popularData, setPopularData] = useState(null);
@@ -19,7 +20,7 @@ export default function PopularTimes({ lotId, initialSelectedDay }) {
     useEffect(() => {
         async function fetchPopularTimes() {
             try {
-                const response = await fetch(`http://localhost:8000/api/popular-times/${lotId}`);
+                const response = await fetch(`${HOST}/api/popular-times/${lotId}`);
                 if (!response.ok) throw new Error("Failed to fetch popular times data.");
                 const data = await response.json();
                 setPopularData(data);
