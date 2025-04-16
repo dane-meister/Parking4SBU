@@ -62,7 +62,7 @@ const Header = ({ times, setTimes }) => {
       <header className="header">
         <div className="header-left">
           {/* Logo and title link to the home page */}
-          <Link to="/home">
+          <Link to="/">
             <img className="logo" src="/images/sbu-logo.png" alt="Stony Brook Logo" />
           </Link>
           <div className="header-title">P4SBU</div>
