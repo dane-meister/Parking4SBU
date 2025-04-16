@@ -105,16 +105,7 @@ describe("Reservation Concurrency", () => {
     ]);
 
     const results = [res1, res2];
-
-    // Logging to help debug failures
-    results.forEach((r, i) => {
-      if (r.status === "fulfilled") {
-        console.log(`Response ${i + 1}:`, r.value.statusCode, r.value.body);
-      } else {
-        console.error(`Request ${i + 1} failed:`, r.reason);
-      }
-    });
-
+    
     const success = results.filter(r => r.status === "fulfilled" && r.value.statusCode === 201);
     const conflict = results.filter(r => r.status === "fulfilled" && r.value.statusCode === 409);
 
@@ -127,3 +118,7 @@ describe("Reservation Concurrency", () => {
     await db.sequelize.close();
   });
 });
+
+afterAll(async () => {
+    await db.sequelize.close();
+  });
