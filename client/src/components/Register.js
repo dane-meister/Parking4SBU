@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../stylesheets/Auth.css';
-const HOST = "http://localhost:8000"
+// const HOST = "http://localhost:8000"
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Base URL for API requests
 
 export default function RegisterPage() {
   const navigate = useNavigate();

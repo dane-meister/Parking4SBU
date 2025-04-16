@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Popup } from '.';
 import axios from 'axios';
-const HOST = "http://localhost:8000"
+// const HOST = "http://localhost:8000"
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 export default function VehiclesForm(props) {
   const { 

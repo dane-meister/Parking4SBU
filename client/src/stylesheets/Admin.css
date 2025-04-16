@@ -138,7 +138,7 @@
   gap: 10px;
 }
 
-.save-button, .respond-button {
+.save-button, .respond-button, .add-lot-button {
   background-color: #990000;
   color: white;
   border: none;

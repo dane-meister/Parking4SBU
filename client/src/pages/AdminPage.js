@@ -4,9 +4,13 @@ import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
 import LotFormModal from '../components/LotFormModal';
 import Popup from '../components/Popup';
-const HOST = "http://localhost:8000"
+// const HOST = "http://localhost:8000"
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
+    console.log(process.env.REACT_APP_API_URL);
+    console.log(HOST);
+  
   const [adminOption, setAdminOption] = useState('users');
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
@@ -251,6 +255,7 @@ export default function Admin() {
         )}
         {adminOption === 'lots' && (
           <>
+            <button className="add-lot-button">Add a Lot</button>
             <h2>Manage Parking Lots</h2>
             <div className="user-list">
               {lots.length === 0 ? (

@@ -10,7 +10,8 @@ import Popup from '../components/Popup';
 import axios from 'axios';
 import '../stylesheets/MakeReservation.css' // Import the CSS stylesheet for styling the ReservationPage component
 
-const HOST = "http://localhost:8000";
+// const HOST = "http://localhost:8000";
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 function Reservation(){
 	const { user } = useAuth(); // Access the current user from AuthContext
