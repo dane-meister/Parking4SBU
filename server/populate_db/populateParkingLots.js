@@ -6,6 +6,8 @@ const { ParkingLot, sequelize } = require("../models");
 // Function to parse CSV data and insert it into the database
 async function insertParkingLots() {
   try {
+    // Authenticate the database connection
+    await sequelize.authenticate();
     const results = []; // Array to store parsed parking lot data
 
     // Read the CSV file containing parking lot data

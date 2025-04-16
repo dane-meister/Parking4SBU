@@ -31,6 +31,8 @@ db.Reservation = require("./Reservation")(sequelize, Sequelize.DataTypes);
 db.Feedback = require("./Feedback")(sequelize, Sequelize.DataTypes);
 
 // Setup associations
+
+// ParkingLot ↔ Rates
 db.ParkingLot.hasMany(db.Rate, {
   foreignKey: "parking_lot_id",
   onDelete: "CASCADE"
@@ -39,6 +41,7 @@ db.Rate.belongsTo(db.ParkingLot, {
   foreignKey: "parking_lot_id"
 });
 
+// User ↔ Vehicle
 db.User.hasMany(db.Vehicle, {
   foreignKey: {
     name: "user_id",
@@ -54,30 +57,17 @@ db.Vehicle.belongsTo(db.User, {
   allowNull: false,
 });
 
-// Reservation belongs to User
-db.Reservation.belongsTo(db.User, {
-  foreignKey: "user_id",
-  onDelete: "CASCADE"
-});
-
-// Reservation belongs to ParkingLot
-db.Reservation.belongsTo(db.ParkingLot, {
-  foreignKey: "parking_lot_id",
-  onDelete: "CASCADE"
-});
-
-// Reservation belongs to Vehicle
-db.Reservation.belongsTo(db.Vehicle, {
-  foreignKey: "vehicle_id",
-  onDelete: "CASCADE"
-});
+// Reservations
+db.Reservation.belongsTo(db.User, { foreignKey: "user_id", onDelete: "CASCADE" });
+db.Reservation.belongsTo(db.ParkingLot, { foreignKey: "parking_lot_id", onDelete: "CASCADE" });
+db.Reservation.belongsTo(db.Vehicle, { foreignKey: "vehicle_id", onDelete: "CASCADE" });
 
 // add reverse associations
 db.User.hasMany(db.Reservation, { foreignKey: "user_id" });
 db.ParkingLot.hasMany(db.Reservation, { foreignKey: "parking_lot_id" });
 db.Vehicle.hasMany(db.Reservation, { foreignKey: "vehicle_id" });
 
-// Feedback belongs to User
+// Feedback ↔ User
 db.User.hasMany(db.Feedback, {
   foreignKey: "user_id",
   onDelete: "CASCADE"
@@ -89,15 +79,6 @@ db.Feedback.belongsTo(db.User, {
 // Add Sequelize instance and constructor to the `db` object
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
-
-db.sequelize.sync({ alter: true })
-  .then(() => {
-    console.log("✅ Database synchronized with models.");
-  })
-  .catch((err) => {
-    console.error("❌ Error syncing database:", err);
-  });
   
 // Export the `db` object for use in other parts of the application
 module.exports = db;
