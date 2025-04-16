@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getInitialTimes } from "../components/Header";
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 // ProfileSidebar component displays a sidebar for account management
 // Props:
@@ -16,7 +17,7 @@ export default function ProfileSidebar({ username, activeTab, setActiveTab, setC
   const handleSignOut = async () => {
     try {
       // Optional: notify backend to clear secure cookie
-      await fetch("http://localhost:8000/api/auth/logout", {
+      await fetch(`${HOST}/api/auth/logout`, {
         method: "POST",
         credentials: "include"
       });
