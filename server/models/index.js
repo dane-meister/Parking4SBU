@@ -90,6 +90,15 @@ db.Feedback.belongsTo(db.User, {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+
+db.sequelize.sync({ alter: true })
+  .then(() => {
+    console.log("✅ Database synchronized with models.");
+  })
+  .catch((err) => {
+    console.error("❌ Error syncing database:", err);
+  });
+  
 // Export the `db` object for use in other parts of the application
 module.exports = db;
 
