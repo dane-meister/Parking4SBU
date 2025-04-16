@@ -1,31 +1,39 @@
 import React from 'react';
 
-// Component to display a single reservation item
 export default function CurrentReservationItem({ reservation }) {
-  // Destructure reservation details from the reservation prop
   const {
     lotName,
     date,
     time,
     licensePlate,
-    reservationId, 
-    status
+    reservationId,
+    status,
+    spotCount,
+    eventDescription
   } = reservation;
+
+  const statusClass = `status ${status.toLowerCase().replace(/\s+/g, '-')}`;
 
   return (
     <div className="reservation-item">
-      {/* Header section displaying the lot name and reservation status */}
       <div className="reservation-header">
-        <span className="lot-name">{lotName}</span>
-        {/* Apply a dynamic class based on the status */}
-        <span className={`status ${status.toLowerCase()}`}>{status}</span>
+        <span className="lot-name">
+          {lotName}
+          {eventDescription && (
+            <span className="event-badge">EVENT</span>
+          )}
+        </span>
+        <span className={statusClass}>{status}</span>
       </div>
 
-      {/* Details section displaying date, time, license plate, and reservation ID */}
       <div className="reservation-details">
         <p><strong>Date:</strong> {date}</p>
         <p><strong>Time:</strong> {time}</p>
         <p><strong>License Plate:</strong> {licensePlate}</p>
+        <p><strong>Spots Reserved:</strong> {spotCount || 1}</p>
+        {eventDescription && (
+          <p><strong>Event:</strong> {eventDescription}</p>
+        )}
         {reservationId && (
           <p><strong>Reservation ID:</strong> {reservationId}</p>
         )}
@@ -34,4 +42,3 @@ export default function CurrentReservationItem({ reservation }) {
   );
 }
 
-  
