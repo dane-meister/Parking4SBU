@@ -23,6 +23,9 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
   const [tempFilterUncovered, setTempFilterUncovered] = useState(filterUncovered);
   const [tempFilterEVCharging, setTempFilterEVCharging] = useState(filterEVCharging);
   const [tempFilterDisability, setTempFilterDisability] = useState(filterDisability);
+
+  // State for result sorting type
+  const [ resultType, setResultType ] = useState('Relevance');
   
   // State for search input value
   const [ value, setValue ] = useState(initialSearchValue || '');
@@ -213,7 +216,10 @@ function LotList({
       <span>/</span>
       <span 
         className={'type-hover '+((buildingLotType==='lot') ? 'selected' : '')}
-        onClick={() => setBuildingLotType('lot')}
+        onClick={() => {
+          setBuildingLotType('lot');
+          setSelectedBuilding(null);
+        }}
       >Lot</span>
     </div>
 
@@ -230,6 +236,7 @@ function LotList({
         setBaseLots={setBaseLots}
         setSelectedLot={setSelectedLot}
         setSort={() => setSortMethod('Distance')}
+        times={times}
       />
       {/* Filter component for additional filtering options */}
       <Filter 

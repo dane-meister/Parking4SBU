@@ -39,18 +39,6 @@
     color: #fff;
   }
   
-  .search-container {
-    margin-bottom: 1.5rem;
-    width: 100%;
-    max-width: 600px;           /* Adjust max width as needed */
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;        /* Some internal padding */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
-  }
-  
   .duration-selector-container {
     margin-bottom: 1.5rem;
     cursor: pointer;
@@ -142,6 +130,7 @@
     cursor: pointer;
     padding-bottom: 0.25rem;
     transition: color 0.3s, border-bottom 0.3s;
+    height: 27px;
   }
   
   /* Underline selected option */
@@ -159,7 +148,7 @@
   .find-parking-btn button {
     padding: 1rem 2rem;
     font-size: 1.2rem;
-    background-color: #d9534f;   /* Red color */
+    background-color: var(--red);   /* Red color */
     color: #fff;
     border: none;
     border-radius: 30px;         /* Oval-ish curved corners */
@@ -170,8 +159,42 @@
     gap: 0.5rem;
     /* Optionally, add a box-shadow for extra visual pop */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin: 8px;
   }
   
   .find-parking-btn button:hover {
-    background-color: #c9302c;
+    background-color: var(--dark-red);
+  }
+
+  .landing-page [role="combobox"] {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 600px;           /* Adjust max width as needed */
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;        /* Some internal padding */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+  }
+
+  .landing-page .suggestions-container{
+    margin-top: -5px;
+    margin-left: -1px;
+    width: calc(100% + 2px);
+    border: 1px solid #ddd;
+    border-top: none;
+  }
+
+  .landing-page .autocomplete-container{
+    z-index: 1; /* display OVER the white arrow */
+  }
+
+  .landing-page .suggestions-container:empty{
+    border-bottom: none;
+    border-top: none;
+  }
+
+  .landing-page .arrow-container{
+    z-index: 0;
   }

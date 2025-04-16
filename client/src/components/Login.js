@@ -51,6 +51,7 @@ export default function LoginPage() {
               value={email}
               onChange={e => setEmail(e.target.value)} // Update email state on input change
               required
+              autoComplete='email'
             />
           </div>
 

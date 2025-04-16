@@ -22,16 +22,18 @@ export default function CurrentReservationsPage() {
                     lotName: r.ParkingLot?.name || 'Unknown Lot',
                     date: new Date(r.start_time).toLocaleDateString(),
                     time: `${new Date(r.start_time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
+                        hour: '2-digit', minute: '2-digit'
                     })} - ${new Date(r.end_time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
+                        hour: '2-digit', minute: '2-digit'
                     })}`,
-                    licensePlate: r.Vehicle?.plate || 'N/A', // 🔄 Renamed from permitNumber
-                    reservationId: r.id, // ✅ New field for true reservation ID
-                    status: getStatus(r.start_time, r.end_time)
-                }));
+                    licensePlate: r.Vehicle?.plate || 'N/A',
+                    reservationId: r.id,
+                    status: r.status !== 'confirmed'
+                        ? r.status.charAt(0).toUpperCase() + r.status.slice(1)
+                        : getStatus(r.start_time, r.end_time),
+                    spotCount: r.spot_count,
+                    eventDescription: r.event_description
+                  }));
                 setReservations(formatted);
             })
             .catch(err => console.error("Failed to fetch reservations", err));

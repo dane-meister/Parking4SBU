@@ -4,10 +4,28 @@ import "../stylesheets/TimeSelector.css";
 
 const TimeSelector = ({ mode, initialTimes, onSelect, onClose }) => {
   // State to store the selected date and time
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedHour, setSelectedHour] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const raw = initialTimes?.[mode];
+    if (!raw) return "";
+    const [dateStr] = raw.split(" | ");
+    const parsed = new Date(`${dateStr}, ${new Date().getFullYear()}`);
+    if (isNaN(parsed)) return "";
+    return parsed.toISOString().split("T")[0]; // yyyy-mm-dd
+  });
+  
+  const [selectedHour, setSelectedHour] = useState(() => {
+    const raw = initialTimes?.[mode];
+    if (!raw) return "";
+    const [, timeStr] = raw.split(" | ");
+    if (!timeStr) return "";
+    const parsedHour = new Date(`2000-01-01 ${timeStr}`);
+    if (isNaN(parsedHour)) return "";
+    return String(parsedHour.getHours());
+  });
+  
 
   // Function to handle the save button click
   const handleSave = () => {

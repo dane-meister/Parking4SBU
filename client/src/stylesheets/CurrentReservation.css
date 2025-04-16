@@ -54,7 +54,8 @@
     background-color: #28a745;  
   }
   
-  .status.upcoming {
+  .status.upcoming,
+  .status-confirmed {
     background-color: #007bff;  
   }
 
@@ -71,4 +72,27 @@
   .reservation-details strong {
     color: #333;
   }
+
+  .status.pending {
+    background-color: orange;
+    color: #fff;
+  }
+
+  .status.cancelled {
+    background-color: red;
+    color: #fff;
+  }
+
+  .event-badge {
+    background-color: var(--gray);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    margin-left: 10px;
+    border-radius: 12px;
+    vertical-align: middle;
+    text-transform: uppercase;
+  }
+  
   

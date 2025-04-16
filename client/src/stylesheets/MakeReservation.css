@@ -4,7 +4,6 @@
 	justify-content: center;
 	padding: 0;
 	gap: 10px;
-	height: calc(100vh - 60px - 60px - 50px);
 }
 
 .make-reservation-left, .make-reservation-right{
@@ -21,6 +20,7 @@
 	justify-content: space-around;
 	margin-left: 5px;
 	max-width: 620px;
+	margin-bottom: 20px;;
 }
 
 .make-reservation-right{
@@ -114,3 +114,11 @@
 #event-details{
 	width: 100%;	
 }
+
+.error-text {
+	color: red;
+	margin-left: 25px;
+	margin-top: 5px;
+	font-size: 14px;
+  }
+  

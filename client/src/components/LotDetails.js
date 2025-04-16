@@ -1,8 +1,11 @@
 import '../stylesheets/LotDetails.css'
 import { formatTimeRange } from '../utils/formatTime';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useState } from 'react';
+import { getInitialTimes } from './Header';
+import PopularTimes from '../components/PopularTimes';
 
-export default function LotDetails({ lotObj, rateType, times }) {
+export default function LotDetails({ lotObj, rateType }) {
 
 	const navigate = useNavigate(); // Hook to programmatically navigate
 
@@ -30,8 +33,38 @@ export default function LotDetails({ lotObj, rateType, times }) {
 		resident_capacity,
 		resident_zone,
 		Rates = [],
+		availability = {},
 	} = lotObj;
 
+	console.log("lotObj", lotObj);
+
+	// Compute minimum available per spot type across entire selected range
+	const minAvailability = {
+		faculty: Infinity,
+		commuter_core: Infinity,
+		commuter_perimeter: Infinity,
+		commuter_satellite: Infinity,
+		resident: Infinity,
+		metered: Infinity,
+		ada: Infinity,
+		ev_charging: Infinity,
+		total: Infinity,
+	};
+
+	Object.values(availability).forEach(hourBlock => {
+		for (const [key, value] of Object.entries(hourBlock)) {
+			if (minAvailability[key] !== undefined) {
+				minAvailability[key] = Math.min(minAvailability[key], value);
+			}
+		}
+	});
+
+	// Replace Infinity with null if no data was found
+	Object.keys(minAvailability).forEach(key => {
+		if (minAvailability[key] === Infinity) {
+			minAvailability[key] = null;
+		}
+	});
 
 	const rateFields = {
 		hourly: 'Hourly',
@@ -55,12 +88,47 @@ export default function LotDetails({ lotObj, rateType, times }) {
 				lotName: name,
 				covered,
 				ev_charging_availability,
+				ev_charging_capacity,
 				ada_availability,
+				ada_capacity,
+				faculty_capacity,
+				faculty_availability,
+				commuter_perimeter_capacity,
+				commuter_perimeter_availability,
+				commuter_core_capacity,
+				commuter_core_availability,
+				commuter_satellite_capacity,
+				commuter_satellite_availability,
+				resident_capacity,
+				resident_availability,
+				metered_capacity,
+				metered_availability,
 				rates: Rates,
+				availability,
 				defaultTimeRange: times,
 			}
 		});
 	};
+	console.log("availability", availability);
+
+	const outletContext = useOutletContext();
+	const [times, setTimes] = useState(outletContext?.times ?? getInitialTimes());
+
+	function parseCustomDate(dateStr) {
+
+		const [dayPart] = dateStr.split('|');
+		const trimmed = dayPart.trim();
+
+		const currentYear = new Date().getFullYear();
+
+		const reformatted = `${trimmed}, ${currentYear}`;
+
+		return new Date(reformatted);
+	}
+
+	const defaultDay = parseCustomDate(times.arrival).toLocaleDateString('en-US', { weekday: 'long' })
+
+
 
 	// Render the lot details section
 	return (
@@ -103,8 +171,8 @@ export default function LotDetails({ lotObj, rateType, times }) {
 							<div className='rate-header'>
 								{rate.permit_type}
 								{rate.permit_type.toLowerCase().includes('resident') && lotObj.resident_zone
-								? ` (Zone ${Number(lotObj.resident_zone)})`
-								: ''}
+									? ` (Zone ${Number(lotObj.resident_zone)})`
+									: ''}
 								<span className='rate-time'>
 									{formatTimeRange(rate.lot_start_time, rate.lot_end_time)}
 								</span>
@@ -114,9 +182,9 @@ export default function LotDetails({ lotObj, rateType, times }) {
 									const value = rate[key];
 									if (value === null || value === undefined) return null;
 									return (
-									<li key={key}>
-										{label}: {formatRate(value)}
-									</li>
+										<li key={key}>
+											{label}: {formatRate(value)}
+										</li>
 									);
 								})}
 							</ul>
@@ -125,45 +193,46 @@ export default function LotDetails({ lotObj, rateType, times }) {
 				)}
 			</section>
 
-			<hr />
-
 			{/* Lot Capacity Info Section */}
 			<section className='lot-capacity-section'>
-			<h4 className='lot-rates-title'>Capacity</h4>
-			<ul className='rate-list'>
-				{faculty_capacity > 0 && (
-				<li>Faculty: {faculty_availability} / {faculty_capacity}</li>
-				)}
-				{commuter_core_capacity > 0 && (
-				<li>Commuter Core: {commuter_core_availability} / {commuter_core_capacity}</li>
-				)}
-				{commuter_perimeter_capacity > 0 && (
-				<li>Commuter Perimeter: {commuter_perimeter_availability} / {commuter_perimeter_capacity}</li>
-				)}
-				{commuter_satellite_capacity > 0 && (
-				<li>Commuter Satellite: {commuter_satellite_availability} / {commuter_satellite_capacity}</li>
-				)}
-				{resident_capacity > 0 && (
-				<li>Resident: {resident_availability} / {resident_capacity}</li>
-				)}
-				{metered_capacity > 0 && (
-				<li>Metered: {metered_availability} / {metered_capacity}</li>
-				)}
-				{ada_capacity > 0 && (
-				<li>ADA: {ada_availability} / {ada_capacity}</li>
-				)}
-				{ev_charging_capacity > 0 && (
-				<li>EV Charging: {ev_charging_availability} / {ev_charging_capacity}</li>
-				)}
-				{capacity > 0 && (
-				<li><strong>Total: </strong>{capacity} Available Spaces</li>
-				)}
-			</ul>
+				<h4 className='lot-rates-title'>Capacity</h4>
+				<ul className='rate-list'>
+					{faculty_capacity > 0 && (
+						<li>Faculty: {minAvailability.faculty ?? faculty_availability} / {faculty_capacity}</li>
+					)}
+					{commuter_core_capacity > 0 && (
+						<li>Commuter Core: {minAvailability.commuter_core ?? commuter_core_availability} / {commuter_core_capacity}</li>
+					)}
+					{commuter_perimeter_capacity > 0 && (
+						<li>Commuter Perimeter: {minAvailability.commuter_perimeter ?? commuter_perimeter_availability} / {commuter_perimeter_capacity}</li>
+					)}
+					{commuter_satellite_capacity > 0 && (
+						<li>Commuter Satellite: {minAvailability.commuter_satellite ?? commuter_satellite_availability} / {commuter_satellite_capacity}</li>
+					)}
+					{resident_capacity > 0 && (
+						<li>Resident: {minAvailability.resident ?? resident_availability} / {resident_capacity}</li>
+					)}
+					{metered_capacity > 0 && (
+						<li>Metered: {minAvailability.metered ?? metered_availability} / {metered_capacity}</li>
+					)}
+					{ada_capacity > 0 && (
+						<li>ADA: {minAvailability.ada ?? ada_availability} / {ada_capacity}</li>
+					)}
+					{ev_charging_capacity > 0 && (
+						<li>EV Charging: {minAvailability.ev_charging ?? ev_charging_availability} / {ev_charging_capacity}</li>
+					)}
+					{capacity > 0 && (
+						<li><strong>Total:</strong> {minAvailability.total ?? 'unknown'} / {capacity} Available</li>
+					)}
+				</ul>
 			</section>
-
+			<section className="lot-popular-times">
+				<h4>Popular Times Forecast</h4>
+				<PopularTimes lotId={id} selectedDay={new Date(times.arrival).toLocaleDateString('en-US', { weekday: 'long' })} />
+			</section>
 			{/* Booking / Action */}
 			<section className='selected-lot-extended-info'>
-				<button 
+				<button
 					className='selected-lot-book-btn pointer'
 					onClick={handleReservationClick}
 				>Book a reservation now!</button>

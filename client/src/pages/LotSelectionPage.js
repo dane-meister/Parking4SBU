@@ -4,18 +4,21 @@ import axios from 'axios';
 import Header from "../components/Header"; 
 import '../stylesheets/LotSelection.css'
 import '../stylesheets/index.css'
+import { fetchLotAvailability } from '../utils/fetchLotAvailability';
+import { getDateWithTime } from '../utils/getDateWithTime';
 import { Sidebar, Map } from '../components';
 import { getInitialTimes } from "../components/Header";
 const HOST = "http://localhost:8000"
 
 const LotSelectionPage = () => {
   // State to store buildings and parking lots
-  const [ selectedLot, setSelectedLot ] = useState(null);
+  const [selectedLot, setSelectedLot] = useState(null);
   const [buildings, setBuildings] = useState([]);
   const [parkingLots, setParkingLots] = useState([]);
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State to track any errors
   const [selectedBuilding, setSelectedBuilding] = useState(null);
+  const [lotAvailability, setLotAvailability] = useState({}); // State to store lot availability
 
 
   const location = useLocation();
@@ -30,28 +33,45 @@ const LotSelectionPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true); // Set loading to true before fetching data
-
-        // Fetch buildings and parking lots data concurrently
-        const [buildingsRes, parkingLotsRes] = await Promise.all([
+        setLoading(true);
+  
+        const [buildingsRes, lotsRes] = await Promise.all([
           axios.get(`${HOST}/api/buildings`, { withCredentials: true }),
-          axios.get(`${HOST}/api/parking-lots`, { withCredentials: true }),
-        ]);     
-
-        // Update state with fetched data
+          axios.get(`${HOST}/api/parking-lots`, { withCredentials: true })
+        ]);
+  
+        const lots = lotsRes.data;
         setBuildings(buildingsRes.data);
-        setParkingLots(parkingLotsRes.data);
+  
+        const startTime = getDateWithTime(times.arrival);
+        const endTime = getDateWithTime(times.departure);
+  
+        const availabilityRes = await fetchLotAvailability(startTime, endTime);
+  
+        const availabilityMap = {};
+        for (const entry of availabilityRes) {
+          availabilityMap[entry.lotId] = entry.hourlyAvailability;
+        }
+  
+        const lotsWithAvailability = lots.map(lot => ({
+          ...lot,
+          availability: availabilityMap[lot.id] || {}
+        }));
+  
+        setParkingLots(lotsWithAvailability);
+  
       } catch (err) {
-        console.error("Error fetching data:", err); // Log error to console
-        setError("Failed to load data."); // Set error message
+        console.error("Error loading data", err);
+        setError("Failed to load data.");
       } finally {
-        setLoading(false); // Set loading to false after fetching is complete
+        setLoading(false);
       }
     };
-
-    fetchData(); 
-  }, []); // Empty dependency array ensures this runs only once on mount
-
+  
+    fetchData();
+  }, [times]);
+  
+  
   return (
     <>
     <div className="main-container-lot-selection">
