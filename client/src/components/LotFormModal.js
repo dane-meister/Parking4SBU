@@ -2,7 +2,7 @@ import Modal from 'react-modal';
 import { Collapsible } from '.';
 import { useEffect, useState } from 'react';
 
-Modal.setAppElement('#root');
+Modal.setAppElement('#root'); // should only render once, or else constant warnings!
 
 
 export default function LotFormModal({ isOpen, onRequestClose, lot }){
