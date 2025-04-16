@@ -68,7 +68,6 @@ async function insertParkingLots() {
           // Insert the parsed data into the database
           await ParkingLot.bulkCreate(results);
           console.log("Data inserted successfully!");
-          sequelize.close();
         } catch (error) {
           // Log any errors encountered during database insertion
           console.error("Error inserting into database:", error);

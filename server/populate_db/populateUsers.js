@@ -95,6 +95,5 @@ const populateUsers = async () => {
 populateUsers()
   .then(count => {
     console.log(`Successfully added ${count} users to the database`);
-    sequelize.close();
   })
   .catch(err => console.error('Failed to populate users:', err));
