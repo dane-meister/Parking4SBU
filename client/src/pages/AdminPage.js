@@ -251,6 +251,7 @@ export default function Admin() {
         )}
         {adminOption === 'lots' && (
           <>
+            <button className="add-lot-button">Add a Lot</button>
             <h2>Manage Parking Lots</h2>
             <div className="user-list">
               {lots.length === 0 ? (
