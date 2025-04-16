@@ -8,7 +8,8 @@ import { fetchLotAvailability } from '../utils/fetchLotAvailability';
 import { getDateWithTime } from '../utils/getDateWithTime';
 import { Sidebar, Map } from '../components';
 import { getInitialTimes } from "../components/Header";
-const HOST = "http://localhost:8000"
+// const HOST = "http://localhost:8000"
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 const LotSelectionPage = () => {
   // State to store buildings and parking lots

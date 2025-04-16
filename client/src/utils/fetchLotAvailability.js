@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const HOST = "http://localhost:8000";
+// const HOST = "http://localhost:8000";
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export async function fetchLotAvailability(startISO, endISO) {
   try {
