@@ -40,11 +40,18 @@ db.Rate.belongsTo(db.ParkingLot, {
 });
 
 db.User.hasMany(db.Vehicle, {
-  foreignKey: "user_id",
+  foreignKey: {
+    name: "user_id",
+    allowNull: false,
+  },
   onDelete: "CASCADE",
 });
 db.Vehicle.belongsTo(db.User, {
-  foreignKey: "user_id",
+  foreignKey: {
+    name: "user_id",
+    allowNull: false,
+  },
+  allowNull: false,
 });
 
 // Reservation belongs to User
