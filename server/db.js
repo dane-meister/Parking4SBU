@@ -20,15 +20,18 @@ const connectionString = `postgres://${process.env.DB_USER}:${String(process.env
 
 const sequelize = new Sequelize(connectionString, {
   dialect: "postgres",
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-    application_name: "p4sbu",
-  },
+  dialectOptions: process.env.NODE_ENV === "production"
+    ? {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+        application_name: "p4sbu",
+      }
+    : {}, // No SSL for local
   logging: process.env.NODE_ENV === "test" ? false : console.log,
 });
+
 
 // Test Connection
 // (async () => {
