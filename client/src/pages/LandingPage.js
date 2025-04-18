@@ -93,6 +93,8 @@ function LandingPage() {
       <div className="landing-content">
         <h1 className="slogan">park.</h1>
         
+
+        
         {/* Pricing options (Hourly / Daily) */}
         <div className="pricing-options">
           <button
