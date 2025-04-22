@@ -40,8 +40,8 @@ fs.createReadStream(csvPath)
     .on('data', (row) => ratesToInsert.push(row)) // Add each row to the ratesToInsert array
     .on('end', async () => {
         try {
-            await sequelize.sync(); // Ensure models are initialized and database is synced
-
+            // Authenticate the database connection
+            await sequelize.authenticate();
             // Iterate over each row in the parsed CSV data
             for (const row of ratesToInsert) {
                 const lotName = row["Name"]?.trim();

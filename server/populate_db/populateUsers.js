@@ -12,7 +12,6 @@ const populateUsers = async () => {
     // Authenticate the database connection
     await sequelize.authenticate();
     console.log('Database connected.');
-    await sequelize.sync();
 
     // Step 1: Read all rows from CSV first (without hashing passwords)
     const rawData = await new Promise((resolve, reject) => {
@@ -95,6 +94,5 @@ const populateUsers = async () => {
 populateUsers()
   .then(count => {
     console.log(`Successfully added ${count} users to the database`);
-    sequelize.close();
   })
   .catch(err => console.error('Failed to populate users:', err));

@@ -6,6 +6,10 @@ const { ParkingLot, Rate, Building, User, Reservation, Vehicle, Feedback } = req
 // Immediately Invoked Async Function Expression (IIFE) to handle database synchronization
 (async () => {
   try {
+     // Drop enum types that might cause conflicts manually before syncing
+     await sequelize.query('DROP TYPE IF EXISTS "enum_Users_user_type" CASCADE');
+     await sequelize.query('DROP TYPE IF EXISTS "enum_Users_permit_type" CASCADE');
+     await sequelize.query('DROP TYPE IF EXISTS "enum_Reservations_status" CASCADE');
     // Synchronize all defined models with the database, forcing the recreation of tables
     await sequelize.sync({ force: true }); 
     console.log("Tables created successfully!");
