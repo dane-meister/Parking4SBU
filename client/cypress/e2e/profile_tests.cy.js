@@ -1,4 +1,5 @@
 const HOST = 'http://localhost:3000'
+const WAIT_TIME = 1000;
 
 Cypress.Commands.add('login', (username, password) => {
 	cy.visit(`${HOST}/auth/login`);
@@ -9,6 +10,11 @@ Cypress.Commands.add('login', (username, password) => {
 
 Cypress.Commands.add('goToProfile', () => {
 	cy.get('[href="/profile"]').last().click();
+});
+
+Cypress.Commands.add('goToProfileVehicles', () => {
+	cy.get('[href="/profile"]').last().click();
+	cy.get()
 });
 
 describe('Profile editing tests', () => {
@@ -23,7 +29,7 @@ describe('Profile editing tests', () => {
 			.children()
 			.last()
 			.click();
-		cy.wait(501);
+		cy.wait(WAIT_TIME);
 
 		cy.get('#firstName')
 			.should('have.value', 'Mis');
@@ -48,7 +54,7 @@ describe('Profile editing tests', () => {
 			.children()
 			.last()
 			.click();
-		cy.wait(501);
+		cy.wait(WAIT_TIME);
 
 		cy.get('#firstName')
 			.should('have.value', 'Mis');
@@ -88,5 +94,10 @@ describe('Profile editing tests', () => {
 			.should('have.value', 'AZ')
 	});
 });
-// describe('Profile vehicle tests',);
+describe('Profile vehicle tests', () => {
+	beforeEach(() => {
+		cy.login('user@user.com', 'user');
+		cy.goToProfileVehicles();
+	});
+});
 // describe('Profile editing persistence tests');
