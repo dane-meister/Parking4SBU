@@ -4,13 +4,9 @@ import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
 import LotFormModal from '../components/LotFormModal';
 import Popup from '../components/Popup';
-// const HOST = "http://localhost:8000"
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
-export default function Admin() {
-    console.log(process.env.REACT_APP_API_URL);
-    console.log(HOST);
-  
+export default function Admin() {  
   const [adminOption, setAdminOption] = useState('users');
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
@@ -26,7 +22,7 @@ export default function Admin() {
   // Fetch users when 'Users' tab is selected
   useEffect(() => {
     if (adminOption === 'users') {
-      axios.get(`${HOST}/api/auth/users`, {
+      axios.get(`${HOST}/api/admin/users`, {
         withCredentials: true
       })
         .then(res => setUsers(res.data))
@@ -46,7 +42,7 @@ export default function Admin() {
         });
     }
     if (adminOption === 'events') {
-      axios.get(`${HOST}/api/auth/admin/event-reservations`, {
+      axios.get(`${HOST}/api/admin/event-reservations`, {
         withCredentials: true
       })
         .then(res => setEventReservations(res.data))
@@ -56,7 +52,7 @@ export default function Admin() {
         });
     }
     if (adminOption === 'feedback') {
-      axios.get(`${HOST}/api/auth/admin/feedback`, { withCredentials: true })
+      axios.get(`${HOST}/api/admin/feedback`, { withCredentials: true })
         .then(res => setFeedbackList(res.data))
         .catch(err => {
           console.error("Failed to fetch feedback", err);
@@ -68,14 +64,14 @@ export default function Admin() {
   // Handle user approval or rejection
   const handleApproval = (userId, approve) => {
     if (approve) {
-      axios.put(`${HOST}/api/auth/users/${userId}/approve`, {}, { withCredentials: true })
+      axios.put(`${HOST}/api/admin/users/${userId}/approve`, {}, { withCredentials: true })
         .then(() => {
           // Refresh user list after approval
           setUsers(prev => prev.map(u => u.user_id === userId ? { ...u, isApproved: true } : u));
         })
         .catch(err => console.error('Failed to approve user', err));
     } else {
-      axios.delete(`${HOST}/api/auth/user/${userId}/remove`, { withCredentials: true })
+      axios.delete(`${HOST}/api/admin/user/${userId}/remove`, { withCredentials: true })
         .then(() => {
           // Remove the user from the list
           setUsers(prev => prev.filter(u => u.user_id !== userId));
@@ -96,7 +92,7 @@ export default function Admin() {
   };
 
   const handleUpdateUser = (user) => {
-    axios.put(`${HOST}/api/auth/users/${user.user_id}/edit`, user, {
+    axios.put(`${HOST}/api/admin/users/${user.user_id}/edit`, user, {
       withCredentials: true
     })
       .then(() => {
@@ -113,7 +109,7 @@ export default function Admin() {
   };
 
   const handleFeedbackResponse = async (feedbackId, responseText) => {
-    axios.put(`${HOST}/api/auth/admin/feedback/${feedbackId}/respond`, {
+    axios.put(`${HOST}/api/admin/feedback/${feedbackId}/respond`, {
       response_text: responseText
     }, { withCredentials: true })
       .then(() => {
@@ -127,7 +123,7 @@ export default function Admin() {
 
   // Handle event reservation approval
   const handleApproveEvent = (reservationId) => {
-    axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/approve`, {}, {
+    axios.put(`${HOST}/api/admin/event-reservations/${reservationId}/approve`, {}, {
       withCredentials: true
     })
       .then(() => {
@@ -138,7 +134,7 @@ export default function Admin() {
 
   // Handle event reservation rejection
   const handleRejectEvent = (reservationId) => {
-    axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/reject`, {}, {
+    axios.put(`${HOST}/api/admin/event-reservations/${reservationId}/reject`, {}, {
       withCredentials: true
     })
       .then(() => {
