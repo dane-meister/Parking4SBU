@@ -2,7 +2,8 @@ import  React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Popup } from '../components';
 import axios from 'axios';
-const HOST = "http://localhost:8000"
+// const HOST = "http://localhost:8000"
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 // The form displays user data passed as a prop (`userData`) in a read-only format.
 export default function ProfileForm({ userData }) {

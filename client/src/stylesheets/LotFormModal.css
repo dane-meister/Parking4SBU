@@ -1,0 +1,50 @@
+#lot-form-modal h2 {
+    margin: 0;
+    padding: 15px 25px;
+    color: white;
+    background-color: var(--red);
+
+}
+.location-collapsible-name{
+    display: flex;
+    align-items: center;
+}
+
+.lot-point-box:first-child{
+    margin-top: 5px;
+}
+
+.location-collapsible > span > span{
+    height: 22px;
+    display: block;
+}
+.location-collapsible-name span:last-child{
+    color: #aaa;
+    margin-left: 10px;
+    font-size: 14px;
+    display: block;
+}
+.name-uncollapsible,
+.location-collapsible,
+.capacity-collapsible,
+.rates-collapsible {
+    padding-bottom: 10px;
+    margin-top: 10px;
+    border-bottom: #aaa solid 1px;
+}
+.lot-point-box > *{
+    margin-bottom: 5px;
+}
+.lot-point-box > span:first-child{
+    width: 64px;
+}
+.lot-point-remove{
+    height: 18px;
+    align-self: center;
+    opacity: .66;
+    margin-bottom: 5px;
+}
+.lot-point-remove:hover{
+    cursor: pointer;
+    opacity: 1;
+}
