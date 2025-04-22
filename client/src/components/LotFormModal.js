@@ -65,6 +65,9 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
     })
   };
 
+  const handleCapacityChange = () => {
+
+  };
   // stops background scrolling
   if(isOpen){
     document.body.style.overflow = 'hidden';
@@ -80,7 +83,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       style={styles}
     >
       <h2 className='lot-edit-h2'>Lot Edit</h2>
-      <section class='padding-wrapper' style={{padding: '25px', paddingTop: '0px'}}>
+      <section className='padding-wrapper' style={{padding: '25px', paddingTop: '0px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
           Name
@@ -97,7 +100,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       >
         <div>
           {formData.coordinates.map((coord, idx) => {
-            return <div className='hbox'>
+            return <div className='hbox' key={idx}>
               <label className='hbox lot-point-box flex' key={idx}>
                 <span style={{marginRight: '10px'}}>Point {idx + 1}:</span>
                 <input 
@@ -129,7 +132,62 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         startOpen={false}
         wideCollapse
       >
-        many to come
+        {/* 
+        ada_capacity
+        commuter_core_capacity
+        commuter_perimeter_capacity: 
+        commuter_satellite_capacity:
+        ev_charging_capacity: 
+        faculty_capacity: 
+        metered_capacity: 
+        resident_capacity:
+        capacity 
+        */}
+
+        <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
+          <label className='flex' htmlFor='ada-capacity'>ADA
+            <input id='ada-capacity' 
+              onChange={() => handleCapacityChange('ada')}
+              value={formData.capacity.ada_capacity}
+            />
+          </label>
+          <label className='flex'>Commuter Core
+            <input id='commuter-core-capacity'   
+              onChange={() => handleCapacityChange('commuter core')}
+              value={formData.capacity.commuter_core_capacity}
+            />
+          </label>
+          <label className='flex'>Commuter Perimeter
+            <input id='commuter-perimeter-capacity' 
+              onChange={() => handleCapacityChange('commuter perimeter')}
+              value={formData.capacity.commuter_perimeter_capacity}
+            />
+          </label>
+        </div>
+
+        <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
+          <label className='flex' htmlFor='ada-capacity'>EV Charging
+            <input id='ev-charging-capacity' />
+          </label>
+          <label className='flex'>Faculty
+            <input id='faculty-capacity' />
+          </label>
+          <label className='flex'>Metered
+            <input id='metered-capacity' />
+          </label>
+        </div>
+        
+        <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
+          <span style={{flex: 1}}/> 
+          <label style={{flex: 2}} htmlFor='ada-capacity'>EV Charging
+            <input id='ev-charging-capacity' />
+          </label>
+          <label style={{flex: 2}}>Faculty
+            <input id='faculty-capacity' onChange={() => handleCapacityChange('faculty')} value={formData.capacity.faculty_capacity}/>
+          </label>
+          <span style={{flex: 1}}/> 
+        </div>
+        <p style={{marginBottom: 0}}>Total Capcity: {formData.capacity.capacity}</p>
       </Collapsible>
       <Collapsible 
         name={'Rates'} 
