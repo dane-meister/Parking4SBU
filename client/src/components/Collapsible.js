@@ -9,7 +9,8 @@ import React, { useState } from 'react';
 // - startOpen: Boolean to determine if the collapsible starts open (default: true).
 // - tag: Optional additional element to display next to the name.
 // - wideCollapse: Optional, lets the entire header open the collapsible section
-export default function Collapsible({ className, name, imgsrc, children, startOpen, tag, wideCollapse }) {
+// - subtext: Optional, adds smaller subtext
+export default function Collapsible({ className, name, imgsrc, children, startOpen, tag, wideCollapse, subtext }) {
 	// Default startOpen to true if not provided
 	startOpen = startOpen !== undefined ? startOpen : true;
 
@@ -35,7 +36,10 @@ export default function Collapsible({ className, name, imgsrc, children, startOp
 				style={{ display: 'flex', cursor: wideCollapse ? 'pointer' : 'default' }} 
 				onClick={() => wideCollapse ? toggleOpen() : 'nop'}
 			>
-				<span className={className + '-name'}>{name}</span>
+				<span className={className + '-name hbox'}>
+					<span>{name}</span>
+					{!!subtext && <span>{subtext}</span>}
+				</span>
 				{tag !== undefined && tag} {/* Render tag if provided */}
 				<span style={{ flex: 1 }} /> {/* Spacer to push the icon to the right */}
 				<img
