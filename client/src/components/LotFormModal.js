@@ -146,19 +146,19 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
 
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
           <label className='flex' htmlFor='ada-capacity'>ADA
-            <input id='ada-capacity' 
+            <input id='ada-capacity' autoComplete='off'
               onChange={() => handleCapacityChange('ada')}
               value={formData.capacity.ada_capacity}
             />
           </label>
           <label className='flex'>Commuter Core
-            <input id='commuter-core-capacity'   
+            <input id='commuter-core-capacity' autoComplete='off'
               onChange={() => handleCapacityChange('commuter core')}
               value={formData.capacity.commuter_core_capacity}
             />
           </label>
           <label className='flex'>Commuter Perimeter
-            <input id='commuter-perimeter-capacity' 
+            <input id='commuter-perimeter-capacity' autoComplete='off'
               onChange={() => handleCapacityChange('commuter perimeter')}
               value={formData.capacity.commuter_perimeter_capacity}
             />
