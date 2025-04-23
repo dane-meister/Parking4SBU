@@ -36,7 +36,6 @@ export default function LotDetails({ lotObj, rateType }) {
 		availability = {},
 	} = lotObj;
 
-	console.log("lotObj", lotObj);
 
 	// Compute minimum available per spot type across entire selected range
 	const minAvailability = {
@@ -109,7 +108,6 @@ export default function LotDetails({ lotObj, rateType }) {
 			}
 		});
 	};
-	console.log("availability", availability);
 
 	const outletContext = useOutletContext();
 	const [times, setTimes] = useState(outletContext?.times ?? getInitialTimes());
