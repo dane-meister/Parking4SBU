@@ -33,7 +33,7 @@ const Map = ({ selectedLot, selectedBuilding }) => {
     });
 
     mapRef.current.on('zoomend', function () {
-      console.log("Current zoom level:", mapRef.current.getZoom());
+      // console.log("Current zoom level:", mapRef.current.getZoom());
     });
 
     //add OpenStreetMap tile layer to the map
@@ -66,7 +66,7 @@ const Map = ({ selectedLot, selectedBuilding }) => {
     if (selectedLot && selectedLot.location) {
       const originalCoords = selectedLot.location.coordinates[0];
       const coords = [originalCoords[1], originalCoords[0]];
-      console.log("Extracted coords (lat, lng):", coords);
+      // console.log("Extracted coords (lat, lng):", coords);
       if (mapRef.current) {
         mapRef.current.setView(coords, 18, { animate: true });
         // Remove previous marker if it exists
@@ -82,7 +82,7 @@ const Map = ({ selectedLot, selectedBuilding }) => {
           lotMarkerRef.current.remove();
           lotMarkerRef.current = null;
         }
-        console.log("Reset to campus center");
+        // console.log("Reset to campus center");
       }
     }
   }, [selectedLot]);
@@ -104,7 +104,7 @@ const Map = ({ selectedLot, selectedBuilding }) => {
         buildingMarkerRef.current = L.marker(coords, { icon: buildingIcon }).addTo(mapRef.current);
       }
     } else {
-      console.log("no building selected");
+      // console.log("no building selected");
       if (buildingMarkerRef.current) {
         buildingMarkerRef.current.remove();
         buildingMarkerRef.current = null;
