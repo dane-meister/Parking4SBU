@@ -48,7 +48,7 @@
     height: 18px;
     align-self: center;
     opacity: .66;
-    margin-bottom: 5px;
+    /* margin-bottom: px; */
 }
 
 .lot-point-remove:hover{
@@ -58,4 +58,43 @@
 
 .capacity-collapsible label:not(:last-child){
     margin-bottom: 3px;
+}
+
+.rates-collapsible label{
+    font-size: 14px;
+}
+
+.disableable-input{
+    box-sizing: content-box;
+    display: flex;
+    border: solid rgb(118, 118, 118) 1px;
+    border-radius: 2px;
+}
+
+.disableable-input img{
+    align-self: center;
+    height: calc(21px - 9px);
+    opacity: .8;
+}
+
+.disableable-input input{
+    border: none;
+    outline: none;
+    padding: 2px 3px;
+    height: 19px
+}
+.disableable-input button{
+    display: flex; /* to let the buttonimg align-self */
+    border: none;
+    border-left: solid #aaa 1px;
+    cursor: pointer;
+}
+
+.disableable-input button:hover, .disableable-input button:hover > img{
+    background-color: #dadada;
+    opacity: 1;
+}
+
+.disableable-input:has(input:focus){
+    outline: 1px black solid;
 }
