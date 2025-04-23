@@ -12,6 +12,7 @@ import "./stylesheets/index.css"; // Global styles
 export default function App() {
   const [times, setTimes] = useState(getInitialTimes()); // shared time state
 
+
   // Layout component to provide a consistent structure for all pages
   function Layout() {
     const location = useLocation(); // Get the current location
@@ -20,7 +21,7 @@ export default function App() {
       <div className="app-wrapper">
         <Header times={times} setTimes={setTimes}/> {/* Header component */}
         <main className={`page-content ${isHome ? "home-padding" : "compact-padding"}`}>
-          <Outlet context={{ times, setTimes }}/> {/* This will render nested routes */}
+          <Outlet context={{ times, setTimes}}/> {/* This will render nested routes */}
         </main>
         <Footer /> {/* Footer component */}
       </div>
