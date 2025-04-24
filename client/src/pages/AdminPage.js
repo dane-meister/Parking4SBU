@@ -8,9 +8,6 @@ import Popup from '../components/Popup';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
-    console.log(process.env.REACT_APP_API_URL);
-    console.log(HOST);
-  
   const [adminOption, setAdminOption] = useState('users');
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);

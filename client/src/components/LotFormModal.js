@@ -1,10 +1,9 @@
 import Modal from 'react-modal';
 import { Collapsible } from '.';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../stylesheets/LotFormModal.css'
 
 Modal.setAppElement('#root'); // should only render once, or else constant warnings!
-
 
 export default function LotFormModal({ isOpen, onRequestClose, lot }){
   const [formData, setFormData] = useState({
@@ -14,10 +13,11 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
     rates: []
   });
 
+  const originalData = useRef({});
   useEffect(() => {
     let coords = lot?.location?.coordinates
     if(!!coords) coords = coords.map(coord => coord.join(", "));
-    setFormData({
+    const data = {
       name: lot?.name ?? '',
       coordinates: coords ?? [],
       capacity: {
@@ -32,8 +32,9 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         capacity: lot?.capacity ?? 0
       },
       rates: lot?.Rates ?? []
-    });
-    console.log("formdata:",formData)
+    }
+    setFormData(data);
+    originalData.current = JSON.parse(JSON.stringify(data));
   }, [isOpen]);
 
   const handleInputChange = (e) => {
@@ -65,6 +66,36 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
     })
   };
 
+  const handleCapacityChange = (e, type) => {
+    let value = e.target.valueAsNumber;
+    value = isNaN(value) ? '' : value;
+    setFormData(prev => {
+      const newCapacity = prev.capacity;
+      newCapacity[`${type}_capacity`] = value;
+      return { ...prev, newCapacity};
+    });
+  };
+
+  const getNewCapacity = () => {
+    const c = formData.capacity;
+    return (c.commuter_core_capacity || 0) +
+      (c.commuter_perimeter_capacity || 0) +
+      (c.commuter_satellite_capacity || 0) +
+      (c.resident_capacity || 0) +
+      (c.faculty_capacity || 0) +
+      (c.metered_capacity || 0) +
+      (c.ev_charging_capacity || 0) +
+      (c.ada_capacity || 0)
+  };
+  const MAX_TYPE_CAPACITY = 9999;
+  const numericKeyDown = (e) => {
+      if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+        e.preventDefault();
+      }
+      let new_value = Number(e.target.value + e.key);
+      if(new_value > MAX_TYPE_CAPACITY) e.preventDefault();
+  };
+
   // stops background scrolling
   if(isOpen){
     document.body.style.overflow = 'hidden';
@@ -80,7 +111,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       style={styles}
     >
       <h2 className='lot-edit-h2'>Lot Edit</h2>
-      <section class='padding-wrapper' style={{padding: '25px', paddingTop: '0px'}}>
+      <section className='padding-wrapper' style={{padding: '25px', paddingTop: '0px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
           Name
@@ -97,7 +128,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       >
         <div>
           {formData.coordinates.map((coord, idx) => {
-            return <div className='hbox'>
+            return <div className='hbox' key={idx}>
               <label className='hbox lot-point-box flex' key={idx}>
                 <span style={{marginRight: '10px'}}>Point {idx + 1}:</span>
                 <input 
@@ -129,15 +160,190 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         startOpen={false}
         wideCollapse
       >
-        many to come
+        {/* 
+        [3] ada_capacity
+        [1] commuter_core_capacity
+        [1] commuter_perimeter_capacity: 
+        [1] commuter_satellite_capacity:
+        [3] ev_charging_capacity: 
+        faculty_capacity: 
+        metered_capacity: 
+        resident_capacity:
+        capacity 
+        */}
+
+        <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
+          <label className='flex'>Commuter Core
+            <input id='commuter-core-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'commuter_core')}
+              value={formData.capacity.commuter_core_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+          <label className='flex'>Commuter Perimeter
+            <input id='commuter-perimeter-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'commuter_perimeter')}
+              value={formData.capacity.commuter_perimeter_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+          <label className='flex'>Commuter Satellite
+            <input id='commuter-satellite-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'commuter_satellite')}
+              value={formData.capacity.commuter_satellite_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+        </div>
+
+        <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
+          <label className='flex'>Resident
+            <input id='resident-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'resident')}
+              value={formData.capacity.resident_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+          <label className='flex'>Faculty
+            <input id='faculty-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'faculty')}
+              value={formData.capacity.faculty_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+          <label className='flex'>Metered
+            <input id='metered-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'metered')}
+              value={formData.capacity.metered_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+        </div>
+        
+        <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
+          <span style={{flex: 1}}/> 
+          <label style={{flex: 2}} htmlFor='ada-capacity'>EV Charging
+            <input id='ev-charging-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'ev_charging')}
+              value={formData.capacity.ev_charging_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+          <label className='flex' style={{flex: 2}}>ADA
+            <input id='ada-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'ada')}
+              value={formData.capacity.ada_capacity}
+              onKeyDown={numericKeyDown}
+            />
+          </label>
+          <span style={{flex: 1}}/> 
+        </div>
+
+        <span style={{display: 'inline-block', marginTop: '5px'}}>
+          <strong>Total Capacity: </strong> {formData.capacity.capacity}
+        </span>
+        {formData.capacity.capacity !== getNewCapacity() && (
+          <span style={{display: 'inline-block', marginTop: '5px', marginLeft: '30px'}}>
+            <strong>New Capacity: </strong> {getNewCapacity()}
+          </span>
+        )}
       </Collapsible>
+
       <Collapsible 
         name={'Rates'} 
         className={'rates-collapsible'}
         startOpen={false}
         wideCollapse
       >
-        many to come
+        {/* 
+          - means started
+          x means finished
+          
+          (-) permit_type: "Faculty"
+          () lot_start_time: "07:00:00"
+          () lot_end_time: "16:00:00"
+          (-) hourly: null
+          (-) max_hours: null
+          (-) daily: null
+          (-) monthly: null
+          () semesterly_fall_spring: null
+          () semesterly_summer: null
+          (-) yearly: 0
+          () event_parking_price: null
+          () sheet_number: null
+          () sheet_price: null
+        */}
+        {console.log(formData.rates)}
+        <div><label htmlFor='permit-select'>Permit Type</label></div>
+        <select id='permit-select' style={{width: '48%'}}>
+          <option></option>
+          <option>Dont check, i didnt do this yet</option>
+        </select>
+        
+        {/* rate times */}
+
+        {/* hourly rate */}
+        <div className='hbox'>  
+          <div style={{width: '48%'}}>
+            <label htmlFor='hourly-rate'>Hourly Rate</label>
+            <div className='disableable-input flex'>
+              <input id='hourly-rate' autoComplete='off'/>
+              <button><img src='/images/disable.png' alt='disable'/></button>
+            </div>
+          </div>
+          <span className='flex'/>
+          <div style={{width: '48%'}}>
+            <label htmlFor='max-hours'>Max Hours</label>
+            <div className='disableable-input flex'>
+              <input id='max-hours' autoComplete='off'/>
+              <button><img src='/images/disable.png' alt='disable'/></button>
+            </div>
+          </div>
+        </div>
+
+        {/* daily rate */}
+        <div className='hbox'>  
+          <div style={{width: '48%'}}>
+            <label htmlFor='daily-rate'>Daily Rate</label>
+            <div className='disableable-input flex'>
+              <input id='daily-rate' autoComplete='off'/>
+              <button><img src='/images/disable.png' alt='disable'/></button>
+            </div>
+          </div>
+        </div>
+
+        {/* monthly rate */}
+        <div className='hbox'>  
+          <div style={{width: '48%'}}>
+            <label htmlFor='monthly-rate'>Monthly Rate</label>
+            <div className='disableable-input flex'>
+              <input id='monthly-rate' autoComplete='off'/>
+              <button><img src='/images/disable.png' alt='disable'/></button>
+            </div>
+          </div>
+        </div>
+
+        semester
+        
+        {/* yearly rate */}
+        <div className='hbox'>  
+          <div style={{width: '48%'}}>
+            <label htmlFor='yearly-rate'>Yearly Rate</label>
+            <div className='disableable-input flex'>
+              <input id='yearly-rate' autoComplete='off'/>
+              <button><img src='/images/disable.png' alt='disable'/></button>
+            </div>
+          </div>
+        </div>
+
       </Collapsible>
       </section>
     </Modal>
