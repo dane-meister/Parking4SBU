@@ -6,7 +6,7 @@ import LotFormModal from '../components/LotFormModal';
 import Popup from '../components/Popup';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
-export default function Admin() {  
+export default function Admin() {
   const [adminOption, setAdminOption] = useState('users');
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
@@ -81,12 +81,12 @@ export default function Admin() {
   };
 
   // Handle lot deletion
-  const handleDeleteLot = (lotId) => {
+  const handleDeleteLot = (id) => {
     if (!window.confirm("Are you sure you want to delete this lot?")) return;
 
-    axios.delete(`${HOST}/api/admin/lots/${lotId}/remove`, { withCredentials: true })
+    axios.delete(`${HOST}/api/admin/parking-lots/${id}/remove`, { withCredentials: true })
       .then(() => {
-        setLots(prev => prev.filter(lot => lot.lot_id !== lotId));
+        setLots(prev => prev.filter(lot => lot.id !== id));
       })
       .catch(err => console.error("Failed to delete lot", err));
   };
@@ -271,7 +271,7 @@ export default function Admin() {
                         src="/images/x.png"
                         alt="Delete Lot"
                         className="icon"
-                        onClick={() => handleDeleteLot(lot.lot_id)}
+                        onClick={() => handleDeleteLot(lot.id)}
                       />
                     </div>
                   </div>
