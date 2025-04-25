@@ -258,7 +258,7 @@ export default function Admin() {
                 <p>No parking lots found.</p>
               ) : (
                 lots.map(lot => (
-                  <div className="user-card" key={lot.id} onClick={() => setEditingLot({ ...lot })}>
+                  <div className="user-card" key={lot.id}>
                     <div className="user-info">
                       <strong>{lot.name}</strong><br />
                       ID: {lot.id}<br />
@@ -267,6 +267,12 @@ export default function Admin() {
                         : 'N/A'}<br />
                     </div>
                     <div className="user-actions">
+                      <img
+                        src="/images/edit-icon1.png"
+                        alt="Edit Lot"
+                        className="icon"
+                        onClick={() => setEditingLot({ ...lot })}
+                      />
                       <img
                         src="/images/x.png"
                         alt="Delete Lot"
