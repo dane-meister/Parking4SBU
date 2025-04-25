@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const reservationRoutes = require('./routes/reservation');
 const popularTimesRoutes = require('./routes/popularTimes');
 const availabilityRoutes = require('./routes/availability');
+const adminRoutes = require('./routes/admin');
 const { computeAvailability } = require('./routes/availability');
 
 // Import models
@@ -30,11 +31,14 @@ app.use("/api/auth", authRoutes);
 // Reservation routes
 app.use("/api/reservations", reservationRoutes);
 
+// Popular times routes
 app.use("/api/popular-times", popularTimesRoutes);
-
 
 // Lot availability routes
 app.use('/api/lot-availability', availabilityRoutes);
+
+// Admin routes
+app.use("/api/admin", adminRoutes);
 
 // API Routes
 app.get("/api/buildings", async (req, res) => {
