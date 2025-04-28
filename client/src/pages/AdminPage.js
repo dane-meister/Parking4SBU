@@ -18,6 +18,7 @@ export default function Admin() {
   const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
   const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
   const [activeFeedback, setActiveFeedback] = useState(null);
+  const [addLotForm, setAddLotForm] = useState(false);
 
   // Fetch users when 'Users' tab is selected
   useEffect(() => {
@@ -251,7 +252,7 @@ export default function Admin() {
         )}
         {adminOption === 'lots' && (
           <>
-            <button className="add-lot-button">Add a Lot</button>
+            <button className="add-lot-button" onClick={() => setAddLotForm(true)}>Add a Lot</button>
             <h2>Manage Parking Lots</h2>
             <div className="user-list">
               {lots.length === 0 ? (
@@ -459,10 +460,13 @@ export default function Admin() {
       )}
 
       <LotFormModal
-        isOpen={!!editingLot}
+        isOpen={!!editingLot || addLotForm}
         lot={editingLot}
-        onRequestClose={() => setEditingLot(false)}
-      ></LotFormModal>
+        onRequestClose={() => {
+          setEditingLot(null);
+          setAddLotForm(false);
+        }}
+      />
 
       <FeedbackFormModal
         isOpen={activeFeedback !== null}
