@@ -111,7 +111,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       style={styles}
     >
       <h2 className='lot-edit-h2'>Lot Edit</h2>
-      <section className='padding-wrapper' style={{padding: '25px', paddingTop: '0px'}}>
+      <section className='padding-wrapper' style={{padding: '0 15px 25px 15px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
           Name
@@ -263,108 +263,119 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         startOpen={false}
         wideCollapse
       >
-        {/* 
-          - means started
-          x means finished
-          
-          (-) permit_type: "Faculty"
-          () lot_start_time: "07:00:00"
-          () lot_end_time: "16:00:00"
-          (-) hourly: null
-          (-) max_hours: null
-          (-) daily: null
-          (-) monthly: null
-          () semesterly_fall_spring: null
-          () semesterly_summer: null
-          (-) yearly: 0
-          () event_parking_price: null
-          () sheet_number: null
-          () sheet_price: null
-        */}
-        {console.log(formData.rates)}
-        <div><label htmlFor='permit-select'>Permit Type</label></div>
-        <select id='permit-select' style={{width: '48%'}}>
-          <option></option>
-          <option>Dont check, i didnt do this yet</option>
-        </select>
-        
-        {/* rate times */}
-
-        {/* hourly rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='hourly-rate'>Hourly Rate</label>
-            <div className='disableable-input flex'>
-              <input id='hourly-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-          <span className='flex'/>
-          <div style={{width: '48%'}}>
-            <label htmlFor='max-hours'>Max Hours</label>
-            <div className='disableable-input flex'>
-              <input id='max-hours' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
-
-        {/* daily rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='daily-rate'>Daily Rate</label>
-            <div className='disableable-input flex'>
-              <input id='daily-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
-
-        {/* monthly rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='monthly-rate'>Monthly Rate</label>
-            <div className='disableable-input flex'>
-              <input id='monthly-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
-
-        semester
-        
-        {/* yearly rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='yearly-rate'>Yearly Rate</label>
-            <div className='disableable-input flex'>
-              <input id='yearly-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
+        {formData.rates.map((rate, idx) => <Rate rateObj={rate} key={idx} rateNumber={idx}/>)}
 
       </Collapsible>
+      <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
       </section>
     </Modal>
   );
 }
 
-function LotFormModalWrapper({children}){
-  return children;
+function Rate({ rateObj, rateNumber }){
+  return (<>
+    {/* 
+      - means started
+      x means finished
+
+      (-) permit_type: "Faculty"
+      () lot_start_time: "07:00:00"
+      () lot_end_time: "16:00:00"
+      (-) hourly: null
+      (-) max_hours: null
+      (-) daily: null
+      (-) monthly: null
+      () semesterly_fall_spring: null
+      () semesterly_summer: null
+      (-) yearly: 0
+      () event_parking_price: null
+      () sheet_number: null
+      () sheet_price: null
+    */}
+    <Collapsible
+      name={`Rate ${rateNumber + 1}`}
+      className={'single-rate-collapsible'}
+      startOpen={false}
+      wideCollapse
+    >
+      <div><label htmlFor='permit-select'>Permit Type</label></div>
+      <select id='permit-select' style={{width: '48%'}}>
+        <option></option>
+        <option>Dont check, i didnt do this yet</option>
+      </select>
+      
+      {/* rate times */}
+
+      {/* hourly rate */}
+      <div className='hbox'>  
+        <div style={{width: '48%'}}>
+          <label htmlFor='hourly-rate'>Hourly Rate</label>
+          <div className='disableable-input flex'>
+            <input id='hourly-rate' autoComplete='off'/>
+            <button><img src='/images/disable.png' alt='disable'/></button>
+          </div>
+        </div>
+        <span className='flex'/>
+        <div style={{width: '48%'}}>
+          <label htmlFor='max-hours'>Max Hours</label>
+          <div className='disableable-input flex'>
+            <input id='max-hours' autoComplete='off'/>
+            <button><img src='/images/disable.png' alt='disable'/></button>
+          </div>
+        </div>
+      </div>
+
+      {/* daily rate */}
+      <div className='hbox'>  
+        <div style={{width: '48%'}}>
+          <label htmlFor='daily-rate'>Daily Rate</label>
+          <div className='disableable-input flex'>
+            <input id='daily-rate' autoComplete='off'/>
+            <button><img src='/images/disable.png' alt='disable'/></button>
+          </div>
+        </div>
+      </div>
+
+      {/* monthly rate */}
+      <div className='hbox'>  
+        <div style={{width: '48%'}}>
+          <label htmlFor='monthly-rate'>Monthly Rate</label>
+          <div className='disableable-input flex'>
+            <input id='monthly-rate' autoComplete='off'/>
+            <button><img src='/images/disable.png' alt='disable'/></button>
+          </div>
+        </div>
+      </div>
+
+      semester
+      
+      {/* yearly rate */}
+      <div className='hbox'>  
+        <div style={{width: '48%'}}>
+          <label htmlFor='yearly-rate'>Yearly Rate</label>
+          <div className='disableable-input flex'>
+            <input id='yearly-rate' autoComplete='off'/>
+            <button><img src='/images/disable.png' alt='disable'/></button>
+          </div>
+        </div>
+      </div>
+    </Collapsible>
+  </>);
 }
 
 const styles = {
   content: {
     marginTop: 'calc(60px + 30px)',
-    width: '500px',
+    width: '525px',
     maxHeight: 'min(60vh, 800px)',
     minHeight: '600px',
     justifySelf: 'center',
     alignSelf: 'center',
     padding: '0',
     zIndex: 3000,
-    border: 'none'
+    border: 'none',
+    overflow: 'auto'
+    // scrollbarGutter: 'stable'
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
