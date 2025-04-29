@@ -19,7 +19,7 @@ const populateBuildings = async () => {
           campus,
           building_name,
           location: sequelize.literal(`ST_GeomFromText('${location}', 4326)`),
-          mercator_coordinates: sequelize.literal(`ST_GeomFromText('${mercator_coordinates}', 3857)`),
+          mercator_coordinates: sequelize.literal(`ST_GeomFromText('${mercator_coordinates}', 3857)`)
         })
         .then(() => {
           console.log(`Inserted: ${building_name}`);
@@ -36,8 +36,6 @@ const populateBuildings = async () => {
           console.log('✅ All buildings inserted.');
         } catch (err) {
           console.error('❌ Error waiting for insertions:', err.message);
-        } finally {
-          console.log('🔌 Database connection closed.');
         }
       });
 
