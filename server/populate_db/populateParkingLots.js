@@ -15,31 +15,16 @@ async function insertParkingLots() {
       .pipe(csv()) // Parse the CSV file
       .on("data", (row) => {
         try {
-          // Extract only the first two coordinates [X, Y] from the Location and Mercator fields
-          const locationCoords = row.Location.match(/[-\d.]+/g).slice(0, 2);
-          const mercatorCoords = row.mercator_coordinates.match(/[-\d.]+/g).slice(0, 2);
-
-          // Validate that both coordinate sets are present and valid
-          if (!locationCoords || locationCoords.length < 2 || !mercatorCoords || mercatorCoords.length < 2) {
+          if (!row.Location || !row.mercator_coordinates) {
             console.error("Skipping invalid row:", row);
             return;
           }
 
-          // Convert coordinates to GeoJSON format for PostGIS
-          const locationGeoJSON = `{
-            "type": "MultiPoint",
-            "coordinates": [[${locationCoords[1]}, ${locationCoords[0]}]]  
-          }`;
-          const mercatorGeoJSON = `{
-            "type": "MultiPoint",
-            "coordinates": [[${mercatorCoords[0]}, ${mercatorCoords[1]}]]  
-          }`;
-
           // Push the parsed data into the results array
           results.push({
             name: row.Name, // Parking lot name
-            location: sequelize.literal(`ST_SetSRID(ST_GeomFromGeoJSON('${locationGeoJSON}'), 4326)`), // GeoJSON for geographic coordinates
-            mercator_coordinates: sequelize.literal(`ST_SetSRID(ST_GeomFromGeoJSON('${mercatorGeoJSON}'), 3857)`), // GeoJSON for Mercator coordinates
+            location: sequelize.literal(`ST_GeomFromText('${row.Location}', 4326)`), // Location coordinates
+            mercator_coordinates: sequelize.literal(`ST_GeomFromText('${row.mercator_coordinates}', 3857)`), // Mercator coordinates
             capacity: parseInt(row.Capacity) || 0, // Total capacity
             faculty_capacity: parseInt(row["Faculty Capacity"]) || 0, // Faculty capacity
             faculty_availability: parseInt(row["Faculty Availibility"]) || 0, // Faculty availability
