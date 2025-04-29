@@ -176,4 +176,41 @@ router.delete('/parking-lots/:id/remove', authenticate, requireAdmin, async (req
   }
 });
 
+// Get capacity analysis
+router.get('/analytics/capacity', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const lots = await ParkingLot.findAll();
+    const reservations = await Reservation.findAll({
+      where: { status: 'confirmed' },
+      include: [{ model: User, attributes: ['user_type'] }]
+    });
+
+    const lotData = lots.map(lot => {
+      const lotReservations = reservations.filter(r => r.parking_lot_id === lot.id);
+
+      const occupancy = lotReservations.length;
+      const occupancyRate = lot.capacity > 0
+        ? (occupancy / lot.capacity) * 100
+        : 0;
+
+      return {
+        lotId: lot.id,
+        lotName: lot.name,
+        capacity: lot.capacity,
+        currentOccupancy: occupancy,
+        occupancyRate: `${occupancyRate.toFixed(2)}%`
+      };
+    });
+
+    res.json({
+      success: true,
+      results: lotData
+    });
+
+  } catch (error) {
+    console.error('Error in capacity analysis:', error);
+    res.status(500).json({ success: false, error: 'Failed to retrieve capacity data.' });
+  }
+});
+
 module.exports = router;
