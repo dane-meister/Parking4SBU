@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
 
-function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType, times, setTimes  }) {
+function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType, times, setTimes, initialRateType }) {
   // State for rate type selection (hourly, daily, etc.)
-  const [ rateType, setRateType ] = useState('hourly');
+  const [ rateType, setRateType ] = useState(initialRateType || 'hourly');
   
   // State for toggling between building and lot selection
   const [ buildingLotType, setBuildingLotType ] = useState(initialSearchType || 'building');

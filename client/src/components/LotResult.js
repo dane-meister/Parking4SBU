@@ -33,8 +33,8 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
 
   const rates = lotObj?.Rates ?? []; // Get the rates from the lot object or default to an empty array
   
-  // Find a rate with an hourly price
-  const hourlyRateObj = rates.find(rate => typeof rate.hourly === 'number' && rate.hourly > 0);
+  // Find a rate with desired rate ype (hourly, daily)
+  const desiredRateObj = rates.find(rate => typeof rate[rateType] === 'number' && rate[rateType] > 0);
 
   // Check for a free lot (hourly or daily is explicitly 0)
   const freeRateObj = rates.find(rate =>
@@ -44,13 +44,14 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
   // Determine what to display for rate
   let displayRate = '';
   let timeRange = '';
-  if (hourlyRateObj) {
-    displayRate = `$${hourlyRateObj.hourly.toFixed(2)} / hr`;
-    timeRange = formatTimeRange(hourlyRateObj.lot_start_time, hourlyRateObj.lot_end_time);
+  if (desiredRateObj) {
+    displayRate = `$${desiredRateObj[rateType].toFixed(2)} / ${rateType}`;
+    timeRange = formatTimeRange(desiredRateObj.lot_start_time, desiredRateObj.lot_end_time);
   } else if (freeRateObj) {
     displayRate = 'Free visitor parking';
     timeRange = formatTimeRange(freeRateObj.lot_start_time, freeRateObj.lot_end_time);
   }
+  
 
   const availableCapacity = 
     ada_availability +
