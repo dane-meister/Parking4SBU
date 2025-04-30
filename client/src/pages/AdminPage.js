@@ -6,6 +6,7 @@ import LotFormModal from '../components/LotFormModal';
 import FeedbackFormModal from '../components/FeedbackFormModal';
 import CapacityAnalysis from '../components/CapacityAnalysis';
 import RevenueAnalysis from '../components/RevenueAnalysis';
+import UserAnalysis from '../components/UserAnalysis';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
@@ -352,6 +353,7 @@ export default function Admin() {
           <div>
             <CapacityAnalysis />
             <RevenueAnalysis />
+            <UserAnalysis />
           </div>
         )}
         {adminOption === 'feedback' && (
