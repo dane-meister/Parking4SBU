@@ -185,6 +185,12 @@ router.get('/analytics/capacity', authenticate, requireAdmin, async (req, res) =
       include: [{ model: User, attributes: ['user_type'] }]
     });
 
+    const userCapacity = {};
+    reservations.forEach(res => {
+      const type = res.User.user_type || 'Unknown';
+      userCapacity[type] = (userCapacity[type] || 0) + (res.spot_count || 1);
+    });
+
     const lotData = lots.map(lot => {
       const lotReservations = reservations.filter(r => r.parking_lot_id === lot.id);
 
@@ -204,7 +210,11 @@ router.get('/analytics/capacity', authenticate, requireAdmin, async (req, res) =
 
     res.json({
       success: true,
-      results: lotData
+      results: lotData,
+      userCategorySummary: Object.entries(userCapacity).map(([name, value]) => ({
+        name,
+        value
+      }))    
     });
 
   } catch (error) {
