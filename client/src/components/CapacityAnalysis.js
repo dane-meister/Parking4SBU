@@ -6,13 +6,11 @@ const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // backen
 
 export default function CapacityAnalysis() {
   const [capacityData, setCapacityData] = useState([]);
-  const [filter, setFilter] = useState('all'); // all, commuter, resident, faculty
-  const [lotId, setLotId] = useState(null);
   const [userCategoryData, setUserCategoryData] = useState([]);
 
   useEffect(() => {
     fetchCapacityAnalysis();
-  }, [filter, lotId]);
+  });
 
   const fetchCapacityAnalysis = async () => {
     try {
