@@ -1,3 +1,10 @@
+#lot-form-modal .padding-wrapper{
+    overflow-y: auto;
+    scrollbar-gutter: stable both-edges;
+    max-height: calc(min(60vh, 800px) - 59px);
+    min-height: calc(600px - 59px);
+}
+
 #lot-form-modal h2 {
     margin: 0;
     padding: 15px 25px;
@@ -30,10 +37,24 @@
 .name-uncollapsible,
 .location-collapsible,
 .capacity-collapsible,
-.rates-collapsible {
+.rates-collapsible,
+.single-rate-collapsible {
     padding-bottom: 10px;
     margin-top: 10px;
     border-bottom: #aaa solid 1px;
+}
+
+.rates-collapsible{
+    border-bottom: 0;
+}
+
+.single-rate-collapsible{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.single-rate-collapsible:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .lot-point-box > *{
@@ -97,4 +118,8 @@
 
 .disableable-input:has(input:focus){
     outline: 1px black solid;
+}
+
+.disableable-input:has(input:disabled){
+    background-color: #ddd;
 }
