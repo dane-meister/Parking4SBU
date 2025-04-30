@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const DisableableInput = (props) => {
-  const { value, onChange, inputId, inputName, isMoney, isInt, onDisable } = props;
+  const { value, onChange, inputId, inputName, isMoney, isInt, onDisable, isModified, label } = props;
   const [disabled, setDisabled] = useState(props.disabled ?? false)
 
   const onKeyDown = (e) => {
@@ -25,10 +25,14 @@ const DisableableInput = (props) => {
     }
   };
 
-  return (
+  return (<>
+    <label htmlFor={inputId ?? ''}>{label}{isModified && '*'}</label>
     <div className='disableable-input flex' disabled={disabled}>
       {isMoney && !disabled && (
-        <div style={{paddingTop: '1px', marginLeft: '2px', fontSize: '12px', height: '19px'}}>$</div>
+        <div 
+          style={{padding: '0 0 2px 2px', fontSize: '12px', height: '19px', alignContent: 'center'}}
+          className={isModified ? 'field-modified' : ''}
+        >$</div>
       )}
       <input 
         id={inputId ?? ''} 
@@ -38,12 +42,13 @@ const DisableableInput = (props) => {
         name={inputName}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        className={isModified ? 'field-modified' : ''}
       />
       <button onClick={() => {setDisabled(!disabled); onDisable()}}>
         <img src='/images/disable.png' alt='disable' />
       </button>
     </div>
-  );
+  </>);
 };
 
 export default DisableableInput;

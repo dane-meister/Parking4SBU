@@ -15,6 +15,7 @@ export default function Admin() {
   const [editingUser, setEditingUser] = useState(null);
   const [lots, setLots] = useState([]);
   const [editingLot, setEditingLot] = useState(null);
+  const [addingLot, setAddingLot] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [feedbackList, setFeedbackList] = useState([]);
   const [eventReservations, setEventReservations] = useState([]);
