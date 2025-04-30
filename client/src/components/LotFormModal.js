@@ -1,5 +1,5 @@
 import Modal from 'react-modal';
-import { Collapsible } from '.';
+import { Collapsible, DisableableInput } from '.';
 import { useEffect, useRef, useState } from 'react';
 import '../stylesheets/LotFormModal.css'
 
@@ -17,6 +17,12 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
   useEffect(() => {
     let coords = lot?.location?.coordinates
     if(!!coords) coords = coords.map(coord => coord.join(", "));
+
+    let rates = lot?.Rates
+    if(!!rates){
+      rates = JSON.parse(JSON.stringify(rates)) // deep copy 
+    }
+
     const data = {
       name: lot?.name ?? '',
       coordinates: coords ?? [],
@@ -31,7 +37,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         resident_capacity: lot?.resident_capacity ?? 0,
         capacity: lot?.capacity ?? 0
       },
-      rates: lot?.Rates ?? []
+      rates: rates ?? []
     }
     setFormData(data);
     originalData.current = JSON.parse(JSON.stringify(data));
@@ -75,6 +81,15 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       return { ...prev, newCapacity};
     });
   };
+
+  const handleRateChange = (e, rateIdx) => {
+    setFormData(prev => {
+      const newRates = prev.rates;
+      newRates[rateIdx][e.target.name] = e.target.value
+      return { ...prev}
+    });
+    console.log(formData.rates)
+  }
 
   const getNewCapacity = () => {
     const c = formData.capacity;
@@ -263,16 +278,46 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         startOpen={false}
         wideCollapse
       >
-        {formData.rates.map((rate, idx) => <Rate rateObj={rate} key={idx} rateNumber={idx}/>)}
-
+        {formData.rates.map((rate, idx) => (
+          <Rate 
+            rateObj={rate} 
+            key={idx} 
+            rateNumber={idx} 
+            onChange={(e) => handleRateChange(e, idx)}
+            setFormData={setFormData}
+          />)
+        )}
       </Collapsible>
+
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
       </section>
     </Modal>
   );
 }
 
-function Rate({ rateObj, rateNumber }){
+function Rate({ rateObj, rateNumber, onChange, setFormData }){
+  const onDisable = (name) => {
+    if(rateObj[name] == null){
+      console.log("trying to undisable");
+      setFormData(prev => {
+        const newRate = prev.rates[rateNumber];
+        newRate[name] = '';
+
+        const newRates = prev.rates
+        newRates[rateNumber] = newRate;
+        return { ...prev,  newRates};
+      }); 
+    }else{
+      console.log("trying to set field null");
+      
+      setFormData(prev => {
+        prev.rates[rateNumber][name] = null;
+
+        return { ...prev };
+      }); 
+    }
+  };
+
   return (<>
     {/* 
       - means started
@@ -292,74 +337,96 @@ function Rate({ rateObj, rateNumber }){
       () sheet_number: null
       () sheet_price: null
     */}
-    <Collapsible
-      name={`Rate ${rateNumber + 1}`}
-      className={'single-rate-collapsible'}
-      startOpen={false}
-      wideCollapse
-    >
-      <div><label htmlFor='permit-select'>Permit Type</label></div>
-      <select id='permit-select' style={{width: '48%'}}>
-        <option></option>
-        <option>Dont check, i didnt do this yet</option>
-      </select>
-      
-      {/* rate times */}
+    {rateNumber !== 0 && <div name='spacer' style={{height: '15px'}}/>}
+    <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
+    {console.log(rateObj)}
+    <div><label htmlFor={`permit-select-${rateNumber}`}>Permit Type</label></div>
+    <select id={`permit-select-${rateNumber}`} style={{width: '48%'}}>
+      <option></option>
+      <option>Dont check, i didnt do this yet</option>
+    </select>
+    
+    {/* rate times */}
 
-      {/* hourly rate */}
-      <div className='hbox'>  
-        <div style={{width: '48%'}}>
-          <label htmlFor='hourly-rate'>Hourly Rate</label>
-          <div className='disableable-input flex'>
-            <input id='hourly-rate' autoComplete='off'/>
-            <button><img src='/images/disable.png' alt='disable'/></button>
-          </div>
-        </div>
-        <span className='flex'/>
-        <div style={{width: '48%'}}>
-          <label htmlFor='max-hours'>Max Hours</label>
-          <div className='disableable-input flex'>
-            <input id='max-hours' autoComplete='off'/>
-            <button><img src='/images/disable.png' alt='disable'/></button>
-          </div>
-        </div>
+    {/* hourly rate */}
+    <div className='hbox'>  
+      <div style={{width: '48%'}}>
+        <label htmlFor={`hourly-rate-${rateNumber}`}>Hourly Rate</label>
+        <DisableableInput
+          value={rateObj['hourly'] ?? ''} 
+          inputId={`hourly-rate-${rateNumber}`}
+          inputName='hourly'
+          disabled={rateObj["hourly"] === null}
+          onChange={onChange}
+          onDisable={() => onDisable('hourly')}
+          isMoney
+        />
       </div>
 
-      {/* daily rate */}
-      <div className='hbox'>  
-        <div style={{width: '48%'}}>
-          <label htmlFor='daily-rate'>Daily Rate</label>
-          <div className='disableable-input flex'>
-            <input id='daily-rate' autoComplete='off'/>
-            <button><img src='/images/disable.png' alt='disable'/></button>
-          </div>
-        </div>
+      <span className='flex'/>
+      <div style={{width: '48%'}}>
+        <label htmlFor={`max-hours-${rateNumber}`}>Max Hours</label>
+        <DisableableInput
+          value={rateObj['max_hours'] ?? ''} 
+          inputId={`max-hours-${rateNumber}`}
+          inputName='max_hours'
+          disabled={rateObj["max_hours"] === null}
+          onChange={onChange}
+          onDisable={() => onDisable('max_hours')}
+          isInt
+        />
       </div>
+    </div>
 
-      {/* monthly rate */}
-      <div className='hbox'>  
-        <div style={{width: '48%'}}>
-          <label htmlFor='monthly-rate'>Monthly Rate</label>
-          <div className='disableable-input flex'>
-            <input id='monthly-rate' autoComplete='off'/>
-            <button><img src='/images/disable.png' alt='disable'/></button>
-          </div>
-        </div>
+    {/* daily rate */}
+    <div className='hbox'>  
+      <div style={{width: '48%'}}>
+        <label htmlFor={`daily-rate-${rateNumber}`}>Daily Rate</label>
+        <DisableableInput
+          value={rateObj['daily'] ?? ''} 
+          inputId={`daily-rate-${rateNumber}`}
+          inputName='daily'
+          disabled={rateObj["daily"] === null}
+          onChange={onChange}
+          onDisable={() => onDisable('daily')}
+          isMoney
+        />
       </div>
+    </div>
 
-      semester
-      
-      {/* yearly rate */}
-      <div className='hbox'>  
-        <div style={{width: '48%'}}>
-          <label htmlFor='yearly-rate'>Yearly Rate</label>
-          <div className='disableable-input flex'>
-            <input id='yearly-rate' autoComplete='off'/>
-            <button><img src='/images/disable.png' alt='disable'/></button>
-          </div>
-        </div>
+    {/* monthly rate */}
+    <div className='hbox'>  
+      <div style={{width: '48%'}}>
+        <label htmlFor={`monthly-rate-${rateNumber}`}>Monthly Rate</label>
+        <DisableableInput
+          value={rateObj['monthly'] ?? ''} 
+          inputId={`monthly-rate-${rateNumber}`}
+          inputName='monthly'
+          disabled={rateObj["monthly"] === null}
+          onChange={onChange}
+          onDisable={() => onDisable('monthly')}
+          isMoney
+        />
       </div>
-    </Collapsible>
+    </div>
+
+    semester
+    
+    {/* yearly rate */}
+    <div className='hbox'>  
+      <div style={{width: '48%'}}>
+        <label htmlFor={`yearly-rate-${rateNumber}`}>Yearly Rate</label>
+        <DisableableInput
+          value={rateObj['yearly'] ?? ''} 
+          inputId={`yearly-rate-${rateNumber}`}
+          inputName='yearly'
+          disabled={rateObj["yearly"] === null}
+          onChange={onChange}
+          onDisable={() => onDisable('yearly')}
+          isMoney
+        />
+      </div>
+    </div>
   </>);
 }
 

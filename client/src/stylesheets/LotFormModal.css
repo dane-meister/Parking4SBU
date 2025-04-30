@@ -119,3 +119,7 @@
 .disableable-input:has(input:focus){
     outline: 1px black solid;
 }
+
+.disableable-input:has(input:disabled){
+    background-color: #ddd;
+}
