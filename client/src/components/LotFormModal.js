@@ -118,8 +118,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
         e.preventDefault();
       }
-      let new_value = Number(e.target.value + e.key);
-      if(new_value > MAX_TYPE_CAPACITY) e.preventDefault();
+      // let new_value = Number(e.target.value + e.key);
+      // if(new_value > MAX_TYPE_CAPACITY) e.preventDefault();
   };
 
   const isCapacityModified = (field) => {
