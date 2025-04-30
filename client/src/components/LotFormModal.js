@@ -1,16 +1,16 @@
 import Modal from 'react-modal';
-import { Collapsible, DisableableInput } from '.';
+import { Collapsible, EditRate } from '.';
 import { useEffect, useRef, useState } from 'react';
 import '../stylesheets/LotFormModal.css'
-
+import formatMoney from '../utils/formatMoney'
 Modal.setAppElement('#root'); // should only render once, or else constant warnings!
 
-export default function LotFormModal({ isOpen, onRequestClose, lot }){
+export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const [formData, setFormData] = useState({
     name: '',
     coordinates: [],
     capacity: {},
-    rates: []
+    rates: [],
   });
 
   const originalData = useRef({});
@@ -21,6 +21,17 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
     let rates = lot?.Rates
     if(!!rates){
       rates = JSON.parse(JSON.stringify(rates)) // deep copy 
+      rates.map(rate => {
+        const fieldsToFormat = [
+          'hourly', 'daily', 'monthly', 'semesterly_fall_spring', 
+          'semesterly_summer', 'yearly', 'event_parking_price', 'sheet_price'
+        ];
+        for(const field of Object.keys(rate)){
+          if(rate[field] !== null && (fieldsToFormat.includes(field))){
+            rate[field] = formatMoney(rate[field])
+          }
+        }
+      });
     }
 
     const data = {
@@ -111,6 +122,10 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       if(new_value > MAX_TYPE_CAPACITY) e.preventDefault();
   };
 
+  const isCapacityModified = (field) => {
+    if(formData.capacity[`${field}_capacity`] === undefined) return false;
+    return originalData.current.capacity[`${field}_capacity`] !== formData.capacity[`${field}_capacity`]
+  };
   // stops background scrolling
   if(isOpen){
     document.body.style.overflow = 'hidden';
@@ -125,7 +140,14 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       id='lot-form-modal'
       style={styles}
     >
-      <h2 className='lot-edit-h2'>Lot Edit</h2>
+      <h2 className='lot-edit-h2 hbox'>
+        {formType==='add' ? 'Lot Add' : 'Lot Edit'}
+        <span className='flex'/>
+        <img className='hover-black' src='/images/x.png' alt='close'
+          style={{filter: 'invert(1)', height: '29px', padding: '1px 0'}}
+          onClick={onRequestClose}
+        />
+      </h2>
       <section className='padding-wrapper' style={{padding: '0 15px 25px 15px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
@@ -188,75 +210,83 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         */}
 
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
-          <label className='flex'>Commuter Core
+          <label className='flex'>Commuter Core{isCapacityModified('commuter_core') ? '*' : ''}
             <input id='commuter-core-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'commuter_core')}
               value={formData.capacity.commuter_core_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('commuter_core') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Commuter Perimeter
+          <label className='flex'>Commuter Perimeter{isCapacityModified('commuter_perimeter') ? '*' : ''}
             <input id='commuter-perimeter-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'commuter_perimeter')}
               value={formData.capacity.commuter_perimeter_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('commuter_perimeter') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Commuter Satellite
+          <label className='flex'>Commuter Satellite{isCapacityModified('commuter_satellite') ? '*' : ''}
             <input id='commuter-satellite-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'commuter_satellite')}
               value={formData.capacity.commuter_satellite_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('commuter_satellite') && 'field-modified'}`}
             />
           </label>
         </div>
 
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
-          <label className='flex'>Resident
+          <label className='flex'>Resident{isCapacityModified('resident') ? '*' : ''}
             <input id='resident-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'resident')}
               value={formData.capacity.resident_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('resident') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Faculty
+          <label className='flex'>Faculty{isCapacityModified('faculty') ? '*' : ''}
             <input id='faculty-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'faculty')}
               value={formData.capacity.faculty_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('faculty') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Metered
+          <label className='flex'>Metered{isCapacityModified('metered') ? '*' : ''}
             <input id='metered-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'metered')}
               value={formData.capacity.metered_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('metered') && 'field-modified'}`}
             />
           </label>
         </div>
         
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
           <span style={{flex: 1}}/> 
-          <label style={{flex: 2}} htmlFor='ada-capacity'>EV Charging
+          <label style={{flex: 2}} htmlFor='ada-capacity'>EV Charging{isCapacityModified('ev_charging') ? '*' : ''}
             <input id='ev-charging-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'ev_charging')}
               value={formData.capacity.ev_charging_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('ev_charging') && 'field-modified'}`}
             />
           </label>
-          <label className='flex' style={{flex: 2}}>ADA
+          <label className='flex' style={{flex: 2}}>ADA{isCapacityModified('ada') ? '*' : ''}
             <input id='ada-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'ada')}
               value={formData.capacity.ada_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('ada') && 'field-modified'}`}
             />
           </label>
           <span style={{flex: 1}}/> 
@@ -279,12 +309,13 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         wideCollapse
       >
         {formData.rates.map((rate, idx) => (
-          <Rate 
+          <EditRate 
             rateObj={rate} 
             key={idx} 
             rateNumber={idx} 
             onChange={(e) => handleRateChange(e, idx)}
             setFormData={setFormData}
+            originalRateObj={originalData.current.rates[idx]}
           />)
         )}
       </Collapsible>
@@ -293,141 +324,6 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       </section>
     </Modal>
   );
-}
-
-function Rate({ rateObj, rateNumber, onChange, setFormData }){
-  const onDisable = (name) => {
-    if(rateObj[name] == null){
-      console.log("trying to undisable");
-      setFormData(prev => {
-        const newRate = prev.rates[rateNumber];
-        newRate[name] = '';
-
-        const newRates = prev.rates
-        newRates[rateNumber] = newRate;
-        return { ...prev,  newRates};
-      }); 
-    }else{
-      console.log("trying to set field null");
-      
-      setFormData(prev => {
-        prev.rates[rateNumber][name] = null;
-
-        return { ...prev };
-      }); 
-    }
-  };
-
-  return (<>
-    {/* 
-      - means started
-      x means finished
-
-      (-) permit_type: "Faculty"
-      () lot_start_time: "07:00:00"
-      () lot_end_time: "16:00:00"
-      (-) hourly: null
-      (-) max_hours: null
-      (-) daily: null
-      (-) monthly: null
-      () semesterly_fall_spring: null
-      () semesterly_summer: null
-      (-) yearly: 0
-      () event_parking_price: null
-      () sheet_number: null
-      () sheet_price: null
-    */}
-    {rateNumber !== 0 && <div name='spacer' style={{height: '15px'}}/>}
-    <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
-    {console.log(rateObj)}
-    <div><label htmlFor={`permit-select-${rateNumber}`}>Permit Type</label></div>
-    <select id={`permit-select-${rateNumber}`} style={{width: '48%'}}>
-      <option></option>
-      <option>Dont check, i didnt do this yet</option>
-    </select>
-    
-    {/* rate times */}
-
-    {/* hourly rate */}
-    <div className='hbox'>  
-      <div style={{width: '48%'}}>
-        <label htmlFor={`hourly-rate-${rateNumber}`}>Hourly Rate</label>
-        <DisableableInput
-          value={rateObj['hourly'] ?? ''} 
-          inputId={`hourly-rate-${rateNumber}`}
-          inputName='hourly'
-          disabled={rateObj["hourly"] === null}
-          onChange={onChange}
-          onDisable={() => onDisable('hourly')}
-          isMoney
-        />
-      </div>
-
-      <span className='flex'/>
-      <div style={{width: '48%'}}>
-        <label htmlFor={`max-hours-${rateNumber}`}>Max Hours</label>
-        <DisableableInput
-          value={rateObj['max_hours'] ?? ''} 
-          inputId={`max-hours-${rateNumber}`}
-          inputName='max_hours'
-          disabled={rateObj["max_hours"] === null}
-          onChange={onChange}
-          onDisable={() => onDisable('max_hours')}
-          isInt
-        />
-      </div>
-    </div>
-
-    {/* daily rate */}
-    <div className='hbox'>  
-      <div style={{width: '48%'}}>
-        <label htmlFor={`daily-rate-${rateNumber}`}>Daily Rate</label>
-        <DisableableInput
-          value={rateObj['daily'] ?? ''} 
-          inputId={`daily-rate-${rateNumber}`}
-          inputName='daily'
-          disabled={rateObj["daily"] === null}
-          onChange={onChange}
-          onDisable={() => onDisable('daily')}
-          isMoney
-        />
-      </div>
-    </div>
-
-    {/* monthly rate */}
-    <div className='hbox'>  
-      <div style={{width: '48%'}}>
-        <label htmlFor={`monthly-rate-${rateNumber}`}>Monthly Rate</label>
-        <DisableableInput
-          value={rateObj['monthly'] ?? ''} 
-          inputId={`monthly-rate-${rateNumber}`}
-          inputName='monthly'
-          disabled={rateObj["monthly"] === null}
-          onChange={onChange}
-          onDisable={() => onDisable('monthly')}
-          isMoney
-        />
-      </div>
-    </div>
-
-    semester
-    
-    {/* yearly rate */}
-    <div className='hbox'>  
-      <div style={{width: '48%'}}>
-        <label htmlFor={`yearly-rate-${rateNumber}`}>Yearly Rate</label>
-        <DisableableInput
-          value={rateObj['yearly'] ?? ''} 
-          inputId={`yearly-rate-${rateNumber}`}
-          inputName='yearly'
-          disabled={rateObj["yearly"] === null}
-          onChange={onChange}
-          onDisable={() => onDisable('yearly')}
-          isMoney
-        />
-      </div>
-    </div>
-  </>);
 }
 
 const styles = {

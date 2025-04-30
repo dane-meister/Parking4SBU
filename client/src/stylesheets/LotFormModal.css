@@ -123,3 +123,24 @@
 .disableable-input:has(input:disabled){
     background-color: #ddd;
 }
+
+.field-modified {
+    background-color: #fff9e4;
+}
+
+.capacity-collapsible input{
+    height: 20.86px
+}
+.capacity-collapsible .field-modified{
+    border: 1px solid light-dark(rgb(118, 118, 118), rgb(133, 133, 133));;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    padding: 1px 2px;
+    height: 20.86px
+}
+.capacity-collapsible .field-modified:focus{
+    padding: 1px 2px;
+    outline: 0.666666666px black auto;
+    height: 20.86px;
+    border: 2px solid light-dark(rgb(118, 118, 118), rgb(133, 133, 133));;
+}
