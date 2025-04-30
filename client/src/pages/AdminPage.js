@@ -3,7 +3,10 @@ import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
 import LotFormModal from '../components/LotFormModal';
-import Popup from '../components/Popup';
+import FeedbackFormModal from '../components/FeedbackFormModal';
+import CapacityAnalysis from '../components/CapacityAnalysis';
+import RevenueAnalysis from '../components/RevenueAnalysis';
+import UserAnalysis from '../components/UserAnalysis';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
@@ -18,6 +21,7 @@ export default function Admin() {
   const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
   const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
   const [activeFeedback, setActiveFeedback] = useState(null);
+  const [addLotForm, setAddLotForm] = useState(false);
 
   // Fetch users when 'Users' tab is selected
   useEffect(() => {
@@ -251,7 +255,7 @@ export default function Admin() {
         )}
         {adminOption === 'lots' && (
           <>
-            <button className="add-lot-button">Add a Lot</button>
+            <button className="add-lot-button" onClick={() => setAddLotForm(true)}>Add a Lot</button>
             <h2>Manage Parking Lots</h2>
             <div className="user-list">
               {lots.length === 0 ? (
@@ -347,8 +351,9 @@ export default function Admin() {
         )}
         {adminOption === 'analysis' && (
           <div>
-            <h2>Analysis</h2>
-            <p>Data analysis tools will be available here.</p>
+            <CapacityAnalysis />
+            <RevenueAnalysis />
+            <UserAnalysis />
           </div>
         )}
         {adminOption === 'feedback' && (
@@ -457,37 +462,22 @@ export default function Admin() {
           </div>
         </div>
       )}
-      {activeFeedback && (
-        <Popup
-          name="feedback-response"
-          popupHeading={`Respond to Feedback #${activeFeedback.feedback_id}`}
-          closeFunction={() => setActiveFeedback(null)}
-        >
-          <textarea
-            value={activeFeedback.admin_response || ""}
-            onChange={(e) =>
-              setActiveFeedback(prev => ({ ...prev, admin_response: e.target.value }))
-            }
-            rows={5}
-            style={{ width: "100%", marginTop: "1rem" }}
-          />
-          <div className="form-buttons" style={{ marginTop: "1rem" }}>
-            <button onClick={() => setActiveFeedback(null)}>Cancel</button>
-            <button
-              className="save-button"
-              onClick={() => handleFeedbackResponse(activeFeedback.feedback_id, activeFeedback.admin_response)}
-            >
-              Save Response
-            </button>
-          </div>
-        </Popup>
-      )}
 
       <LotFormModal
-        isOpen={!!editingLot}
+        isOpen={!!editingLot || addLotForm}
         lot={editingLot}
-        onRequestClose={() => setEditingLot(false)}
-      ></LotFormModal>
+        onRequestClose={() => {
+          setEditingLot(null);
+          setAddLotForm(false);
+        }}
+      />
+
+      <FeedbackFormModal
+        isOpen={activeFeedback !== null}
+        onRequestClose={() => setActiveFeedback(null)}
+        feedback={activeFeedback}
+        refreshFeedbackList={() => setToggleFeedbackResponseRefresh(prev => !prev)}
+      />
 
     </main>
   );

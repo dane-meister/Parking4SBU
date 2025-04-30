@@ -1,0 +1,61 @@
+#feedback-form-modal h2 {
+    margin: 0;
+    padding: 15px 25px;
+    color: white;
+    background-color: var(--red);
+}
+
+.padding-wrapper {
+    padding: 25px;
+    padding-top: 0;
+}
+
+.feedback-details p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.feedback-lbl {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+textarea#response-text {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: solid rgb(118, 118, 118) 1px;
+    border-radius: 2px;
+    resize: vertical;
+    min-height: 100px;
+}
+
+textarea#response-text:focus {
+    outline: 1px solid black;
+}
+
+.btn-cancel,
+.btn-submit {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #aaa;
+    color: white;
+    transition: background-color 0.2s ease;
+}
+
+.btn-submit {
+    background-color: var(--red);
+}
+
+.btn-cancel:hover {
+    background-color: #888;
+}
+
+.btn-submit:hover {
+    background-color: #b30000;
+}
