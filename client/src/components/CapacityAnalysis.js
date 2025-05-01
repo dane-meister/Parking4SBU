@@ -14,7 +14,7 @@ export default function CapacityAnalysis() {
 
   const fetchCapacityAnalysis = async () => {
     try {
-      const response = await axios.get(`${HOST}/api/admin/analytics/capacity`, { withCredentials: true });
+      const response = await axios.get(`${HOST}/api/admin/analytics/capacity-analysis`, { withCredentials: true });
       setCapacityData(response.data.results);
       setUserCategoryData(response.data.userCategorySummary);
     } catch (err) {
