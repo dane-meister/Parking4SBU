@@ -394,7 +394,7 @@ function Reservation(){
 				Spots Needed:
 				<input
 					type="number"
-					min="1"
+					min="2"
 					value={spotCount}
 					onChange={(e) => setSpotCount(Number(e.target.value))}
 					style={{ marginLeft: '10px', width: '60px' }}
