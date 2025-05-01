@@ -26,11 +26,18 @@ export function calculateReservationCharge({
     const [rateEndHour, rateEndMin] = rateEnd.split(':').map(Number);
     const rateStartFloat = rateStartHour + rateStartMin / 60;
     const rateEndFloat = rateEndHour + rateEndMin / 60;
+    const isOvernight = rateEndFloat <= rateStartFloat;
   
     for (let d = new Date(start); d < end; d = new Date(d.getTime() + msPerHour)) {
       const hourFloat = d.getHours() + d.getMinutes() / 60;
-      if (hourFloat >= rateStartFloat && hourFloat < rateEndFloat) {
-        totalBillableHours++;
+      if (isOvernight) {
+        if (hourFloat >= rateStartFloat || hourFloat < rateEndFloat) {
+          totalBillableHours++;
+        }
+      } else {
+        if (hourFloat >= rateStartFloat && hourFloat < rateEndFloat) {
+          totalBillableHours++;
+        }
       }
     }
   

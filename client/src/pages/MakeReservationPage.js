@@ -92,38 +92,87 @@ function Reservation(){
 			});
 	}, [user?.user_id]);
 
+	// Calculate price based on selected times and rates
 	useEffect(() => {
 		if (!times.arrival || !times.departure || !Array.isArray(rates) || rates.length === 0) return;
 	
 		const startTime = getDateWithTime(times.arrival);
 		const endTime = getDateWithTime(times.departure);
 
-		const selectedRate = rates.find(r =>
-			r.hourly != null &&
-			r.lot_start_time &&
-			r.lot_end_time &&
-			r.max_hours != null &&
-			r.daily != null
-		);
+		const selectedRate = rates.find(r => {
+			if (isEventParking) {
+				console.log("Checking event rate:", r);
+				return (
+					(r.sheet_number != null && r.sheet_price != null) ||
+					r.event_parking_price != null ||
+					(
+						r.hourly != null &&
+						r.lot_start_time &&
+						r.lot_end_time &&
+						r.max_hours != null &&
+						r.daily != null
+					)
+				);
+			} 
+			else {
+				// Standard reservations need hourly, daily, etc.
+				return (
+				r.hourly != null &&
+				r.lot_start_time &&
+				r.lot_end_time &&
+				r.max_hours != null &&
+				r.daily != null
+				);
+			}
+		});
 
 		if (!selectedRate) {
 			console.warn("No valid rate found for calculation.");
 			setCalculatedPrice(0);
 			return;
 		}
-	
-		const { subtotal } = calculateReservationCharge({
-			startTime,
-			endTime,
-			rateStart: selectedRate.lot_start_time,
-			rateEnd: selectedRate.lot_end_time,
-			hourlyRate: selectedRate.hourly,
-			maxHours: selectedRate.max_hours,
-			dailyMaxRate: selectedRate.daily
-		});
+		console.log("Selected rate for calculation:", selectedRate);
+
+		let subtotal = 0;
+
+		if (isEventParking) {
+			const { sheet_number, sheet_price, event_parking_price, hourly, lot_start_time, lot_end_time, max_hours, daily } = selectedRate;
+			if (sheet_number != null && sheet_price != null) {
+				const sheetsNeeded = Math.ceil(spotCount / sheet_number);
+				subtotal = sheetsNeeded * sheet_price;
+			} else if (event_parking_price != null) {
+				subtotal = event_parking_price * spotCount; // Flat per-spot rate (daily)
+			} else if (hourly != null && lot_start_time && lot_end_time && max_hours != null && daily != null) {
+				const result = calculateReservationCharge({
+					startTime,
+					endTime,
+					rateStart: lot_start_time,
+					rateEnd: lot_end_time,
+					hourlyRate: hourly,
+					maxHours: max_hours,
+					dailyMaxRate: daily
+				});
+				subtotal = result.subtotal * spotCount;
+			} else {
+				console.warn("No valid event rate found. Defaulting to $0.");
+				subtotal = 0;
+			}
+		} else {
+			// Normal (non-event) reservation
+			const result = calculateReservationCharge({
+				startTime,
+				endTime,
+				rateStart: selectedRate.lot_start_time,
+				rateEnd: selectedRate.lot_end_time,
+				hourlyRate: selectedRate.hourly,
+				maxHours: selectedRate.max_hours,
+				dailyMaxRate: selectedRate.daily
+			});
+			subtotal = result.subtotal;
+		} 
 	
 		setCalculatedPrice(subtotal);
-	}, [times, rates]);
+	}, [times, rates, isEventParking, spotCount]);
 
 	useEffect(() => {
 		const fetchAvailability = async () => {
@@ -227,6 +276,11 @@ function Reservation(){
 			hasError = true;
 		}
 
+		if (isEventParking && spotCount > minAvailability[selectedSpotType]) {
+			errors.availability = `Only ${minAvailability[selectedSpotType]} ${selectedSpotType.replace('_', ' ')} spots are available.`;
+			hasError = true;
+		}
+
 		setErrorMessages(errors);  
 		if (hasError) return;	  
 		
@@ -239,41 +293,14 @@ function Reservation(){
 				errors.general = "You cannot make a reservation in the past.";
 				hasError = true;
 			}
-
 			
-			const selectedRate = rates.find(r =>
-				r.hourly != null &&
-				r.lot_start_time &&
-				r.lot_end_time &&
-				r.max_hours != null &&
-				r.daily != null
-			);
-
-			let subtotal = 0;
-
-			if (selectedRate) {
-				const result = calculateReservationCharge({
-					startTime,
-					endTime,
-					rateStart: selectedRate.lot_start_time,
-					rateEnd: selectedRate.lot_end_time,
-					hourlyRate: selectedRate.hourly,
-					maxHours: selectedRate.max_hours,
-					dailyMaxRate: selectedRate.daily
-				});
-				subtotal = result.subtotal;
-			} else {
-				console.warn("No valid rate found for reservation. Defaulting to free.");
-			}
-
-
 			const payload = {
 				user_id: user?.user_id,
 				parking_lot_id: lotId,
 				vehicle_id: selectedVehicleId,
 				start_time: startTime,
 				end_time: endTime,
-				total_price: subtotal,
+				total_price: calculatedPrice,
 				spot_count: isEventParking ? spotCount : 1,
 				event_description: isEventParking ? eventDescription : null,
 				spot_type: selectedSpotType
@@ -519,6 +546,11 @@ function Reservation(){
 					}
 					if (minAvailability[selectedSpotType] === 0) {
 						errors.availability = `No ${selectedSpotType.replace('_', ' ')} spots available during the selected time range.`;
+						hasError = true;
+					}
+
+					if (isEventParking && spotCount > minAvailability[selectedSpotType]) {
+						errors.availability = `Only ${minAvailability[selectedSpotType]} ${selectedSpotType.replace('_', ' ')} spots are available.`;
 						hasError = true;
 					}
 
