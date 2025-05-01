@@ -55,6 +55,11 @@ function Reservation(){
 	const [selectedVehicleId, setSelectedVehicleId] = useState(null);
 
 	const [isEventParking, setIsEventParking] = useState(false);
+	// Effect to update spot count based on event parking status
+	useEffect(() => {
+		setSpotCount(isEventParking ? 2 : 1);
+	}, [isEventParking]);
+
 	const [spotCount, setSpotCount] = useState(1);
 	const [eventDescription, setEventDescription] = useState('');
 
