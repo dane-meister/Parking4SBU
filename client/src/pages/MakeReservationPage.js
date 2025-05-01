@@ -106,7 +106,6 @@ function Reservation(){
 
 		const selectedRate = rates.find(r => {
 			if (isEventParking) {
-				console.log("Checking event rate:", r);
 				return (
 					(r.sheet_number != null && r.sheet_price != null) ||
 					r.event_parking_price != null ||
@@ -136,17 +135,22 @@ function Reservation(){
 			setCalculatedPrice(0);
 			return;
 		}
-		console.log("Selected rate for calculation:", selectedRate);
 
 		let subtotal = 0;
 
 		if (isEventParking) {
+			console.log(endTime, startTime);
+			const start = new Date(startTime);
+			const end = new Date(endTime);
+			const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)); // Calculate number of days between start and end
+			console.log(dayCount);
+
 			const { sheet_number, sheet_price, event_parking_price, hourly, lot_start_time, lot_end_time, max_hours, daily } = selectedRate;
 			if (sheet_number != null && sheet_price != null) {
 				const sheetsNeeded = Math.ceil(spotCount / sheet_number);
-				subtotal = sheetsNeeded * sheet_price;
+				subtotal = sheetsNeeded * sheet_price * dayCount;
 			} else if (event_parking_price != null) {
-				subtotal = event_parking_price * spotCount; // Flat per-spot rate (daily)
+				subtotal = event_parking_price * spotCount * dayCount; // Flat per-spot rate (daily)
 			} else if (hourly != null && lot_start_time && lot_end_time && max_hours != null && daily != null) {
 				const result = calculateReservationCharge({
 					startTime,

@@ -1,53 +1,62 @@
 export function calculateReservationCharge({
-    startTime,
-    endTime,
-    rateStart,    
-    rateEnd,      
-    hourlyRate,    
-    maxHours,     
-    dailyMaxRate  
-  }) {
-    console.log("Calculating reservation charge...");
-    console.log("Start Time:", startTime);
-    console.log("End Time:", endTime);
-    console.log("Rate Start:", rateStart);
-    console.log("Rate End:", rateEnd);
-    console.log("Hourly Rate:", hourlyRate);
-    console.log("Max Hours:", maxHours);
-    console.log("Daily Max Rate:", dailyMaxRate);
-    const msPerHour = 1000 * 60 * 60;
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-  
-    let totalBillableHours = 0;
-  
-    // Convert rate window to hour float
-    const [rateStartHour, rateStartMin] = rateStart.split(':').map(Number);
-    const [rateEndHour, rateEndMin] = rateEnd.split(':').map(Number);
-    const rateStartFloat = rateStartHour + rateStartMin / 60;
-    const rateEndFloat = rateEndHour + rateEndMin / 60;
-    const isOvernight = rateEndFloat <= rateStartFloat;
-  
-    for (let d = new Date(start); d < end; d = new Date(d.getTime() + msPerHour)) {
-      const hourFloat = d.getHours() + d.getMinutes() / 60;
-      if (isOvernight) {
-        if (hourFloat >= rateStartFloat || hourFloat < rateEndFloat) {
-          totalBillableHours++;
-        }
-      } else {
-        if (hourFloat >= rateStartFloat && hourFloat < rateEndFloat) {
-          totalBillableHours++;
-        }
-      }
+  startTime,
+  endTime,
+  rateStart,
+  rateEnd,
+  hourlyRate,
+  maxHours,
+  dailyMaxRate
+}) {
+  const msPerHour = 1000 * 60 * 60;
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  const [startHr, startMin] = rateStart.split(':').map(Number);
+  const [endHr, endMin] = rateEnd.split(':').map(Number);
+  const rateStartFloat = startHr + startMin / 60;
+  const rateEndFloat = endHr + endMin / 60;
+  const isOvernight = rateEndFloat <= rateStartFloat;
+
+  let totalCost = 0;
+  let d = new Date(start);
+
+  while (d < end) {
+    const dayStart = new Date(d);
+    dayStart.setHours(0, 0, 0, 0);
+
+    const nextDay = new Date(dayStart);
+    nextDay.setDate(dayStart.getDate() + 1);
+
+    const windowStart = new Date(dayStart);
+    windowStart.setHours(startHr, startMin, 0, 0);
+
+    const windowEnd = new Date(dayStart);
+    if (isOvernight) {
+      windowEnd.setDate(windowEnd.getDate() + 1);
     }
-  
-    const cappedHours = Math.min(totalBillableHours, maxHours);
-    const rawCost = cappedHours * hourlyRate;
-    const totalCost = Math.min(rawCost, dailyMaxRate);
-  
-    return {
-      hoursBilled: cappedHours,
-      subtotal: parseFloat(totalCost.toFixed(2))
-    };
+    windowEnd.setHours(endHr, endMin, 0, 0);
+
+    const billStart = new Date(Math.max(start, windowStart));
+    const billEnd = new Date(Math.min(end, windowEnd));
+
+    let hours = 0;
+    for (
+      let h = new Date(billStart);
+      h < billEnd;
+      h = new Date(h.getTime() + msPerHour)
+    ) {
+      hours++;
+    }
+
+    const cappedHours = Math.min(hours, maxHours);
+    const raw = cappedHours * hourlyRate;
+    totalCost += Math.min(raw, dailyMaxRate);
+
+    // Advance to next day
+    d = nextDay;
   }
-  
+
+  return {
+    subtotal: parseFloat(totalCost.toFixed(2))
+  };
+}
