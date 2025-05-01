@@ -92,7 +92,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
         });
         break;
       case 'Price':
-        sortedLots = lotResults.toSorted((a,b) => {
+        sortedLots = lotResults.toSorted((_a,b) => {
           /* sort logic here */
         });
         break;

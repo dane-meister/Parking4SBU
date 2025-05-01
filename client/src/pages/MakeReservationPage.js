@@ -233,6 +233,13 @@ function Reservation(){
 		try {
 			const startTime = getDateWithTime(times.arrival);
 			const endTime = getDateWithTime(times.departure);
+
+			const now = new Date();
+			if (startTime < now) {
+				errors.general = "You cannot make a reservation in the past.";
+				hasError = true;
+			}
+
 			
 			const selectedRate = rates.find(r =>
 				r.hourly != null &&
@@ -478,6 +485,12 @@ function Reservation(){
 				<span>${calculatedPrice.toFixed(2)}</span>
 			</div>
 			<div>
+			{errorMessages.general && (
+			<div className="error-text" style={{ color: 'red', marginBottom: '10px' }}>
+				{errorMessages.general}
+			</div>
+			)}
+
 			<button 
 				className='make-reservation-pay-btn'
 				disabled={reservationSuccess === true}
