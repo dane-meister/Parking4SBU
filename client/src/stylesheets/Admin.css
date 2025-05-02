@@ -249,6 +249,7 @@
   background-color: #fff;
   width: 100%;
   resize: vertical;
+  font-family: sans-serif;
 }
 
 .ticket-form textarea {
