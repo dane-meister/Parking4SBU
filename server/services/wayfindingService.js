@@ -117,5 +117,5 @@ async function getSortedParkingLots(buildingId) {
 }
 
 module.exports = {
-    getSortedParkingLots, manhattanDistance
+    getSortedParkingLots, manhattanDistance, metersToMiles
 };
