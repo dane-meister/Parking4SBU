@@ -124,6 +124,10 @@
     background-color: #ddd;
 }
 
+.disableable-input input:disabled{
+    background-color: #ddd;
+}
+
 .field-modified {
     background-color: #fff9e4;
 }

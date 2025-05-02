@@ -471,6 +471,7 @@ export default function Admin() {
           setEditingLot(null);
           setAddLotForm(false);
         }}
+        formType={addLotForm ? 'add' : 'edit'}
       />
 
       <FeedbackFormModal

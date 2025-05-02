@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Collapsible component: A reusable component that can toggle the visibility of its children.
 // Props:
@@ -12,17 +12,24 @@ import React, { useState } from 'react';
 // - subtext: Optional, adds smaller subtext
 // - persistentChildren: bool, if false or undefined children will unrender when collapsed
 // - asterisk: bool, if true adds an asterisk to the name
-export default function Collapsible({ className, name, imgsrc, children, startOpen, tag, wideCollapse, subtext, persistentChildren, asterisk }) {
+export default function Collapsible({ className, name, imgsrc, children, startOpen, tag, wideCollapse, subtext, persistentChildren, asterisk, externalOpen, externalSetOpen }) {
 	// Default startOpen to true if not provided
 	startOpen = startOpen !== undefined ? startOpen : true;
 	persistentChildren = persistentChildren ?? false;
+
 	// State to track whether the collapsible is open or closed
 	const [open, setOpen] = useState(startOpen);
 
 	// Function to toggle the open state
 	const toggleOpen = () => {
-		setOpen(!open);
+		if(externalOpen !== undefined){
+			externalSetOpen(prev => !prev);
+		}else{
+			setOpen(!open);
+		}
 	};
+
+	const currentlyOpen = externalOpen !== undefined ? externalOpen : open; 
 
 	// Style for the toggle icon (rotates when open)
 	const imgStyle = {
@@ -54,8 +61,8 @@ export default function Collapsible({ className, name, imgsrc, children, startOp
 			</div>
 			{/* Render children only if the collapsible is open */}
 			{persistentChildren 
-				? <div style={open ? {} : {display: 'none'}}>{children}</div>
-				: open && <div>{children}</div>
+				? <div style={currentlyOpen ? {} : {display: 'none'}}>{children}</div>
+				: currentlyOpen && <div>{children}</div>
 			}
 		</div>
 	);

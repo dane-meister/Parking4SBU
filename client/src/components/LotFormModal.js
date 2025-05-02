@@ -99,7 +99,6 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       newRates[rateIdx][e.target.name] = e.target.value
       return { ...prev}
     });
-    console.log(formData.rates)
   }
 
   const getNewCapacity = () => {
@@ -113,6 +112,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       (c.ev_charging_capacity || 0) +
       (c.ada_capacity || 0)
   };
+
   const MAX_TYPE_CAPACITY = 9999;
   const MAX_TOTAL_CAPACITY = 10000;
   const numericKeyDown = (e) => {
@@ -124,6 +124,10 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   };
 
   const isCoordinateModified = (idx) => {
+    if(!originalData.current || !formData){
+      return false;
+    }
+
     if(originalData.current.coordinates.length <= idx){
       // new point
       return true;
@@ -154,21 +158,74 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const nameErr = useRef(null);
   const coordinatesErr = useRef(null);
   const capacityErr = useRef(null);
-  const hasError = {
-    name: false,
-    coordinates: false,
-    capacity: false
+
+  const isNonNullAndEmpty = (state) => state !== null && state === '';
+  
+  const isNullOrHasMoneyPrecision = (state) => {
+    if(state === null) return true;
+
+    if(state.match(/^\d*[.]\d{3,}$/)){ // too many digits for money
+      return false;
+    }
+    return true;
   };
+
+  const [rateErrMsgs, setRateErrMsgs] = useState({});
+  const anyRateErrs = (rateErrMsgs) => {
+    for(const index in rateErrMsgs){
+      const currentRateErrMsgs = rateErrMsgs[index];
+      for(const key in currentRateErrMsgs){
+        if(currentRateErrMsgs[key] !== '') return true;
+      }
+    }
+
+    return false;
+  };
+
+  const validateRate = (rateObj) => {
+    const currentRateErrMsgs = {};
+    // permit type checks
+    // - empty rn
+
+    // price checks
+    [
+      'hourly', 'daily', 'monthly', 'semesterly_fall_spring',
+      'semesterly_summer', 'yearly', 'event_parking_price', 'sheet_price'
+    ].forEach(key => {
+      if(isNonNullAndEmpty(rateObj[key])){
+        currentRateErrMsgs[key] = "Rate cannot be empty if nonnull!";
+      }else if(!isNullOrHasMoneyPrecision(rateObj[key])){
+        currentRateErrMsgs[key] = "Rate must be a valid dollar amount!";
+      }else{
+        currentRateErrMsgs[key] = '';
+      }
+    });
+
+    // positive int checks
+    ['max_hours', 'sheet_number'].forEach(key => {
+      const value = rateObj[key];
+      if(isNonNullAndEmpty(value)){
+        currentRateErrMsgs[key] = "Number cannot be empty if nonnull!";
+      }else if(value !== null && value == 0){
+        currentRateErrMsgs[key] = "Number must be larger than 0!";
+      }else{
+        currentRateErrMsgs[key] = "";
+      }
+    });
+
+    return currentRateErrMsgs;
+  };
+
   const handleEditSubmit = (e) => {
     e.preventDefault()
 
+    let errorOccurred = false;
     // name 
-    hasError["name"] = true; //pessimistic 😔
     if(!formData.name.trim()){
       nameErr.current.innerHTML = 'Lot name cannot be empty!';
+      errorOccurred = true;
     }else{
       nameErr.current.innerHTML = '';
-      hasError["name"] = false;
     }
 
     // location
@@ -184,17 +241,28 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         improperFormatCoords.push({ coord, index })
     });
 
-    hasError["coordinates"] = true; //pessimistic 😔
+    const impreciseCoords = [];
+    formData.coordinates.forEach((coord, index) => {
+      if(!coord.match(/^[ ]*-?\d+[.]\d{2,}[ ]*,[ ]*-?\d+[.]\d{2,}[ ]*$/)) 
+        impreciseCoords.push({ coord, index })
+    });
     if(!!emptyCoords.length){
       const emptyPnts = `(Point${emptyCoords.length !== 1 ? 's' : ''} ${emptyCoords.map(c => c.index + 1).join(', ')})`;
       coordinatesErr.current.innerHTML = `Lot coordinates cannot be empty! ${emptyPnts}`
+      errorOccurred = true;
     }else if(!!improperFormatCoords.length){
       const improperFormatPnts = `(Point${improperFormatCoords.length !== 1 ? 's' : ''} ${improperFormatCoords.map(c => c.index + 1).join(', ')})`;
       coordinatesErr.current.innerHTML = `Lot coordinates must be valid numbers in the format "Latitude, Longitude"!\n${improperFormatPnts}`
+      errorOccurred = true;
+    }else if(!!impreciseCoords.length){
+      const imprecisePnts = `(Point${impreciseCoords.length !== 1 ? 's' : ''} ${impreciseCoords.map(c => c.index + 1).join(', ')})`
+      coordinatesErr.current.innerHTML = `All lot coordinates needs 2 decimal places of precision! ${imprecisePnts}`
+      errorOccurred = true;
     }else{
-      hasError["coordinates"] = false;
       coordinatesErr.current.innerHTML = '';
     }
+
+    if(!!coordinatesErr.current.innerHTML) setOpenLocation(true);
 
     // capacity
       // check for empty
@@ -211,19 +279,37 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         )
         .replace('Ev', 'EV');
     }
-    hasError["capacity"] = true; //pessimistic 😔
     if(!!emptyCaps.length){
       capacityErr.current.innerHTML = `Capacities cannot be 0 or empty! (${emptyCaps.map(c => formatCapKey(c)).join(', ')} capacit${emptyCaps.length !== 1 ? 'ies' : 'y'})`
+      errorOccurred = true;
     }else if(getNewCapacity() > MAX_TOTAL_CAPACITY){
       capacityErr.current.innerHTML = `New Capacity too large! (total capacity must be lower than ${MAX_TOTAL_CAPACITY})`
+      errorOccurred = true;
     }else{
-      hasError["capacity"] = false; 
       capacityErr.current.innerHTML = '';
     }
 
+    if(!!capacityErr.current.innerHTML) setOpenCapacity(true);
+
     // rate
-    // rate: hourly rate
-    // rate: max hours
+    const rateErrs = {};
+    formData.rates.forEach((rateObj, index) => {
+      const rateErrMsg = validateRate(rateObj);
+      rateErrs[index] = rateErrMsg;
+    });
+    setRateErrMsgs(rateErrs);
+
+    if(anyRateErrs(rateErrs)){
+      setOpenRates(true);
+      errorOccurred = true;
+    }
+
+    //alert?
+    if(errorOccurred) 
+      alert(`Error ${formType === 'add' ? 'adding' : 'editing'} lot!`);
+    else{
+      alert("TEST REPLACE, submitting...")
+    }
   }
 
   // stops background scrolling
@@ -232,6 +318,10 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   }else{
     document.body.style.overflow = 'unset';
   }
+
+  const [openLocation, setOpenLocation] = useState(false);
+  const [openCapacity, setOpenCapacity] = useState(false);
+  const [openRates, setOpenRates] = useState(false);
 
   return (
     <Modal 
@@ -252,11 +342,11 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       <section className='padding-wrapper' style={{padding: '0 15px 25px 15px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
-          Name{originalData.current.name.trim() !== formData.name.trim() && '*'}
+          Name{!!originalData.current.name && originalData.current.name.trim() !== formData.name.trim() && '*'}
         </label>
         <input name='name' id='lot-name' value={formData?.name} autoComplete='off' 
           onChange={handleInputChange} 
-          className={originalData.current.name.trim() !== formData.name.trim() ? 'field-modified' : ''}
+          className={!!originalData.current.name && originalData.current.name.trim() !== formData.name.trim() ? 'field-modified' : ''}
         />
         <div className='lot-form-error' ref={nameErr} />
       </div>
@@ -269,6 +359,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         wideCollapse
         persistentChildren
         asterisk={formData.coordinates.some((c, idx) => isCoordinateModified(idx))}
+        externalOpen={openLocation}
+        externalSetOpen={setOpenLocation}
       >
         <div>
           {formData.coordinates.map((coord, idx) => {
@@ -306,6 +398,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         wideCollapse
         persistentChildren
         asterisk={anyCapacityModified()}
+        externalOpen={openCapacity}
+        externalSetOpen={setOpenCapacity}
       >
         {/* 
         [3] ada_capacity
@@ -418,6 +512,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         className={'rates-collapsible'}
         startOpen={false}
         wideCollapse
+        externalOpen={openRates}
+        externalSetOpen={setOpenRates}
       >
         {formData.rates.map((rate, idx) => (
           <EditRate 
@@ -427,13 +523,14 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
             onChange={(e) => handleRateChange(e, idx)}
             setFormData={setFormData}
             originalRateObj={originalData.current.rates[idx]}
+            errorMsgs={rateErrMsgs[idx]}
           />)
         )}
       </Collapsible>
 
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
 
-
+      <p style={{margin: '10px 0px -8px 0', fontSize: '13px', color: 'var(--gray)'}}>* edited fields</p>
       <input type='submit' className='edit-lot-btn' value='Edit Lot' />
       </section>
       </form>
