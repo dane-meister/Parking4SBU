@@ -524,7 +524,6 @@ export default function Admin() {
       {activeTicketUser && (
         <div className="ticket-popup-overlay" onClick={() => setActiveTicketUser(null)}>
           <div className="ticket-popup-form" onClick={(e) => e.stopPropagation()}>
-            <h2>Issue Ticket for {activeTicketUser.first_name} {activeTicketUser.last_name}</h2>
             <TicketForm 
               user={activeTicketUser} 
               onSuccess={() => setActiveTicketUser(null)} 

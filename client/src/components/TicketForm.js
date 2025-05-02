@@ -48,7 +48,7 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 
 	return (
 		<form onSubmit={handleSubmit} className="ticket-form">
-			<h3>Issue Ticket for {user.first_name} {user.last_name}</h3>
+			<h2>Issue Ticket for {user.first_name} {user.last_name}</h2>
 
 			<label htmlFor="plate">Plate</label>
 			<input id="plate" name="plate" value={formData.plate} onChange={handleChange} />

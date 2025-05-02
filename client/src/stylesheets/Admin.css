@@ -206,7 +206,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 2000;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
@@ -262,9 +262,6 @@
   margin-top: 20px;
 }
 
-
-
-=======
 .capacity-analysis-container {
   padding: 20px;
 }
