@@ -1,6 +1,7 @@
 const wayfindingService = require('../services/wayfindingService');
 const { Building, ParkingLot, sequelize } = require('../models');
 
+// Define test cases that will verify manhattan distance between buildings and parking lots
 const testCases = [
   { buildingId: 26, lotId: 49, description: 'Computer Science, New & Lot 40' },
   { buildingId: 30, lotId: 52, description: 'Dewey College & Lot 2' },
@@ -8,6 +9,7 @@ const testCases = [
 ];
 
 describe('manhattanDistance Testing', () => {
+  // Run a test for each test case
   testCases.forEach(({ buildingId, lotId, description }) => {
 
     test(`calculates manhattan distance between ${description}`, async () => {
@@ -15,22 +17,21 @@ describe('manhattanDistance Testing', () => {
       const building = await Building.findByPk(buildingId); // Building from testCases
       const lot = await ParkingLot.findByPk(lotId); // Lot from testCases
 
-      // Defensive check
+      // Defensive check to ensure data exists
       expect(building).not.toBeNull();
       expect(lot).not.toBeNull();
 
+      // Extract mercator coordinates
       const buildingCoords = building.mercator_coordinates.coordinates;
       const lotCoords = lot.mercator_coordinates.coordinates;
 
-      // Defensive check
       expect(buildingCoords).toBeDefined();
       expect(lotCoords).toBeDefined();
 
-      // Unwrap the first point from the MULTIPOINT
+      // Unwrap the first point from the MULTIPOINT since its in double array [ [ cords ] ]
       const buildingCoord = buildingCoords[0];
       const lotCoord = lotCoords[0];
 
-      // Devensive check
       expect(buildingCoord.length).toBeGreaterThanOrEqual(2);
       expect(lotCoord.length).toBeGreaterThanOrEqual(2);
 
@@ -39,7 +40,8 @@ describe('manhattanDistance Testing', () => {
       // actualDistance calculates the Manhattan distance using the service
       const actualDistance = wayfindingService.manhattanDistance(buildingCoord, lotCoord);
 
-      expect(actualDistance).toBeCloseTo(expectedDistance, 6); // use toBeCloseTo for floating point precision
+      // Validate both match using toBeCloseTo for floating point precision
+      expect(actualDistance).toBeCloseTo(expectedDistance, 6);
     });
   });
 
@@ -56,7 +58,10 @@ describe('manhattanDistance Testing', () => {
 
 describe('getSortedLots testing', () => {
   test('returns sorted lots for a building', async () => {
+    // Get sorted list of lots by distance from building with given ID
     const lots = await wayfindingService.getSortedParkingLots(26); // Computer Science, New
+    
+    // Should return a non-empty array of parking lots
     expect(Array.isArray(lots)).toBe(true);
     expect(lots.length).toBeGreaterThan(0);
 
@@ -100,7 +105,7 @@ describe('metersToMiles Testing', () => {
 
 });
 
-// Close the database connection after all tests
+// Close the Sequelize connection after all tests to prevent hanging
 afterAll(async () => {
   await sequelize.close();
 });
