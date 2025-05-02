@@ -40,6 +40,14 @@ module.exports = (sequelize, DataTypes) =>{
     ada_availability: DataTypes.INTEGER, // Available spaces for ADA parking
     ev_charging_capacity: DataTypes.INTEGER, // Capacity for EV charging stations
     ev_charging_availability: DataTypes.INTEGER, // Available EV charging stations
+    general_capacity: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    general_availability: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
     covered: {
       type: DataTypes.BOOLEAN, // Boolean indicating if the parking lot is covered
       allowNull: false, // Covered status is required
