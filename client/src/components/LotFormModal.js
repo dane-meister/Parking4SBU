@@ -114,6 +114,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       (c.ada_capacity || 0)
   };
   const MAX_TYPE_CAPACITY = 9999;
+  const MAX_TOTAL_CAPACITY = 10000;
   const numericKeyDown = (e) => {
       if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
         e.preventDefault();
@@ -122,10 +123,109 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       // if(new_value > MAX_TYPE_CAPACITY) e.preventDefault();
   };
 
+  const isCoordinateModified = (idx) => {
+    if(originalData.current.coordinates.length <= idx){
+      // new point
+      return true;
+    }
+
+    const current = formData.coordinates[idx].replaceAll(' ', '');
+    const original = originalData.current.coordinates[idx].replaceAll(' ', '');
+    if(current.split(',').length != 2){ return false; }
+
+    const [c_lat, c_lon] = current.split(',');
+    const [o_lat, o_lon] = original.split(',');
+
+    return (Number(c_lat) !== Number(o_lat)) || (Number(c_lon) !== Number(o_lon))
+
+  };
   const isCapacityModified = (field) => {
     if(formData.capacity[`${field}_capacity`] === undefined) return false;
     return originalData.current.capacity[`${field}_capacity`] !== formData.capacity[`${field}_capacity`]
   };
+
+  const anyCapacityModified = () => {
+    return [
+      'commuter_core', 'commuter_perimiter', 'commuter_satellite', 'resident',
+      'faculty', 'metered', 'ev_charging', 'ada'
+    ].some(str => isCapacityModified(str))
+  };
+
+  const nameErr = useRef(null);
+  const coordinatesErr = useRef(null);
+  const capacityErr = useRef(null);
+  const hasError = {
+    name: false,
+    coordinates: false,
+    capacity: false
+  };
+  const handleEditSubmit = (e) => {
+    e.preventDefault()
+
+    // name 
+    hasError["name"] = true; //pessimistic 😔
+    if(!formData.name.trim()){
+      nameErr.current.innerHTML = 'Lot name cannot be empty!';
+    }else{
+      nameErr.current.innerHTML = '';
+      hasError["name"] = false;
+    }
+
+    // location
+      //check empty
+    const emptyCoords = [];
+    formData.coordinates.forEach((coord, index) => {
+      if(!coord.trim()) emptyCoords.push({ coord, index })
+    });
+      // check format
+    const improperFormatCoords = [];
+    formData.coordinates.forEach((coord, index) => {
+      if(!coord.match(/^[ ]*-?\d+[.]?\d*[ ]*,[ ]*-?\d+[.]?\d*[ ]*$/)) 
+        improperFormatCoords.push({ coord, index })
+    });
+
+    hasError["coordinates"] = true; //pessimistic 😔
+    if(!!emptyCoords.length){
+      const emptyPnts = `(Point${emptyCoords.length !== 1 ? 's' : ''} ${emptyCoords.map(c => c.index + 1).join(', ')})`;
+      coordinatesErr.current.innerHTML = `Lot coordinates cannot be empty! ${emptyPnts}`
+    }else if(!!improperFormatCoords.length){
+      const improperFormatPnts = `(Point${improperFormatCoords.length !== 1 ? 's' : ''} ${improperFormatCoords.map(c => c.index + 1).join(', ')})`;
+      coordinatesErr.current.innerHTML = `Lot coordinates must be valid numbers in the format "Latitude, Longitude"!\n${improperFormatPnts}`
+    }else{
+      hasError["coordinates"] = false;
+      coordinatesErr.current.innerHTML = '';
+    }
+
+    // capacity
+      // check for empty
+    const emptyCaps = [];
+    for(const [key, value] of Object.entries(formData.capacity)){
+      if(value === undefined || value === '') emptyCaps.push(key);
+    }
+    const formatCapKey = (cap) => {
+      return cap.replace('_capacity', '')
+        .replaceAll('_', ' ')
+        .replace(             // to title case
+          /\w\S*/g,
+          text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+        )
+        .replace('Ev', 'EV');
+    }
+    hasError["capacity"] = true; //pessimistic 😔
+    if(!!emptyCaps.length){
+      capacityErr.current.innerHTML = `Capacities cannot be 0 or empty! (${emptyCaps.map(c => formatCapKey(c)).join(', ')} capacit${emptyCaps.length !== 1 ? 'ies' : 'y'})`
+    }else if(getNewCapacity() > MAX_TOTAL_CAPACITY){
+      capacityErr.current.innerHTML = `New Capacity too large! (total capacity must be lower than ${MAX_TOTAL_CAPACITY})`
+    }else{
+      hasError["capacity"] = false; 
+      capacityErr.current.innerHTML = '';
+    }
+
+    // rate
+    // rate: hourly rate
+    // rate: max hours
+  }
+
   // stops background scrolling
   if(isOpen){
     document.body.style.overflow = 'hidden';
@@ -140,6 +240,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       id='lot-form-modal'
       style={styles}
     >
+      <form onSubmit={handleEditSubmit}>
       <h2 className='lot-edit-h2 hbox'>
         {formType==='add' ? 'Lot Add' : 'Lot Edit'}
         <span className='flex'/>
@@ -151,9 +252,13 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       <section className='padding-wrapper' style={{padding: '0 15px 25px 15px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
-          Name
+          Name{originalData.current.name.trim() !== formData.name.trim() && '*'}
         </label>
-        <input name='name' id='lot-name' value={formData?.name} onChange={handleInputChange} autoComplete='off'/>
+        <input name='name' id='lot-name' value={formData?.name} autoComplete='off' 
+          onChange={handleInputChange} 
+          className={originalData.current.name.trim() !== formData.name.trim() ? 'field-modified' : ''}
+        />
+        <div className='lot-form-error' ref={nameErr} />
       </div>
 
       <Collapsible
@@ -162,6 +267,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         className={'location-collapsible'}
         startOpen={false}
         wideCollapse
+        persistentChildren
+        asterisk={formData.coordinates.some((c, idx) => isCoordinateModified(idx))}
       >
         <div>
           {formData.coordinates.map((coord, idx) => {
@@ -169,7 +276,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
               <label className='hbox lot-point-box flex' key={idx}>
                 <span style={{marginRight: '10px'}}>Point {idx + 1}:</span>
                 <input 
-                  className="flex" 
+                  className={`flex ${isCoordinateModified(idx) ? 'field-modified' : ''}`} 
                   name='lot-lat-long' 
                   id={`lot-lat-long-${idx}`} 
                   value={formData.coordinates[idx]}
@@ -185,17 +292,20 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
             </div>
           })}
           
-          {formData.coordinates.length < 16 && (
-            <button onClick={addLocationPoint}>Add more points</button>
+          {formData.coordinates.length < 10 && (
+            <button onClick={addLocationPoint} type="button">Add more points</button>
           )}
+          <div className='lot-form-error' ref={coordinatesErr} />
         </div>
       </Collapsible>
 
       <Collapsible 
-        name={'Capacity'} 
+        name={`Capacity`} 
         className={'capacity-collapsible'}
         startOpen={false}
         wideCollapse
+        persistentChildren
+        asterisk={anyCapacityModified()}
       >
         {/* 
         [3] ada_capacity
@@ -300,6 +410,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
             <strong>New Capacity: </strong> {getNewCapacity()}
           </span>
         )}
+        <div className='lot-form-error' ref={capacityErr} />
       </Collapsible>
 
       <Collapsible 
@@ -321,7 +432,11 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       </Collapsible>
 
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
+
+
+      <input type='submit' className='edit-lot-btn' value='Edit Lot' />
       </section>
+      </form>
     </Modal>
   );
 }
@@ -331,7 +446,7 @@ const styles = {
     marginTop: 'calc(60px + 30px)',
     width: '525px',
     maxHeight: 'min(60vh, 800px)',
-    minHeight: '600px',
+    // minHeight: '600px',
     justifySelf: 'center',
     alignSelf: 'center',
     padding: '0',
