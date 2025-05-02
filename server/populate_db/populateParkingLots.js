@@ -3,6 +3,7 @@ const path = require("path"); // Path module for handling file paths
 const csv = require("csv-parser"); // CSV parser module for parsing CSV files
 const { ParkingLot, sequelize } = require("../models");
 
+
 // Function to parse CSV data and insert it into the database
 async function insertParkingLots() {
   try {
@@ -19,6 +20,36 @@ async function insertParkingLots() {
             console.error("Skipping invalid row:", row);
             return;
           }
+
+          const totalCapacity = parseInt(row.Capacity) || 0;
+
+          // Sum up all typed capacities
+          const typedCapacities = [
+            parseInt(row["Faculty Capacity"]) || 0,
+            parseInt(row["Commuter Perimeter Capacity"]) || 0,
+            parseInt(row["Commuter Core Capacity"]) || 0,
+            parseInt(row["Commuter Satellite Capacity"]) || 0,
+            parseInt(row["Metered Capacity"]) || 0,
+            parseInt(row["Resident Capacity"]) || 0,
+            parseInt(row["ADA Capacity"]) || 0,
+            parseInt(row["EV Charging Capacity"]) || 0,
+          ];
+          const generalCapacity = totalCapacity - typedCapacities.reduce((sum, val) => sum + val, 0);
+
+          // Sum up all typed availabilities
+          const typedAvailabilities = [
+            parseInt(row["Faculty Availibility"]) || 0,
+            parseInt(row["Commuter Perimeter Availibility"]) || 0,
+            parseInt(row["Commuter Core Availibility"]) || 0,
+            parseInt(row["Commuter Satellite Availibility"]) || 0,
+            parseInt(row["Metered Availibility"]) || 0,
+            parseInt(row["Resident Availibility"]) || 0,
+            parseInt(row["ADA Availibility"]) || 0,
+            parseInt(row["EV Charging Availibility"]) || 0,
+          ];
+          const generalAvailability = generalCapacity > 0
+            ? Math.max(0, totalCapacity - typedAvailabilities.reduce((sum, val) => sum + val, 0))
+            : 0;
 
           // Push the parsed data into the results array
           results.push({
@@ -43,6 +74,8 @@ async function insertParkingLots() {
             ada_availability: parseInt(row["ADA Availibility"]) || 0, // ADA availability
             ev_charging_capacity: parseInt(row["EV Charging Capacity"]) || 0, // EV charging capacity
             ev_charging_availability: parseInt(row["EV Charging Availibility"]) || 0, // EV charging availability
+            general_capacity: generalCapacity, // General capacity
+            general_availability: generalAvailability, // General availability
             covered: row.Covered.toLowerCase() === "true", // Whether the parking lot is covered
           });
         } catch (error) {
