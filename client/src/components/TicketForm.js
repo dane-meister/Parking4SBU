@@ -47,51 +47,60 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="ticket-form">
+		<form onSubmit={handleSubmit} className="ticket-form" style={{height: '100%'}}>
 			<h2>Issue Ticket for {user.first_name} {user.last_name}</h2>
-
-			<label htmlFor="plate">Plate</label>
-			<input id="plate" name="plate" value={formData.plate} onChange={handleChange} />
-
-			<label htmlFor="permit">Permit #</label>
-			<input id="permit" name="permit" value={formData.permit} onChange={handleChange} />
-
-			<label htmlFor="location">Location</label>
-			<input id="location" name="location" value={formData.location} onChange={handleChange} />
-
-			<label htmlFor="space">Space</label>
-			<input id="space" name="space" value={formData.space} onChange={handleChange} />
-
-			<label htmlFor="violation">Violation *</label>
-			<input id="violation" name="violation" value={formData.violation} onChange={handleChange} required />
-
-			<label htmlFor="comments">Comments</label>
-			<textarea id="comments" name="comments" value={formData.comments} onChange={handleChange} />
-
-			<label htmlFor="fine">Fine ($) *</label>
-			<input
-				id="fine"
-				type="number"
-				step="0.01"
-				name="fine"
-				value={formData.fine}
-				onChange={handleChange}
-				required
-			/>
-
-			<label htmlFor="officer_id">Officer ID</label>
-			<input
-				id="officer_id"
-				type="number"
-				name="officer_id"
-				value={formData.officer_id}
-				onChange={handleChange}
-			/>
-
-			<div className="form-buttons">
-				<button type="submit" className="save-button">Submit Ticket</button>
-				<button type="button" onClick={onCancel}>Cancel</button>
-			</div>
+			<section style={{overflowY: 'auto', height: '100%'}}>
+				<div>
+					<label htmlFor="plate">Plate</label>
+					<input id="plate" name="plate" value={formData.plate} onChange={handleChange} />
+				</div>
+				<div>
+					<label htmlFor="permit">Permit #</label>
+					<input id="permit" name="permit" value={formData.permit} onChange={handleChange} />
+				</div>
+				<div>
+					<label htmlFor="location">Location</label>
+					<input id="location" name="location" value={formData.location} onChange={handleChange} />
+				</div>
+				<div>
+					<label htmlFor="space">Space</label>
+					<input id="space" name="space" value={formData.space} onChange={handleChange} />
+				</div>
+				<div>
+					<label htmlFor="violation">Violation *</label>
+					<input id="violation" name="violation" value={formData.violation} onChange={handleChange} required />
+				</div>
+				<div>
+					<label htmlFor="comments">Comments</label>
+					<textarea id="comments" name="comments" value={formData.comments} onChange={handleChange} />
+				</div>
+				<div>
+					<label htmlFor="fine">Fine ($) *</label>
+					<input
+						id="fine"
+						type="number"
+						step="0.01"
+						name="fine"
+						value={formData.fine}
+						onChange={handleChange}
+						required
+					/>
+				</div>
+				<div>
+					<label htmlFor="officer_id">Officer ID</label>
+					<input
+						id="officer_id"
+						type="number"
+						name="officer_id"
+						value={formData.officer_id}
+						onChange={handleChange}
+					/>
+				</div>
+				<div className="form-buttons">
+					<button type="submit" className="save-button">Submit Ticket</button>
+					<button type="button" onClick={onCancel}>Cancel</button>
+				</div>
+			</section>
 		</form>
 	);
 }
