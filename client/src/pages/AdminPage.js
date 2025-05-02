@@ -3,6 +3,8 @@ import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
 import LotFormModal from '../components/LotFormModal';
+import Popup from '../components/Popup';
+import TicketForm from '../components/TicketForm';
 import FeedbackFormModal from '../components/FeedbackFormModal';
 import CapacityAnalysis from '../components/CapacityAnalysis';
 import RevenueAnalysis from '../components/RevenueAnalysis';
@@ -22,6 +24,17 @@ export default function Admin() {
   const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
   const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
   const [activeFeedback, setActiveFeedback] = useState(null);
+  const [activeTicketUser, setActiveTicketUser] = useState(null);
+  const [newTicket, setNewTicket] = useState({
+    plate: '',
+    permit: '',
+    location: '',
+    space: '',
+    violation: '',
+    comments: '',
+    fine: '',
+    officer_id: ''
+  });
   const [addLotForm, setAddLotForm] = useState(false);
 
   // Fetch users when 'Users' tab is selected
@@ -240,15 +253,43 @@ export default function Admin() {
                 <p>No users found.</p>
               ) : (
                 users.map(user => (
-                  <div className="user-card" key={user.user_id} onClick={() => setEditingUser(user)}>
-                    <strong>{user.first_name} {user.last_name}</strong><br />
-                    ID: {user.user_id}<br />
-                    Email: {user.email}<br />
-                    Type: {user.user_type}<br />
-                    Permit: {user.permit_type}<br />
-                    Joined: {new Date(user.createdAt).toLocaleDateString()}<br />
-                    Approved: {user.isApproved ? 'Yes' : 'No'}<br />
+                  <div
+                  className="user-card"
+                  key={user.user_id}
+                  onClick={() => setEditingUser(user)}
+                  style={{ position: 'relative', paddingBottom: '50px' }} // for button space
+                >
+                  <div className="user-info">
+                    <strong style={{ fontSize: '1.1rem' }}>{user.first_name} {user.last_name}</strong><br />
+                    <span><b>ID:</b> {user.user_id}</span><br />
+                    <span><b>Email:</b> {user.email}</span><br />
+                    <span><b>Type:</b> {user.user_type}</span><br />
+                    <span><b>Permit:</b> {user.permit_type || 'N/A'}</span><br />
+                    <span><b>Joined:</b> {new Date(user.createdAt).toLocaleDateString()}</span><br />
+                    <span><b>Approved:</b> {user.isApproved ? 'Yes' : 'No'}</span><br />
                   </div>
+                
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '10px',
+                      right: '10px'
+                    }}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveTicketUser(user);
+                      }}
+                      className="give-ticket-btn"
+                    >
+                      Give Ticket
+                    </button>
+
+
+                  </div>
+                </div>
+                
                 ))
               )}
             </div>
@@ -479,6 +520,18 @@ export default function Admin() {
         feedback={activeFeedback}
         refreshFeedbackList={() => setToggleFeedbackResponseRefresh(prev => !prev)}
       />
+
+      {activeTicketUser && (
+        <div className="ticket-popup-overlay" onClick={() => setActiveTicketUser(null)}>
+          <div className="ticket-popup-form" onClick={(e) => e.stopPropagation()}>
+            <TicketForm 
+              user={activeTicketUser} 
+              onSuccess={() => setActiveTicketUser(null)} 
+              onCancel={() => setActiveTicketUser(null)}
+            />
+          </div>
+        </div>
+      )}
 
     </main>
   );

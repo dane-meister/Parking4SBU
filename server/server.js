@@ -8,6 +8,7 @@ const reservationRoutes = require('./routes/reservation');
 const popularTimesRoutes = require('./routes/popularTimes');
 const availabilityRoutes = require('./routes/availability');
 const adminRoutes = require('./routes/admin');
+const ticketRoutes = require('./routes/ticket');
 const { computeAvailability } = require('./routes/availability');
 
 // Import models
@@ -39,6 +40,8 @@ app.use('/api/lot-availability', availabilityRoutes);
 
 // Admin routes
 app.use("/api/admin", adminRoutes);
+
+app.use('/api/tickets', ticketRoutes);
 
 // API Routes
 app.get("/api/buildings", async (req, res) => {

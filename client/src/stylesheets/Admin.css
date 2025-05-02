@@ -187,6 +187,81 @@
   filter: brightness(0.8);
 }
 
+.give-ticket-btn {
+  padding: 6px 12px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.give-ticket-btn:hover {
+  background-color: #d62828;
+}
+
+.ticket-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.ticket-popup-form {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+.ticket-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ticket-form label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.ticket-form input,
+.ticket-form textarea {
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width: 100%;
+  resize: vertical;
+}
+
+.ticket-form textarea {
+  min-height: 90px;
+}
+
+.ticket-form .form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 .capacity-analysis-container {
   padding: 20px;
 }

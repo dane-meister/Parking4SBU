@@ -101,8 +101,9 @@ const LotSelectionPage = () => {
               setSelectedBuilding={setSelectedBuilding}
               initialSearchValue={initialSearchValue}
               initialSearchType={initialSearchType}
-              times
+              times={times}
               setTimes={setTimes}
+              initialRateType={searchParams?.pricingType || "hourly"} 
             />
           </>
         )}
