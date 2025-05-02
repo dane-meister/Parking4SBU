@@ -1,14 +1,13 @@
 const wayfindingService = require('../services/wayfindingService');
-const { Building, ParkingLot } = require('../models');
-const Sequelize = require('sequelize');
+const { Building, ParkingLot, sequelize } = require('../models');
 
 const testCases = [
-  { buildingId: 26, lotId: 49, description: 'CS building & Lot 40' },
+  { buildingId: 26, lotId: 49, description: 'Computer Science, New & Lot 40' },
   { buildingId: 30, lotId: 52, description: 'Dewey College & Lot 2' },
   { buildingId: 35, lotId: 55, description: 'Earth and Space Sciences & Lot A (Staff)' },
 ];
 
-describe('Manhattan Distance Calculation', () => {
+describe('manhattanDistance Testing', () => {
   testCases.forEach(({ buildingId, lotId, description }) => {
 
     test(`calculates manhattan distance between ${description}`, async () => {
@@ -53,4 +52,55 @@ describe('Manhattan Distance Calculation', () => {
     expect(wayfindingService.manhattanDistance([], [1, 2])).toBe(Infinity);
   });
 
+});
+
+describe('getSortedLots testing', () => {
+  test('returns sorted lots for a building', async () => {
+    const lots = await wayfindingService.getSortedParkingLots(26); // Computer Science, New
+    expect(Array.isArray(lots)).toBe(true);
+    expect(lots.length).toBeGreaterThan(0);
+
+    // Check that the distances are sorted ascending
+    for (let i = 0; i < lots.length - 1; i++) {
+      expect(lots[i].distance_meters).toBeLessThanOrEqual(lots[i + 1].distance_meters);
+    }
+  });
+
+  test('throws error for invalid building ID', async () => {
+    await expect(wayfindingService.getSortedParkingLots(-1)).rejects.toThrow('Building not found');
+  });
+
+});
+
+describe('metersToMiles Testing', () => {
+  test('converts 0 meters to 0 miles', () => {
+      expect(wayfindingService.metersToMiles(0)).toBe(0);
+  });
+
+  test('converts 1609.344 meters to approximately 1 mile', () => {
+      const result = wayfindingService.metersToMiles(1609.344);
+      expect(result).toBeCloseTo(1, 5); // allow for floating point precision
+  });
+
+  test('converts 10000 meters to miles', () => {
+      const result = wayfindingService.metersToMiles(10000);
+      expect(result).toBeCloseTo(6.21371, 5);
+  });
+
+  test('handles negative numbers', () => {
+      const result = wayfindingService.metersToMiles(-500);
+      expect(result).toBeCloseTo(-0.3106855, 5);
+  });
+
+  test('returns 0 for non-numeric or undefined input', () => {
+      expect(wayfindingService.metersToMiles(undefined)).toBeNaN();
+      expect(wayfindingService.metersToMiles(null)).toBe(0); // null * number is 0
+      expect(wayfindingService.metersToMiles('abc')).toBeNaN();
+  });
+
+});
+
+// Close the database connection after all tests
+afterAll(async () => {
+  await sequelize.close();
 });
