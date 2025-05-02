@@ -359,3 +359,7 @@
   color: #555;
   line-height: 1.4;
 }
+
+#react-autowhatever-1:empty{
+  display: none;
+}

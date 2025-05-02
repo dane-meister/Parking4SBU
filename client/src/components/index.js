@@ -17,3 +17,5 @@ export { default as Login } from './Login';
 export { default as Register } from './Register';
 export { default as Popup } from './Popup';
 export { default as PopularTimes } from './PopularTimes';
+export { default as DisableableInput } from './DisableableInput'
+export { default as EditRate } from './EditRate'

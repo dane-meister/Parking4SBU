@@ -1,22 +1,39 @@
 import Modal from 'react-modal';
-import { Collapsible } from '.';
+import { Collapsible, EditRate } from '.';
 import { useEffect, useRef, useState } from 'react';
 import '../stylesheets/LotFormModal.css'
-
+import formatMoney from '../utils/formatMoney'
 Modal.setAppElement('#root'); // should only render once, or else constant warnings!
 
-export default function LotFormModal({ isOpen, onRequestClose, lot }){
+export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const [formData, setFormData] = useState({
     name: '',
     coordinates: [],
     capacity: {},
-    rates: []
+    rates: [],
   });
 
   const originalData = useRef({});
   useEffect(() => {
     let coords = lot?.location?.coordinates
     if(!!coords) coords = coords.map(coord => coord.join(", "));
+
+    let rates = lot?.Rates
+    if(!!rates){
+      rates = JSON.parse(JSON.stringify(rates)) // deep copy 
+      rates.map(rate => {
+        const fieldsToFormat = [
+          'hourly', 'daily', 'monthly', 'semesterly_fall_spring', 
+          'semesterly_summer', 'yearly', 'event_parking_price', 'sheet_price'
+        ];
+        for(const field of Object.keys(rate)){
+          if(rate[field] !== null && (fieldsToFormat.includes(field))){
+            rate[field] = formatMoney(rate[field])
+          }
+        }
+      });
+    }
+
     const data = {
       name: lot?.name ?? '',
       coordinates: coords ?? [],
@@ -31,7 +48,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         resident_capacity: lot?.resident_capacity ?? 0,
         capacity: lot?.capacity ?? 0
       },
-      rates: lot?.Rates ?? []
+      rates: rates ?? []
     }
     setFormData(data);
     originalData.current = JSON.parse(JSON.stringify(data));
@@ -76,6 +93,15 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
     });
   };
 
+  const handleRateChange = (e, rateIdx) => {
+    setFormData(prev => {
+      const newRates = prev.rates;
+      newRates[rateIdx][e.target.name] = e.target.value
+      return { ...prev}
+    });
+    console.log(formData.rates)
+  }
+
   const getNewCapacity = () => {
     const c = formData.capacity;
     return (c.commuter_core_capacity || 0) +
@@ -92,10 +118,14 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
         e.preventDefault();
       }
-      let new_value = Number(e.target.value + e.key);
-      if(new_value > MAX_TYPE_CAPACITY) e.preventDefault();
+      // let new_value = Number(e.target.value + e.key);
+      // if(new_value > MAX_TYPE_CAPACITY) e.preventDefault();
   };
 
+  const isCapacityModified = (field) => {
+    if(formData.capacity[`${field}_capacity`] === undefined) return false;
+    return originalData.current.capacity[`${field}_capacity`] !== formData.capacity[`${field}_capacity`]
+  };
   // stops background scrolling
   if(isOpen){
     document.body.style.overflow = 'hidden';
@@ -110,8 +140,15 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
       id='lot-form-modal'
       style={styles}
     >
-      <h2 className='lot-edit-h2'>Lot Edit</h2>
-      <section className='padding-wrapper' style={{padding: '25px', paddingTop: '0px'}}>
+      <h2 className='lot-edit-h2 hbox'>
+        {formType==='add' ? 'Lot Add' : 'Lot Edit'}
+        <span className='flex'/>
+        <img className='hover-black' src='/images/x.png' alt='close'
+          style={{filter: 'invert(1)', height: '29px', padding: '1px 0'}}
+          onClick={onRequestClose}
+        />
+      </h2>
+      <section className='padding-wrapper' style={{padding: '0 15px 25px 15px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
           Name
@@ -173,75 +210,83 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
         */}
 
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
-          <label className='flex'>Commuter Core
+          <label className='flex'>Commuter Core{isCapacityModified('commuter_core') ? '*' : ''}
             <input id='commuter-core-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'commuter_core')}
               value={formData.capacity.commuter_core_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('commuter_core') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Commuter Perimeter
+          <label className='flex'>Commuter Perimeter{isCapacityModified('commuter_perimeter') ? '*' : ''}
             <input id='commuter-perimeter-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'commuter_perimeter')}
               value={formData.capacity.commuter_perimeter_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('commuter_perimeter') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Commuter Satellite
+          <label className='flex'>Commuter Satellite{isCapacityModified('commuter_satellite') ? '*' : ''}
             <input id='commuter-satellite-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'commuter_satellite')}
               value={formData.capacity.commuter_satellite_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('commuter_satellite') && 'field-modified'}`}
             />
           </label>
         </div>
 
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
-          <label className='flex'>Resident
+          <label className='flex'>Resident{isCapacityModified('resident') ? '*' : ''}
             <input id='resident-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'resident')}
               value={formData.capacity.resident_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('resident') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Faculty
+          <label className='flex'>Faculty{isCapacityModified('faculty') ? '*' : ''}
             <input id='faculty-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'faculty')}
               value={formData.capacity.faculty_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('faculty') && 'field-modified'}`}
             />
           </label>
-          <label className='flex'>Metered
+          <label className='flex'>Metered{isCapacityModified('metered') ? '*' : ''}
             <input id='metered-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'metered')}
               value={formData.capacity.metered_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('metered') && 'field-modified'}`}
             />
           </label>
         </div>
         
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
           <span style={{flex: 1}}/> 
-          <label style={{flex: 2}} htmlFor='ada-capacity'>EV Charging
+          <label style={{flex: 2}} htmlFor='ada-capacity'>EV Charging{isCapacityModified('ev_charging') ? '*' : ''}
             <input id='ev-charging-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'ev_charging')}
               value={formData.capacity.ev_charging_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('ev_charging') && 'field-modified'}`}
             />
           </label>
-          <label className='flex' style={{flex: 2}}>ADA
+          <label className='flex' style={{flex: 2}}>ADA{isCapacityModified('ada') ? '*' : ''}
             <input id='ada-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'ada')}
               value={formData.capacity.ada_capacity}
               onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('ada') && 'field-modified'}`}
             />
           </label>
           <span style={{flex: 1}}/> 
@@ -343,27 +388,37 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
           </div>
         </div>
 
+        {formData.rates.map((rate, idx) => (
+          <EditRate 
+            rateObj={rate} 
+            key={idx} 
+            rateNumber={idx} 
+            onChange={(e) => handleRateChange(e, idx)}
+            setFormData={setFormData}
+            originalRateObj={originalData.current.rates[idx]}
+          />)
+        )}
       </Collapsible>
+
+      <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
       </section>
     </Modal>
   );
 }
 
-function LotFormModalWrapper({children}){
-  return children;
-}
-
 const styles = {
   content: {
     marginTop: 'calc(60px + 30px)',
-    width: '500px',
+    width: '525px',
     maxHeight: 'min(60vh, 800px)',
     minHeight: '600px',
     justifySelf: 'center',
     alignSelf: 'center',
     padding: '0',
     zIndex: 3000,
-    border: 'none'
+    border: 'none',
+    overflow: 'auto'
+    // scrollbarGutter: 'stable'
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
