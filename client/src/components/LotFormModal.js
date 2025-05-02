@@ -281,7 +281,6 @@ export default function LotFormModal({ isOpen, onRequestClose, lot }){
           () sheet_number: null
           () sheet_price: null
         */}
-        {console.log(formData.rates)}
         <div><label htmlFor='permit-select'>Permit Type</label></div>
         <select id='permit-select' style={{width: '48%'}}>
           <option></option>
