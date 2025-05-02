@@ -177,7 +177,7 @@ router.delete('/parking-lots/:id/remove', authenticate, requireAdmin, async (req
 });
 
 // Get capacity analysis
-router.get('/analytics/capacity', authenticate, requireAdmin, async (req, res) => {
+router.get('/analytics/capacity-analysis', authenticate, requireAdmin, async (req, res) => {
   try {
     const lots = await ParkingLot.findAll();
     const reservations = await Reservation.findAll({
@@ -214,7 +214,7 @@ router.get('/analytics/capacity', authenticate, requireAdmin, async (req, res) =
       userCategorySummary: Object.entries(userCapacity).map(([name, value]) => ({
         name,
         value
-      }))    
+      }))
     });
 
   } catch (error) {
