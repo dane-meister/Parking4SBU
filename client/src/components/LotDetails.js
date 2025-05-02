@@ -28,6 +28,8 @@ export default function LotDetails({ lotObj, rateType }) {
 		id,
 		metered_availability,
 		metered_capacity,
+		general_availability,
+		general_capacity,
 		name,
 		resident_availability,
 		resident_capacity,
@@ -47,6 +49,7 @@ export default function LotDetails({ lotObj, rateType }) {
 		metered: Infinity,
 		ada: Infinity,
 		ev_charging: Infinity,
+		general: Infinity,
 		total: Infinity,
 	};
 
@@ -102,6 +105,8 @@ export default function LotDetails({ lotObj, rateType }) {
 				resident_availability,
 				metered_capacity,
 				metered_availability,
+				general_capacity,
+				general_availability,
 				rates: Rates,
 				availability,
 				defaultTimeRange: times,
@@ -212,6 +217,9 @@ export default function LotDetails({ lotObj, rateType }) {
 					)}
 					{metered_capacity > 0 && (
 						<li>Metered: {minAvailability.metered ?? metered_availability} / {metered_capacity}</li>
+					)}
+					{general_capacity > 0 && (
+						<li>General: {minAvailability.general ?? general_availability} / {general_capacity}</li>
 					)}
 					{ada_capacity > 0 && (
 						<li>ADA: {minAvailability.ada ?? ada_availability} / {ada_capacity}</li>

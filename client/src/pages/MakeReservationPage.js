@@ -43,6 +43,8 @@ function Reservation(){
 		resident_availability,
 		metered_capacity,
 		metered_availability,
+		general_capacity,
+		general_availability,
 		rates,
 		availability: initialAvailability = {},
 	} = location.state || {};
@@ -228,6 +230,7 @@ function Reservation(){
 		metered: Infinity,
 		ada: Infinity,
 		ev_charging: Infinity,
+		general: Infinity,
 	};
 
 	for (const hour of buckets) {
@@ -488,9 +491,11 @@ function Reservation(){
 					{ key: 'metered', label: 'Metered', capacity: metered_capacity },
 					{ key: 'ada', label: 'ADA', capacity: ada_capacity },
 					{ key: 'ev_charging', label: 'EV Charging', capacity: ev_charging_capacity },
+					{ key: 'general', label: 'General', capacity: general_capacity },
 					]
 					.filter(type => type.capacity > 0)
 					.map(({ key, label, capacity }) => {
+						console.log("minAvailability", minAvailability);
 						const available = minAvailability[key];
 						const display = available != null ? `${available} / ${capacity}` : `unknown / ${capacity}`;
 						return (

@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
+import AdminTabSelector from '../components/AdminTabSelector';
+import AdminUsers from '../components/AdminUsers';
+import AdminLots from '../components/AdminLots';
+import AdminEvents from '../components/AdminEvents';
+import AdminFeedback from '../components/AdminFeedback';
+import AdminAnalysis from '../components/AdminAnalysis';
 import LotFormModal from '../components/LotFormModal';
 import Popup from '../components/Popup';
 import TicketForm from '../components/TicketForm';
 import FeedbackFormModal from '../components/FeedbackFormModal';
-import CapacityAnalysis from '../components/CapacityAnalysis';
-import RevenueAnalysis from '../components/RevenueAnalysis';
-import UserAnalysis from '../components/UserAnalysis';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
@@ -126,19 +129,6 @@ export default function Admin() {
       });
   };
 
-  const handleFeedbackResponse = async (feedbackId, responseText) => {
-    axios.put(`${HOST}/api/admin/feedback/${feedbackId}/respond`, {
-      response_text: responseText
-    }, { withCredentials: true })
-      .then(() => {
-        setToggleFeedbackResponseRefresh(prev => !prev);
-      })
-      .catch(err => {
-        console.error('Failed to respond to feedback', err);
-        alert('Failed to save response');
-      });
-  };
-
   // Handle event reservation approval
   const handleApproveEvent = (reservationId) => {
     axios.put(`${HOST}/api/admin/event-reservations/${reservationId}/approve`, {}, {
@@ -166,262 +156,42 @@ export default function Admin() {
   return (
     <main className="admin">
       <h1>Admin</h1>
-      <div className='hbox'>
-        <div
-          className="hbox selection"
-          id="admin-selection"
-          style={{ marginRight: '35px' }}
-        >
-          <span
-            className={'type-hover ' + (adminOption === 'users' ? 'selected' : '')}
-            onClick={() => setAdminOption('users')}
-          >Users</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'lots' ? 'selected' : '')}
-            onClick={() => setAdminOption('lots')}
-          >Lots</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'events' ? 'selected' : '')}
-            onClick={() => setAdminOption('events')}
-          >Events</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'analysis' ? 'selected' : '')}
-            onClick={() => setAdminOption('analysis')}
-          >Analysis</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'feedback' ? 'selected' : '')}
-            onClick={() => setAdminOption('feedback')}
-          >Feedback</span>
-        </div>
-      </div>
+      <AdminTabSelector
+        adminOption={adminOption}
+        setAdminOption={setAdminOption}
+      />
       <div className='admin-content'>
         {adminOption === 'users' && (
-          <>
-            <h2>Unapproved Users</h2>
-            <div className="user-list">
-              {users.filter(user => !user.isApproved).length === 0 ? (
-                <p>No unapproved users found.</p>
-              ) : (
-                users
-                  .filter(user => !user.isApproved)
-                  .filter(user =>
-                    `${user.first_name} ${user.last_name} ${user.email}`.toLowerCase().includes(searchTerm.toLowerCase())
-                  )
-                  .map(user => (
-                    <div className="user-card" key={user.user_id}>
-                      <div className="user-info">
-                        <strong>{user.first_name} {user.last_name}</strong><br />
-                        ID: {user.user_id}<br />
-                        Email: {user.email}<br />
-                        Type: {user.user_type}<br />
-                        Permit: {user.permit_type}<br />
-                        Joined: {new Date(user.createdAt).toLocaleDateString()}<br />
-                      </div>
-                      <div className="user-actions">
-                        <img
-                          src="/images/check.png"
-                          alt="Approve"
-                          className="icon"
-                          onClick={() => handleApproval(user.user_id, true)}
-                        />
-                        <img
-                          src="/images/x.png"
-                          alt="Reject"
-                          className="icon"
-                          onClick={() => handleApproval(user.user_id, false)}
-                        />
-                      </div>
-                    </div>))
-              )}
-            </div>
-            <h2>All Users</h2>
-            <input
-              type="text"
-              className="user-search"
-              name='user-search'
-              placeholder="Search by name or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-
-            <div className="user-list">
-              {users.length === 0 ? (
-                <p>No users found.</p>
-              ) : (
-                users.map(user => (
-                  <div
-                  className="user-card"
-                  key={user.user_id}
-                  onClick={() => setEditingUser(user)}
-                  style={{ position: 'relative', paddingBottom: '50px' }} // for button space
-                >
-                  <div className="user-info">
-                    <strong style={{ fontSize: '1.1rem' }}>{user.first_name} {user.last_name}</strong><br />
-                    <span><b>ID:</b> {user.user_id}</span><br />
-                    <span><b>Email:</b> {user.email}</span><br />
-                    <span><b>Type:</b> {user.user_type}</span><br />
-                    <span><b>Permit:</b> {user.permit_type || 'N/A'}</span><br />
-                    <span><b>Joined:</b> {new Date(user.createdAt).toLocaleDateString()}</span><br />
-                    <span><b>Approved:</b> {user.isApproved ? 'Yes' : 'No'}</span><br />
-                  </div>
-                
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: '10px',
-                      right: '10px'
-                    }}
-                  >
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveTicketUser(user);
-                      }}
-                      className="give-ticket-btn"
-                    >
-                      Give Ticket
-                    </button>
-
-
-                  </div>
-                </div>
-                
-                ))
-              )}
-            </div>
-          </>
+          <AdminUsers
+            users={users}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            handleApproval={handleApproval}
+            setEditingUser={setEditingUser}
+            setActiveTicketUser={setActiveTicketUser}
+          />
         )}
         {adminOption === 'lots' && (
-          <>
-            <button className="add-lot-button" onClick={() => setAddLotForm(true)}>Add a Lot</button>
-            <h2>Manage Parking Lots</h2>
-            <div className="user-list">
-              {lots.length === 0 ? (
-                <p>No parking lots found.</p>
-              ) : (
-                lots.map(lot => (
-                  <div className="user-card" key={lot.id}>
-                    <div className="user-info">
-                      <strong>{lot.name}</strong><br />
-                      ID: {lot.id}<br />
-                      Location: {Array.isArray(lot.location?.coordinates)
-                        ? `(${lot.location.coordinates[0][1]}, ${lot.location.coordinates[0][0]})`
-                        : 'N/A'}<br />
-                    </div>
-                    <div className="user-actions">
-                      <img
-                        src="/images/edit-icon1.png"
-                        alt="Edit Lot"
-                        className="icon"
-                        onClick={() => setEditingLot({ ...lot })}
-                      />
-                      <img
-                        src="/images/x.png"
-                        alt="Delete Lot"
-                        className="icon"
-                        onClick={() => handleDeleteLot(lot.id)}
-                      />
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
+          <AdminLots
+            lots={lots}
+            setEditingLot={setEditingLot}
+            handleDeleteLot={handleDeleteLot}
+            setAddLotForm={setAddLotForm}
+          />
         )}
         {adminOption === 'events' && (
-          <>
-            <h2>Pending Event Parking Requests</h2>
-            <div className="user-list">
-              {eventReservations.filter(reservation => reservation.status === 'pending').length === 0 ? (
-                <p>No pending event reservations found.</p>
-              ) : (
-                eventReservations.filter(reservation => reservation.status === 'pending')
-                  .map(reservation => (
-                    <div key={reservation.id} className="user-card">
-                      <div className="user-info">
-                        <strong>Reservation #{reservation.id}</strong><br />
-                        User ID: {reservation.user_id}<br />
-                        Lot ID: {reservation.parking_lot_id}<br />
-                        Spots: {reservation.spot_count}<br />
-                        Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
-                        Description: {reservation.event_description || "N/A"}
-                      </div>
-                      <div className="user-actions">
-                        <img
-                          src="/images/check.png"
-                          alt="Approve"
-                          className="icon"
-                          onClick={() => handleApproveEvent(reservation.id)}
-                        />
-                        <img
-                          src="/images/x.png"
-                          alt="Reject"
-                          className="icon"
-                          onClick={() => handleRejectEvent(reservation.id)}
-                        />
-
-                      </div>
-                    </div>
-                  ))
-              )}
-            </div>
-            <h2>All Event Parking</h2>
-            <div className="user-list">
-              {eventReservations.length === 0 ? (
-                <p>No event reservations found.</p>
-              ) : (
-                eventReservations.map(reservation => (
-                  <div key={reservation.id} className="user-card">
-                    <div className="user-info">
-                      <strong>Reservation #{reservation.id}</strong><br />
-                      User ID: {reservation.user_id}<br />
-                      Lot ID: {reservation.parking_lot_id}<br />
-                      Spots: {reservation.spot_count}<br />
-                      Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
-                      Description: {reservation.event_description || "N/A"}<br />
-                      Status: {reservation.status}<br />
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
+          <AdminEvents
+            eventReservations={eventReservations}
+            handleApproveEvent={handleApproveEvent}
+            handleRejectEvent={handleRejectEvent}
+          />
         )}
-        {adminOption === 'analysis' && (
-          <div>
-            <CapacityAnalysis />
-            <RevenueAnalysis />
-            <UserAnalysis />
-          </div>
-        )}
+        {adminOption === 'analysis' && <AdminAnalysis />}
         {adminOption === 'feedback' && (
-          <>
-            <h2>User Feedback</h2>
-            <div className="user-list">
-              {feedbackList.length === 0 ? (
-                <p>No feedback found.</p>
-              ) : (
-                feedbackList.map(feedback => (
-                  <div className="user-card" key={feedback.feedback_id}>
-                    <div className="user-info">
-                      User ID: {feedback.user_id}<br />
-                      Lot ID: {feedback.parking_lot_id}<br />
-                      Feedback: {feedback.feedback_text}<br />
-                      Rating: {feedback.rating}<br />
-                      Response: {feedback.admin_response || "No response yet"}<br />
-                      <button className="respond-button" onClick={() => setActiveFeedback(feedback)}>
-                        Respond
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
+          <AdminFeedback
+            feedbackList={feedbackList}
+            setActiveFeedback={setActiveFeedback}
+          />
         )}
       </div>
       {editingUser && (
@@ -525,9 +295,9 @@ export default function Admin() {
       {activeTicketUser && (
         <div className="ticket-popup-overlay" onClick={() => setActiveTicketUser(null)}>
           <div className="ticket-popup-form" onClick={(e) => e.stopPropagation()}>
-            <TicketForm 
-              user={activeTicketUser} 
-              onSuccess={() => setActiveTicketUser(null)} 
+            <TicketForm
+              user={activeTicketUser}
+              onSuccess={() => setActiveTicketUser(null)}
               onCancel={() => setActiveTicketUser(null)}
             />
           </div>
