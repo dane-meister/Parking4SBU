@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { DisableableInput } from '.'
+import TimeSelector from './TimeSelector';
 
 function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj, errorMsgs }){
   const onDisable = (name) => {
@@ -76,7 +77,14 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj,
     (-) sheet_price: null
     */}
     {rateNumber !== 0 && <div name='spacer' style={{height: '15px'}}/>}
-    <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
+    <div className='hbox lot-modal-rate-header'>
+      <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
+      <span className='flex'/>
+      <img src='/images/x.png' alt='close' 
+        style={{height: '20px', alignSelf: 'center', filter: 'invert(1)'}}
+      />
+    </div>
+
     <div><label htmlFor={`permit-select-${rateNumber}`}>Permit Type</label></div>
     <select 
       id={`permit-select-${rateNumber}`} style={{width: '48%'}} 
@@ -93,7 +101,9 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj,
     <div className='lot-form-error' />
     
     {/* rate times */}
+    <div className='hbox'>
 
+    </div>
     {/* hourly rate */}
     <div className='hbox'>  
       <div style={{width: '48%'}}>

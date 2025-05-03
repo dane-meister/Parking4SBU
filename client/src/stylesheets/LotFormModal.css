@@ -10,7 +10,11 @@
     padding: 15px 25px;
     color: white;
     background-color: var(--red);
+}
 
+.lot-modal-rate-header{
+    background-color: var(--red);
+    padding-right: 5px;
 }
 
 .location-collapsible-name{
@@ -172,4 +176,15 @@
 }
 .edit-lot-btn:active{
     background-color: var(--btn-color-active);
+}
+
+#lot-modal-add-rate{
+    background-color: var(--red);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 15px;
+    width: 140px;
 }

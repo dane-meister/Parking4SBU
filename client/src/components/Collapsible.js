@@ -30,10 +30,9 @@ export default function Collapsible({ className, name, imgsrc, children, startOp
 	};
 
 	const currentlyOpen = externalOpen !== undefined ? externalOpen : open; 
-
 	// Style for the toggle icon (rotates when open)
 	const imgStyle = {
-		transform: open ? 'rotate(180deg)' : '', // Rotate 180 degrees when open
+		transform: currentlyOpen ? 'rotate(180deg)' : '', // Rotate 180 degrees when open
 		transition: 'transform 50ms ease', // Smooth transition for rotation
 		cursor: 'pointer' // Pointer cursor to indicate clickability
 	};
@@ -55,7 +54,7 @@ export default function Collapsible({ className, name, imgsrc, children, startOp
 					className={name.toLowerCase() + '-img'} // Dynamic class name based on the name prop
 					src={imgsrc ? imgsrc : '/images/chevron.webp'} // Use provided imgsrc or default chevron image
 					style={imgStyle}
-					onClick={toggleOpen} // Toggle open state on click
+					onClick={() => wideCollapse ? 'nop' : toggleOpen()} // Toggle open state on click
 					alt='collapse section' // Alt text for accessibility
 				/>
 			</div>

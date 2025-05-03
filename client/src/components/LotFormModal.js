@@ -33,21 +33,21 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         }
       });
     }
-
+    const defaultCapacity = formType === 'add' ? '' : 0;
     const data = {
       name: lot?.name ?? '',
       coordinates: coords ?? [],
       capacity: {
-        ada_capacity: lot?.ada_capacity ?? 0,
-        commuter_core_capacity: lot?.commuter_core_capacity ?? 0,
-        commuter_perimeter_capacity: lot?.commuter_perimeter_capacity ?? 0,
-        commuter_satellite_capacity: lot?.commuter_satellite_capacity ?? 0,
-        ev_charging_capacity: lot?.ev_charging_capacity ?? 0,
-        faculty_capacity: lot?.faculty_capacity ?? 0,
-        metered_capacity: lot?.metered_capacity ?? 0,
-        resident_capacity: lot?.resident_capacity ?? 0,
-        capacity: lot?.capacity ?? 0,
-        general_capacity: lot?.general_capacity ?? 0
+        ada_capacity: lot?.ada_capacity ?? defaultCapacity,
+        commuter_core_capacity: lot?.commuter_core_capacity ?? defaultCapacity,
+        commuter_perimeter_capacity: lot?.commuter_perimeter_capacity ?? defaultCapacity,
+        commuter_satellite_capacity: lot?.commuter_satellite_capacity ?? defaultCapacity,
+        ev_charging_capacity: lot?.ev_charging_capacity ?? defaultCapacity,
+        faculty_capacity: lot?.faculty_capacity ?? defaultCapacity,
+        metered_capacity: lot?.metered_capacity ?? defaultCapacity,
+        resident_capacity: lot?.resident_capacity ?? defaultCapacity,
+        capacity: lot?.capacity ?? defaultCapacity,
+        general_capacity: lot?.general_capacity ?? defaultCapacity
       },
       rates: rates ?? []
     }
@@ -325,6 +325,12 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const [openLocation, setOpenLocation] = useState(false);
   const [openCapacity, setOpenCapacity] = useState(false);
   const [openRates, setOpenRates] = useState(false);
+  useEffect(() => {
+    const isAddingLot = formType === 'add';
+    setOpenLocation(isAddingLot);
+    setOpenCapacity(isAddingLot);
+    setOpenRates(isAddingLot);
+  }, [formType]);
 
   return (
     <Modal 
@@ -358,7 +364,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         name={'Location'}
         subtext={'(Latitude, Longitude)'}
         className={'location-collapsible'}
-        startOpen={false}
+        startOpen={formType === 'add'}
         wideCollapse
         persistentChildren
         asterisk={formData.coordinates.some((c, idx) => isCoordinateModified(idx))}
@@ -397,9 +403,9 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       <Collapsible 
         name={`Capacity`} 
         className={'capacity-collapsible'}
-        startOpen={false}
         wideCollapse
         persistentChildren
+        startOpen={formType === 'add'}
         asterisk={anyCapacityModified()}
         externalOpen={openCapacity}
         externalSetOpen={setOpenCapacity}
@@ -520,8 +526,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       <Collapsible 
         name={'Rates'} 
         className={'rates-collapsible'}
-        startOpen={false}
         wideCollapse
+        startOpen={formType === 'add'}
         externalOpen={openRates}
         externalSetOpen={setOpenRates}
       >
@@ -536,6 +542,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
             errorMsgs={rateErrMsgs[idx]}
           />)
         )}
+        <button id='lot-modal-add-rate' type='button'>Add a Rate</button>
       </Collapsible>
 
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
