@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
 
         const interval = setInterval(() => {
             checkAuth();
-        }, 5 * 60 * 1000); // every 5 minutes
+        }, 30 * 1000); // every 5 minutes
     
         return () => clearInterval(interval);
     }, []);
