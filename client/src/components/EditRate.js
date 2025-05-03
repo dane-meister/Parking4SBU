@@ -1,6 +1,8 @@
+import { useRef } from 'react';
 import { DisableableInput } from '.'
+import TimeSelector from './TimeSelector';
 
-function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj }){
+function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj, errorMsgs }){
   const onDisable = (name) => {
     if(rateObj[name] == null){
       setFormData(prev => {
@@ -75,7 +77,14 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
     (-) sheet_price: null
     */}
     {rateNumber !== 0 && <div name='spacer' style={{height: '15px'}}/>}
-    <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
+    <div className='hbox lot-modal-rate-header'>
+      <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
+      <span className='flex'/>
+      <img src='/images/x.png' alt='close' 
+        style={{height: '20px', alignSelf: 'center', filter: 'invert(1)'}}
+      />
+    </div>
+
     <div><label htmlFor={`permit-select-${rateNumber}`}>Permit Type</label></div>
     <select 
       id={`permit-select-${rateNumber}`} style={{width: '48%'}} 
@@ -89,9 +98,12 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
         return <option key={index} value={fromTitleCase(type)}>{formatted}</option>
       })}
     </select>
+    <div className='lot-form-error' />
     
     {/* rate times */}
+    <div className='hbox'>
 
+    </div>
     {/* hourly rate */}
     <div className='hbox'>  
       <div style={{width: '48%'}}>
@@ -106,6 +118,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Hourly Rate'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.hourly}</div>
       </div>
 
       <span className='flex'/>
@@ -122,6 +135,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Max Hours'
           isInt
         />
+        <div className='lot-form-error'>{errorMsgs?.max_hours}</div>
       </div>
     </div>
 
@@ -139,6 +153,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Daily Rate'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.daily}</div>
       </div>
       <span className='flex'/>
       <div style={{width: '48%'}}>
@@ -153,6 +168,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Monthly Rate'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.monthly}</div>
       </div>
     </div>
 
@@ -169,6 +185,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Semesterly Fall/Spring Rate'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.semesterly_fall_spring}</div>
       </div>
 
       <span className='flex'/>
@@ -185,6 +202,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Semesterly Summer Rate'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.semesterly_summer}</div>
       </div>
     </div>
     
@@ -202,6 +220,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Yearly Rate'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.yearly}</div>
       </div>
       <span className='flex' />
       <div style={{width: '48%'}}>
@@ -216,6 +235,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Event Parking Price'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.event_parking_price}</div>
       </div>
     </div>  
 
@@ -233,6 +253,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Sheet Number'
           isInt
         />
+        <div className='lot-form-error'>{errorMsgs?.sheet_number}</div>
       </div>
       <span className='flex' />
       <div style={{width: '48%'}}>
@@ -247,6 +268,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj 
           label='Sheet Price'
           isMoney
         />
+        <div className='lot-form-error'>{errorMsgs?.sheet_price}</div>
       </div>
     </div>  
   </>);

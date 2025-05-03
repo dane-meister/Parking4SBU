@@ -2,7 +2,7 @@
     overflow-y: auto;
     scrollbar-gutter: stable both-edges;
     max-height: calc(min(60vh, 800px) - 59px);
-    min-height: calc(600px - 59px);
+    /* min-height: calc(600px - 59px); */
 }
 
 #lot-form-modal h2 {
@@ -10,7 +10,11 @@
     padding: 15px 25px;
     color: white;
     background-color: var(--red);
+}
 
+.lot-modal-rate-header{
+    background-color: var(--red);
+    padding-right: 5px;
 }
 
 .location-collapsible-name{
@@ -124,6 +128,10 @@
     background-color: #ddd;
 }
 
+.disableable-input input:disabled{
+    background-color: #ddd;
+}
+
 .field-modified {
     background-color: #fff9e4;
 }
@@ -131,7 +139,7 @@
 .capacity-collapsible input{
     height: 20.86px
 }
-.capacity-collapsible .field-modified{
+.capacity-collapsible .field-modified, #lot-name, .location-collapsible input{
     border: 1px solid light-dark(rgb(118, 118, 118), rgb(133, 133, 133));;
     border-radius: 2px;
     -moz-border-radius: 2px;
@@ -143,4 +151,40 @@
     outline: 0.666666666px black auto;
     height: 20.86px;
     border: 2px solid light-dark(rgb(118, 118, 118), rgb(133, 133, 133));;
+}
+
+.lot-form-error{
+	font-size: 14px;
+	color: var(--bright-red);
+}
+
+.edit-lot-btn{
+    --btn-color: hsl(134, 61%, 41%);
+    --btn-color-hover: hsl(134, 61%, 37%);
+    --btn-color-active: hsl(134, 61%, 45%);
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+    width: 100%;
+}
+.edit-lot-btn:hover{
+    background-color: var(--btn-color-hover);
+}
+.edit-lot-btn:active{
+    background-color: var(--btn-color-active);
+}
+
+#lot-modal-add-rate{
+    background-color: var(--red);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 15px;
+    width: 140px;
 }
