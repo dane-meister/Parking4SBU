@@ -535,28 +535,6 @@ router.put("/edit-profile/:userId", authenticate, async (req, res) => {
     }
 });
 
-router.put("/users/:userId/edit", authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== "admin") {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
-        const user = await User.findByPk(req.params.userId);
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        const allowedUpdates = ['email', 'user_type', 'permit_type'];
-        allowedUpdates.forEach(field => {
-            if (req.body[field]) user[field] = req.body[field];
-        });
-
-        await user.save();
-        res.json({ message: "User updated successfully", user });
-    } catch (err) {
-        console.error("Error updating user:", err);
-        res.status(500).json({ message: "Update failed", error: err.message });
-    }
-});
-
 router.post("/feedback/add", authenticate, async (req, res) => {
     try {
         const { feedback_text, rating } = req.body;

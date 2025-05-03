@@ -138,7 +138,9 @@
   gap: 10px;
 }
 
-.save-button, .respond-button, .add-lot-button {
+.save-button,
+.respond-button,
+.add-lot-button {
   background-color: #990000;
   color: white;
   border: none;
@@ -156,28 +158,162 @@
 }
 
 
-.capacity-collapsible{
+.capacity-collapsible {
   height: auto;
 }
 
-.capacity-img, .rates-img, .location-img{
+.capacity-img, .rates-img, .location-img, img.rate {
   height: 20px;
 }
 
-.capacity-collapsible-name, .rates-collapsible-name, .location-collapsible-name, .lot-lbl{
+.capacity-collapsible-name,
+.rates-collapsible-name,
+.location-collapsible-name,
+.lot-lbl {
   font-weight: bold;
   font-size: 18px;
   padding-left: 5px;
 }
 
-#lot-form-modal input{
+#lot-form-modal input {
   width: 100%;
 }
 
-#lot-form-modal > div{
+#lot-form-modal>div {
   margin-bottom: 10px;
 }
 
-.overlay-modal{
+.overlay-modal {
   filter: brightness(0.8);
+}
+
+.give-ticket-btn {
+  padding: 6px 12px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.give-ticket-btn:hover {
+  background-color: #d62828;
+}
+
+.ticket-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.ticket-popup-form {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+.ticket-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ticket-form label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.ticket-form input,
+.ticket-form textarea {
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width: 100%;
+  resize: vertical;
+}
+
+.ticket-form textarea {
+  min-height: 90px;
+}
+
+.ticket-form .form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.capacity-analysis-container {
+  padding: 20px;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.capacity-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.capacity-table th,
+.capacity-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.capacity-analysis-section {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.lot-table {
+  flex: 1;
+  min-width: 400px;
+}
+
+.user-type-chart {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 400px;
+}
+
+.table-wrapper {
+  overflow-y: scroll;
+  height: 415px;
+  display: block;
+  max-width: 100%;
+}
+
+.capacity-table th { /* Table heading to stay */
+  position: sticky;
+  top: 0;
+  background-color: #BEBEBE;
+  z-index: 2;
 }

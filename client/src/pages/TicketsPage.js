@@ -1,58 +1,97 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { TicketItem } from '../components';
+import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Ticket.css';
 
+const HOST = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 export default function TicketPage() {
-	// Hardcoded dummy ticket data
-	const ticket = {
-		summons: '5019225', // Ticket number
-		plate: 'ABC1234 NY PA', // License plate and state
-		vehicle: 'Chevrolet Colorado', // Vehicle make and model
-		permit: '802250', // Parking permit number
-		location: 'NORTH P / LOT #5A', // Parking location
-		space: '1', // Parking space number
-		violation: 'EXPIRED METER', // Violation type
-		fine: 30.00, // Fine amount in dollars
-		comments: 'You parked terribly too...', // Additional comments
-		date: '11/08/2024', // Date of the ticket
-		time: '4:46 PM', // Time of the ticket
-		officer: '604' // Issuing officer's ID
+	const { user } = useAuth();
+	const [tickets, setTickets] = useState([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		if (!user?.user_id) return;
+
+		axios.get(`${HOST}/api/tickets/user/${user.user_id}`, { withCredentials: true })
+			.then(res => setTickets(res.data ?? []))
+			.catch(err => {
+				console.error('Error fetching tickets:', err);
+				setTickets([]);
+			})
+			.finally(() => setLoading(false));
+	}, [user]);
+
+	const handlePay = async (ticketId) => {
+		try {
+			await axios.patch(`${HOST}/api/tickets/${ticketId}/pay`, {}, { withCredentials: true });
+			const res = await axios.get(`${HOST}/api/tickets/user/${user.user_id}`, { withCredentials: true });
+			setTickets(res.data ?? []);
+		} catch (err) {
+			console.error("Payment error:", err);
+			alert("Failed to pay ticket.");
+		}
 	};
 
+	const handleAppeal = async (ticketId) => {
+		const reason = prompt("Enter your appeal reason:");
+		if (!reason) return;
+		try {
+			await axios.patch(`${HOST}/api/tickets/${ticketId}/appeal`, {
+				appeal_reason: reason
+			}, { withCredentials: true });
+
+			const res = await axios.get(`${HOST}/api/tickets/user/${user.user_id}`, { withCredentials: true });
+			setTickets(res.data ?? []);
+		} catch (err) {
+			console.error("Appeal error:", err);
+			alert("Failed to submit appeal.");
+		}
+	};
+
+	const unpaidCount = Array.isArray(tickets) ? tickets.filter(t => t.status === 'unpaid').length : 0;
+
 	return (
-		<div className="ticket-container">
-			{/* Unpaid Banner */}
-			<div className="unpaid-banner">
-				<span>Your Account Currently has <b>1 Unpaid</b> Tickets</span>
-				<button className="view-all-btn">View All Tickets</button>
-			</div>
+		<main className="ticket-page">
+			<h1>My Tickets</h1>
 
-			{/* Lookup Section */}
-			<div className="lookup-section">
-				<h2>Lookup Ticket</h2>
-				<div className="lookup-fields">
-					{/* Input fields for ticket lookup */}
-					<input type="text" placeholder="Ticket #" defaultValue={ticket.summons} />
-					<input type="text" placeholder="Plate Number or VIN" defaultValue="ABC1234" />
-					<button className="search-btn">Search</button>
+			{unpaidCount > 0 && (
+				<div className="unpaid-banner">
+					<span>Your account has <b>{unpaidCount} unpaid</b> ticket{unpaidCount > 1 ? 's' : ''}</span>
 				</div>
-			</div>
+			)}
 
-			{/* Ticket Details */}
-			{/* Render ticket details using the TicketItem component */}
-			<TicketItem ticket={ticket} />
-
-			{/* Late Fee Warning */}
-			<div className="late-fee-warning">
-				A LATE FEE WILL BE ADDED IF FULL PAYMENT OR AN APPEAL IS NOT RECEIVED BEFORE 11/22/2024
-			</div>
-
-			{/* Action Buttons */}
-			<div className="action-buttons">
-				{/* Buttons for payment and appeal actions */}
-				<button className="pay-btn">PAY</button>
-				<button className="appeal-btn">APPEAL</button>
-			</div>
-		</div>
+			{loading ? (
+				<p>Loading tickets...</p>
+			) : tickets.length === 0 ? (
+				<p>No tickets found.</p>
+			) : (
+				<>
+					<h2>Ticket History</h2>
+					{tickets.map(ticket => (
+						<div key={ticket.id}>
+							<TicketItem ticket={ticket} />
+							<div className="action-buttons">
+								{ticket.status === 'unpaid' && (
+									<>
+										<button className="pay-btn" onClick={() => handlePay(ticket.id)}>PAY</button>
+										<button className="appeal-btn" onClick={() => handleAppeal(ticket.id)}>APPEAL</button>
+									</>
+								)}
+								{ticket.status === 'appealed' && (
+									<p className="ticket-status-msg">Appeal submitted on {new Date(ticket.appeal_submitted_at).toLocaleDateString()}</p>
+								)}
+								{ticket.status === 'paid' && (
+									<p className="ticket-status-msg">Ticket paid</p>
+								)}
+							</div>
+							<hr style={{ margin: '25px 0' }} />
+						</div>
+					))}
+				</>
+			)}
+		</main>
 	);
 }

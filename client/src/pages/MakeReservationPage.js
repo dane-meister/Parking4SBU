@@ -43,6 +43,8 @@ function Reservation(){
 		resident_availability,
 		metered_capacity,
 		metered_availability,
+		general_capacity,
+		general_availability,
 		rates,
 		availability: initialAvailability = {},
 	} = location.state || {};
@@ -55,6 +57,11 @@ function Reservation(){
 	const [selectedVehicleId, setSelectedVehicleId] = useState(null);
 
 	const [isEventParking, setIsEventParking] = useState(false);
+	// Effect to update spot count based on event parking status
+	useEffect(() => {
+		setSpotCount(isEventParking ? 2 : 1);
+	}, [isEventParking]);
+
 	const [spotCount, setSpotCount] = useState(1);
 	const [eventDescription, setEventDescription] = useState('');
 
@@ -92,38 +99,91 @@ function Reservation(){
 			});
 	}, [user?.user_id]);
 
+	// Calculate price based on selected times and rates
 	useEffect(() => {
 		if (!times.arrival || !times.departure || !Array.isArray(rates) || rates.length === 0) return;
 	
 		const startTime = getDateWithTime(times.arrival);
 		const endTime = getDateWithTime(times.departure);
 
-		const selectedRate = rates.find(r =>
-			r.hourly != null &&
-			r.lot_start_time &&
-			r.lot_end_time &&
-			r.max_hours != null &&
-			r.daily != null
-		);
+		const selectedRate = rates.find(r => {
+			if (isEventParking) {
+				return (
+					(r.sheet_number != null && r.sheet_price != null) ||
+					r.event_parking_price != null ||
+					(
+						r.hourly != null &&
+						r.lot_start_time &&
+						r.lot_end_time &&
+						r.max_hours != null &&
+						r.daily != null
+					)
+				);
+			} 
+			else {
+				// Standard reservations need hourly, daily, etc.
+				return (
+				r.hourly != null &&
+				r.lot_start_time &&
+				r.lot_end_time &&
+				r.max_hours != null &&
+				r.daily != null
+				);
+			}
+		});
 
 		if (!selectedRate) {
 			console.warn("No valid rate found for calculation.");
 			setCalculatedPrice(0);
 			return;
 		}
-	
-		const { subtotal } = calculateReservationCharge({
-			startTime,
-			endTime,
-			rateStart: selectedRate.lot_start_time,
-			rateEnd: selectedRate.lot_end_time,
-			hourlyRate: selectedRate.hourly,
-			maxHours: selectedRate.max_hours,
-			dailyMaxRate: selectedRate.daily
-		});
+
+		let subtotal = 0;
+
+		if (isEventParking) {
+			console.log(endTime, startTime);
+			const start = new Date(startTime);
+			const end = new Date(endTime);
+			const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)); // Calculate number of days between start and end
+			console.log(dayCount);
+
+			const { sheet_number, sheet_price, event_parking_price, hourly, lot_start_time, lot_end_time, max_hours, daily } = selectedRate;
+			if (sheet_number != null && sheet_price != null) {
+				const sheetsNeeded = Math.ceil(spotCount / sheet_number);
+				subtotal = sheetsNeeded * sheet_price * dayCount;
+			} else if (event_parking_price != null) {
+				subtotal = event_parking_price * spotCount * dayCount; // Flat per-spot rate (daily)
+			} else if (hourly != null && lot_start_time && lot_end_time && max_hours != null && daily != null) {
+				const result = calculateReservationCharge({
+					startTime,
+					endTime,
+					rateStart: lot_start_time,
+					rateEnd: lot_end_time,
+					hourlyRate: hourly,
+					maxHours: max_hours,
+					dailyMaxRate: daily
+				});
+				subtotal = result.subtotal * spotCount;
+			} else {
+				console.warn("No valid event rate found. Defaulting to $0.");
+				subtotal = 0;
+			}
+		} else {
+			// Normal (non-event) reservation
+			const result = calculateReservationCharge({
+				startTime,
+				endTime,
+				rateStart: selectedRate.lot_start_time,
+				rateEnd: selectedRate.lot_end_time,
+				hourlyRate: selectedRate.hourly,
+				maxHours: selectedRate.max_hours,
+				dailyMaxRate: selectedRate.daily
+			});
+			subtotal = result.subtotal;
+		} 
 	
 		setCalculatedPrice(subtotal);
-	}, [times, rates]);
+	}, [times, rates, isEventParking, spotCount]);
 
 	useEffect(() => {
 		const fetchAvailability = async () => {
@@ -170,6 +230,7 @@ function Reservation(){
 		metered: Infinity,
 		ada: Infinity,
 		ev_charging: Infinity,
+		general: Infinity,
 	};
 
 	for (const hour of buckets) {
@@ -227,46 +288,31 @@ function Reservation(){
 			hasError = true;
 		}
 
+		if (isEventParking && spotCount > minAvailability[selectedSpotType]) {
+			errors.availability = `Only ${minAvailability[selectedSpotType]} ${selectedSpotType.replace('_', ' ')} spots are available.`;
+			hasError = true;
+		}
+
 		setErrorMessages(errors);  
 		if (hasError) return;	  
 		
 		try {
 			const startTime = getDateWithTime(times.arrival);
 			const endTime = getDateWithTime(times.departure);
-			
-			const selectedRate = rates.find(r =>
-				r.hourly != null &&
-				r.lot_start_time &&
-				r.lot_end_time &&
-				r.max_hours != null &&
-				r.daily != null
-			);
 
-			let subtotal = 0;
-
-			if (selectedRate) {
-				const result = calculateReservationCharge({
-					startTime,
-					endTime,
-					rateStart: selectedRate.lot_start_time,
-					rateEnd: selectedRate.lot_end_time,
-					hourlyRate: selectedRate.hourly,
-					maxHours: selectedRate.max_hours,
-					dailyMaxRate: selectedRate.daily
-				});
-				subtotal = result.subtotal;
-			} else {
-				console.warn("No valid rate found for reservation. Defaulting to free.");
+			const now = new Date();
+			if (startTime < now) {
+				errors.general = "You cannot make a reservation in the past.";
+				hasError = true;
 			}
-
-
+			
 			const payload = {
 				user_id: user?.user_id,
 				parking_lot_id: lotId,
 				vehicle_id: selectedVehicleId,
 				start_time: startTime,
 				end_time: endTime,
-				total_price: subtotal,
+				total_price: calculatedPrice,
 				spot_count: isEventParking ? spotCount : 1,
 				event_description: isEventParking ? eventDescription : null,
 				spot_type: selectedSpotType
@@ -360,7 +406,7 @@ function Reservation(){
 				Spots Needed:
 				<input
 					type="number"
-					min="1"
+					min="2"
 					value={spotCount}
 					onChange={(e) => setSpotCount(Number(e.target.value))}
 					style={{ marginLeft: '10px', width: '60px' }}
@@ -445,9 +491,11 @@ function Reservation(){
 					{ key: 'metered', label: 'Metered', capacity: metered_capacity },
 					{ key: 'ada', label: 'ADA', capacity: ada_capacity },
 					{ key: 'ev_charging', label: 'EV Charging', capacity: ev_charging_capacity },
+					{ key: 'general', label: 'General', capacity: general_capacity },
 					]
 					.filter(type => type.capacity > 0)
 					.map(({ key, label, capacity }) => {
+						console.log("minAvailability", minAvailability);
 						const available = minAvailability[key];
 						const display = available != null ? `${available} / ${capacity}` : `unknown / ${capacity}`;
 						return (
@@ -478,6 +526,12 @@ function Reservation(){
 				<span>${calculatedPrice.toFixed(2)}</span>
 			</div>
 			<div>
+			{errorMessages.general && (
+			<div className="error-text" style={{ color: 'red', marginBottom: '10px' }}>
+				{errorMessages.general}
+			</div>
+			)}
+
 			<button 
 				className='make-reservation-pay-btn'
 				disabled={reservationSuccess === true}
@@ -506,6 +560,11 @@ function Reservation(){
 					}
 					if (minAvailability[selectedSpotType] === 0) {
 						errors.availability = `No ${selectedSpotType.replace('_', ' ')} spots available during the selected time range.`;
+						hasError = true;
+					}
+
+					if (isEventParking && spotCount > minAvailability[selectedSpotType]) {
+						errors.availability = `Only ${minAvailability[selectedSpotType]} ${selectedSpotType.replace('_', ' ')} spots are available.`;
 						hasError = true;
 					}
 

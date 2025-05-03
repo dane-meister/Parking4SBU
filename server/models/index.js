@@ -29,6 +29,7 @@ db.User = require("./User")(sequelize, Sequelize.DataTypes);
 db.Vehicle = require("./Vehicle")(sequelize, Sequelize.DataTypes);
 db.Reservation = require("./Reservation")(sequelize, Sequelize.DataTypes);
 db.Feedback = require("./Feedback")(sequelize, Sequelize.DataTypes);
+db.Ticket = require("./Ticket")(sequelize, Sequelize.DataTypes);
 
 // Setup associations
 
@@ -74,6 +75,18 @@ db.User.hasMany(db.Feedback, {
 });
 db.Feedback.belongsTo(db.User, {
   foreignKey: "user_id"
+});
+
+// Ticket ↔ User
+db.Ticket.belongsTo(db.User, {
+  foreignKey: {
+    name: 'user_id',
+    allowNull: false
+  },
+  onDelete: 'CASCADE'
+});
+db.User.hasMany(db.Ticket, {
+  foreignKey: 'user_id'
 });
 
 // Add Sequelize instance and constructor to the `db` object

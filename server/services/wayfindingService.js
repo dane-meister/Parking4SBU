@@ -55,25 +55,30 @@ async function getSortedParkingLots(buildingId) {
             const lotCoords = lot.mercator_coordinates.coordinates; // MULTIPOINT array
 
             let minDistance = Infinity; // Initialize minimum distance
+            let closestCoordIndex = null; // Initialize closest coordinate
 
-            // Compare all building points to all parking lot points
-            for (const bCoord of buildingCoords) {
-                for (const lCoord of lotCoords) {
-                    // Ensure both coordinates are valid
-                    if (bCoord.length >= 2 && lCoord.length >= 2) {
-                        // Compute Manhattan distance and update minimum distance
-                        const distance = manhattanDistance(bCoord.slice(0, 2), lCoord.slice(0, 2)); 
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                        }
-                    }
+            for (let i = 0; i < buildingCoords.length; i++) {
+            const bCoord = buildingCoords[i];
+
+            for (let j = 0; j < lotCoords.length; j++) {
+                const lCoord = lotCoords[j];
+
+                if (bCoord.length >= 2 && lCoord.length >= 2) {
+                const distance = manhattanDistance(bCoord.slice(0, 2), lCoord.slice(0, 2));
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestCoordIndex = j; // Track index of closest lot point
+                }
                 }
             }
+            }
+
 
 
             return {
                 id: lot.id,
                 location: lot.location,
+                closest_point: lot.location.coordinates[closestCoordIndex] || null,
                 name: lot.name,
                 distance_meters: minDistance,
                 distance_miles: metersToMiles(minDistance),
@@ -112,5 +117,5 @@ async function getSortedParkingLots(buildingId) {
 }
 
 module.exports = {
-    getSortedParkingLots, // Export the function for external use
+    getSortedParkingLots, manhattanDistance, metersToMiles
 };

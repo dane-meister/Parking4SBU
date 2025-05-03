@@ -6,7 +6,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10), // ✅ Ensure it's a number
+    port: parseInt(process.env.DB_PORT, 10), 
     dialect: 'postgres'
   },
   test: {
@@ -27,7 +27,7 @@ module.exports = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false // You can make this true if you're using CA-signed certs
+        rejectUnauthorized: false 
       }
     }
   }

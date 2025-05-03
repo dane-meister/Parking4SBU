@@ -3,6 +3,7 @@ const path = require("path"); // Path module for handling file paths
 const csv = require("csv-parser"); // CSV parser module for parsing CSV files
 const { ParkingLot, sequelize } = require("../models");
 
+
 // Function to parse CSV data and insert it into the database
 async function insertParkingLots() {
   try {
@@ -15,31 +16,46 @@ async function insertParkingLots() {
       .pipe(csv()) // Parse the CSV file
       .on("data", (row) => {
         try {
-          // Extract only the first two coordinates [X, Y] from the Location and Mercator fields
-          const locationCoords = row.Location.match(/[-\d.]+/g).slice(0, 2);
-          const mercatorCoords = row.mercator_coordinates.match(/[-\d.]+/g).slice(0, 2);
-
-          // Validate that both coordinate sets are present and valid
-          if (!locationCoords || locationCoords.length < 2 || !mercatorCoords || mercatorCoords.length < 2) {
+          if (!row.Location || !row.mercator_coordinates) {
             console.error("Skipping invalid row:", row);
             return;
           }
 
-          // Convert coordinates to GeoJSON format for PostGIS
-          const locationGeoJSON = `{
-            "type": "MultiPoint",
-            "coordinates": [[${locationCoords[1]}, ${locationCoords[0]}]]  
-          }`;
-          const mercatorGeoJSON = `{
-            "type": "MultiPoint",
-            "coordinates": [[${mercatorCoords[0]}, ${mercatorCoords[1]}]]  
-          }`;
+          const totalCapacity = parseInt(row.Capacity) || 0;
+
+          // Sum up all typed capacities
+          const typedCapacities = [
+            parseInt(row["Faculty Capacity"]) || 0,
+            parseInt(row["Commuter Perimeter Capacity"]) || 0,
+            parseInt(row["Commuter Core Capacity"]) || 0,
+            parseInt(row["Commuter Satellite Capacity"]) || 0,
+            parseInt(row["Metered Capacity"]) || 0,
+            parseInt(row["Resident Capacity"]) || 0,
+            parseInt(row["ADA Capacity"]) || 0,
+            parseInt(row["EV Charging Capacity"]) || 0,
+          ];
+          const generalCapacity = totalCapacity - typedCapacities.reduce((sum, val) => sum + val, 0);
+
+          // Sum up all typed availabilities
+          const typedAvailabilities = [
+            parseInt(row["Faculty Availibility"]) || 0,
+            parseInt(row["Commuter Perimeter Availibility"]) || 0,
+            parseInt(row["Commuter Core Availibility"]) || 0,
+            parseInt(row["Commuter Satellite Availibility"]) || 0,
+            parseInt(row["Metered Availibility"]) || 0,
+            parseInt(row["Resident Availibility"]) || 0,
+            parseInt(row["ADA Availibility"]) || 0,
+            parseInt(row["EV Charging Availibility"]) || 0,
+          ];
+          const generalAvailability = generalCapacity > 0
+            ? Math.max(0, totalCapacity - typedAvailabilities.reduce((sum, val) => sum + val, 0))
+            : 0;
 
           // Push the parsed data into the results array
           results.push({
             name: row.Name, // Parking lot name
-            location: sequelize.literal(`ST_SetSRID(ST_GeomFromGeoJSON('${locationGeoJSON}'), 4326)`), // GeoJSON for geographic coordinates
-            mercator_coordinates: sequelize.literal(`ST_SetSRID(ST_GeomFromGeoJSON('${mercatorGeoJSON}'), 3857)`), // GeoJSON for Mercator coordinates
+            location: sequelize.literal(`ST_GeomFromText('${row.Location}', 4326)`), // Location coordinates
+            mercator_coordinates: sequelize.literal(`ST_GeomFromText('${row.mercator_coordinates}', 3857)`), // Mercator coordinates
             capacity: parseInt(row.Capacity) || 0, // Total capacity
             faculty_capacity: parseInt(row["Faculty Capacity"]) || 0, // Faculty capacity
             faculty_availability: parseInt(row["Faculty Availibility"]) || 0, // Faculty availability
@@ -58,6 +74,8 @@ async function insertParkingLots() {
             ada_availability: parseInt(row["ADA Availibility"]) || 0, // ADA availability
             ev_charging_capacity: parseInt(row["EV Charging Capacity"]) || 0, // EV charging capacity
             ev_charging_availability: parseInt(row["EV Charging Availibility"]) || 0, // EV charging availability
+            general_capacity: generalCapacity, // General capacity
+            general_availability: generalAvailability, // General availability
             covered: row.Covered.toLowerCase() === "true", // Whether the parking lot is covered
           });
         } catch (error) {
