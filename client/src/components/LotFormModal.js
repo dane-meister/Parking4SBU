@@ -46,7 +46,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         faculty_capacity: lot?.faculty_capacity ?? 0,
         metered_capacity: lot?.metered_capacity ?? 0,
         resident_capacity: lot?.resident_capacity ?? 0,
-        capacity: lot?.capacity ?? 0
+        capacity: lot?.capacity ?? 0,
+        general_capacity: lot?.general_capacity ?? 0
       },
       rates: rates ?? []
     }
@@ -103,14 +104,16 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
 
   const getNewCapacity = () => {
     const c = formData.capacity;
-    return (c.commuter_core_capacity || 0) +
+    return (c.commuter_core_capacity || 0) + 
       (c.commuter_perimeter_capacity || 0) +
       (c.commuter_satellite_capacity || 0) +
       (c.resident_capacity || 0) +
       (c.faculty_capacity || 0) +
       (c.metered_capacity || 0) +
       (c.ev_charging_capacity || 0) +
-      (c.ada_capacity || 0)
+      (c.ada_capacity || 0) +
+      (c.general_capacity || 0)
+
   };
 
   const MAX_TYPE_CAPACITY = 9999;
@@ -151,7 +154,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const anyCapacityModified = () => {
     return [
       'commuter_core', 'commuter_perimiter', 'commuter_satellite', 'resident',
-      'faculty', 'metered', 'ev_charging', 'ada'
+      'faculty', 'metered', 'ev_charging', 'ada', 'general'
     ].some(str => isCapacityModified(str))
   };
 
@@ -280,7 +283,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         .replace('Ev', 'EV');
     }
     if(!!emptyCaps.length){
-      capacityErr.current.innerHTML = `Capacities cannot be 0 or empty! (${emptyCaps.map(c => formatCapKey(c)).join(', ')} capacit${emptyCaps.length !== 1 ? 'ies' : 'y'})`
+      capacityErr.current.innerHTML = `Capacities cannot be empty! (${emptyCaps.map(c => formatCapKey(c)).join(', ')} capacit${emptyCaps.length !== 1 ? 'ies' : 'y'})`
       errorOccurred = true;
     }else if(getNewCapacity() > MAX_TOTAL_CAPACITY){
       capacityErr.current.innerHTML = `New Capacity too large! (total capacity must be lower than ${MAX_TOTAL_CAPACITY})`
@@ -474,8 +477,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         </div>
         
         <div className='hbox' style={{gap: '15px', fontSize: '14px'}}>
-          <span style={{flex: 1}}/> 
-          <label style={{flex: 2}} htmlFor='ada-capacity'>EV Charging{isCapacityModified('ev_charging') ? '*' : ''}
+          <label className='flex' htmlFor='ada-capacity'>EV Charging{isCapacityModified('ev_charging') ? '*' : ''}
             <input id='ev-charging-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'ev_charging')}
@@ -484,7 +486,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
               className={`${isCapacityModified('ev_charging') && 'field-modified'}`}
             />
           </label>
-          <label className='flex' style={{flex: 2}}>ADA{isCapacityModified('ada') ? '*' : ''}
+          <label className='flex'>ADA{isCapacityModified('ada') ? '*' : ''}
             <input id='ada-capacity' autoComplete='off'
               type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
               onChange={(e) => handleCapacityChange(e, 'ada')}
@@ -493,7 +495,15 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
               className={`${isCapacityModified('ada') && 'field-modified'}`}
             />
           </label>
-          <span style={{flex: 1}}/> 
+          <label className='flex'>General Capacity{isCapacityModified('general') ? '*' : ''}
+            <input id='general-capacity' autoComplete='off'
+              type="number" min="0" step="1" max={`${MAX_TYPE_CAPACITY}`}
+              onChange={(e) => handleCapacityChange(e, 'general')}
+              value={formData.capacity.general_capacity}
+              onKeyDown={numericKeyDown}
+              className={`${isCapacityModified('general') && 'field-modified'}`}
+            />
+          </label>
         </div>
 
         <span style={{display: 'inline-block', marginTop: '5px'}}>
@@ -515,86 +525,6 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         externalOpen={openRates}
         externalSetOpen={setOpenRates}
       >
-        {/* 
-          - means started
-          x means finished
-          
-          (-) permit_type: "Faculty"
-          () lot_start_time: "07:00:00"
-          () lot_end_time: "16:00:00"
-          (-) hourly: null
-          (-) max_hours: null
-          (-) daily: null
-          (-) monthly: null
-          () semesterly_fall_spring: null
-          () semesterly_summer: null
-          (-) yearly: 0
-          () event_parking_price: null
-          () sheet_number: null
-          () sheet_price: null
-        */}
-        <div><label htmlFor='permit-select'>Permit Type</label></div>
-        <select id='permit-select' style={{width: '48%'}}>
-          <option></option>
-          <option>Dont check, i didnt do this yet</option>
-        </select>
-        
-        {/* rate times */}
-
-        {/* hourly rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='hourly-rate'>Hourly Rate</label>
-            <div className='disableable-input flex'>
-              <input id='hourly-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-          <span className='flex'/>
-          <div style={{width: '48%'}}>
-            <label htmlFor='max-hours'>Max Hours</label>
-            <div className='disableable-input flex'>
-              <input id='max-hours' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
-
-        {/* daily rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='daily-rate'>Daily Rate</label>
-            <div className='disableable-input flex'>
-              <input id='daily-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
-
-        {/* monthly rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='monthly-rate'>Monthly Rate</label>
-            <div className='disableable-input flex'>
-              <input id='monthly-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
-
-        semester
-        
-        {/* yearly rate */}
-        <div className='hbox'>  
-          <div style={{width: '48%'}}>
-            <label htmlFor='yearly-rate'>Yearly Rate</label>
-            <div className='disableable-input flex'>
-              <input id='yearly-rate' autoComplete='off'/>
-              <button><img src='/images/disable.png' alt='disable'/></button>
-            </div>
-          </div>
-        </div>
-
         {formData.rates.map((rate, idx) => (
           <EditRate 
             rateObj={rate} 
@@ -623,14 +553,13 @@ const styles = {
     marginTop: 'calc(60px + 30px)',
     width: '525px',
     maxHeight: 'min(60vh, 800px)',
-    // minHeight: '600px',
+    // minHeight: '500px',
     justifySelf: 'center',
     alignSelf: 'center',
     padding: '0',
     zIndex: 3000,
     border: 'none',
-    overflow: 'auto'
-    // scrollbarGutter: 'stable'
+    overflow: 'hidden'
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
