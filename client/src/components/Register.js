@@ -107,6 +107,8 @@ export default function RegisterPage() {
     setStep(prev => prev - 1);
   };
 
+  const [awaitingApproval, setAwaitingApproval] = useState(false);
+
   // Handles the registration form submission
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -119,7 +121,8 @@ export default function RegisterPage() {
       const response = await axios.post(`${HOST}/api/auth/register`, form, {
         withCredentials: true
       });
-      navigate('/login'); // Redirects to the login page upon successful registration
+      // navigate('/login'); // Redirects to the login page upon successful registration
+      setAwaitingApproval(true);
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed.");
       console.error(err);
@@ -368,6 +371,20 @@ export default function RegisterPage() {
             {step === 3 && <button type="submit" className="auth-button">Register</button>}
           </div>
         </form>
+
+        {awaitingApproval && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>Registration received!</h3>
+              <p>
+                Please wait while our admin reviews your account.<br />
+                You’ll also get an email confirmation shortly.
+              </p>
+              <button onClick={() => setAwaitingApproval(false)}>OK</button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -46,12 +46,15 @@ const populateUsers = async () => {
         postal_zip_code,
         country,
         is_approved,
+        is_verified
       } = row;
 
       // Now we can properly await the hash
       const hashed_password = await bcrypt.hash(password, salt_rounds);
       // convert strings to bool
       const is_approved_value = is_approved === 'true' ? true : false;
+      const is_verified_value = true;
+
 
       usersData.push({
         email,
@@ -69,6 +72,7 @@ const populateUsers = async () => {
         postal_zip_code,
         country,
         isApproved: is_approved_value,
+        isVerified: is_verified_value
       });
     }
 
