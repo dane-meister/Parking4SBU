@@ -1,8 +1,7 @@
-import { useRef } from 'react';
 import { DisableableInput } from '.'
 import TimeSelector from './TimeSelector';
 
-function EditRate({ rateObj, setFormData, originalRateObj, errorMsgs }){
+function EditRate({ rateObj, setFormData, originalRateObj, errorMsgs, formType }){
   const rateNumber = rateObj.rateNumber
   
   const onDisable = (name) => {
@@ -64,8 +63,10 @@ function EditRate({ rateObj, setFormData, originalRateObj, errorMsgs }){
     'core', 'perimeter', 'satellite', 'visitor'
   ]
 
-  const isModified = (field) => rateObj[field] !== originalRateObj[field];
-
+  const isModified = (field) =>{
+    if(formType === 'add') return false;
+    return rateObj[field] !== originalRateObj[field];
+  };
   return (<>
     {/* 
     - means started

@@ -55,7 +55,30 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       rates: rates ?? []
     }
     setFormData(data);
+    if(formType === 'add'){
+      const emptyRate = {
+        daily: null,
+        event_parking_price: null,
+        hourly: null,
+        lot_end_time: "23:59:59",
+        lot_start_time: "0:00:00",
+        max_hours: null,
+        monthly: null,
+        parking_lot_id: null,
+        permit_type: 'Core',
+        semesterly_fall_spring: null,
+        semesterly_summer: null,
+        sheet_number: null,
+        sheet_price: null,
+        yearly: null,
+        rateNumber: 0
+      }
+      setFormData(prev => {
+        return { ...prev, coordinates: [''], rates: [emptyRate] }
+      });
+    }
     originalData.current = JSON.parse(JSON.stringify(data));
+    
   }, [isOpen]);
 
   const handleInputChange = (e) => {
@@ -85,7 +108,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   };
 
   const isCoordinateModified = (idx) => {
-    if(!originalData.current || !formData){
+    if(formType === 'add' || !originalData.current || !formData){
       return false;
     }
 
@@ -104,7 +127,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   };
 
   const isCapacityModified = (field) => {
-    if(formData.capacity[`${field}_capacity`] === undefined) return false;
+    if(formType === 'add') return false;
+    else if(formData.capacity[`${field}_capacity`] === undefined) return false;
     return originalData.current.capacity[`${field}_capacity`] !== formData.capacity[`${field}_capacity`]
   };
 
@@ -121,6 +145,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
 
   const [rateErrMsgs, setRateErrMsgs] = useState({});
   const anyRateErrs = (rateErrMsgs) => {
+    if(rateErrMsgs.length === 0) return true;
+
     for(const index in rateErrMsgs){
       const currentRateErrMsgs = rateErrMsgs[index];
       for(const key in currentRateErrMsgs){
@@ -217,6 +243,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       // check for empty
     const emptyCaps = [];
     for(const [key, value] of Object.entries(formData.capacity)){
+      if(key === 'capacity') continue; // this field isnt directly edited
       if(value === undefined || value === '') emptyCaps.push(key);
     }
     const formatCapKey = (cap) => {
@@ -297,11 +324,11 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       <section className='padding-wrapper' style={{padding: '0 15px 25px 15px'}}>
       <div className='name-uncollapsible'>
         <label htmlFor='lot-name' className='lot-lbl' style={styles.lbl}>
-          Name{!!originalData.current.name && originalData.current.name.trim() !== formData.name.trim() && '*'}
+          Name{(formType === 'add' || (!!originalData.current.name && originalData.current.name.trim() !== formData.name.trim())) && '*'}
         </label>
         <input name='name' id='lot-name' value={formData?.name} autoComplete='off' 
           onChange={handleInputChange} 
-          className={!!originalData.current.name && originalData.current.name.trim() !== formData.name.trim() ? 'field-modified' : ''}
+          className={formType !== 'add' && !!originalData.current.name && originalData.current.name.trim() !== formData.name.trim() ? 'field-modified' : ''}
         />
         <div className='lot-form-error' ref={nameErr} />
       </div>
@@ -313,7 +340,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         startOpen={formType === 'add'}
         wideCollapse
         persistentChildren
-        asterisk={formData.coordinates.some((c, idx) => isCoordinateModified(idx))}
+        asterisk={formType === 'add' || formData.coordinates.some((c, idx) => isCoordinateModified(idx))}
         externalOpen={openLocation} externalSetOpen={setOpenLocation}
       >
         <EditLotLocation 
@@ -329,7 +356,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         wideCollapse
         persistentChildren
         startOpen={formType === 'add'}
-        asterisk={anyCapacityModified()}
+        asterisk={formType === 'add' || anyCapacityModified()}
         externalOpen={openCapacity} externalSetOpen={setOpenCapacity}
       >
         <EditLotCapacity 
@@ -347,6 +374,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         wideCollapse
         startOpen={formType === 'add'}
         externalOpen={openRates} externalSetOpen={setOpenRates}
+        asterisk={formType === 'add'} 
       >
         {formData.rates.map((rate, idx) => (
           <EditRate 
@@ -355,14 +383,20 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
             setFormData={setFormData}
             originalRateObj={originalData.current.rates[idx]}
             errorMsgs={rateErrMsgs[idx]}
+            formType={formType}
           />)
+        )}
+        {formData.rates.length === 0 && (
+          <div style={{margin: '8px 0 0'}}>No rates to this lot currently!</div>
         )}
         <button id='lot-modal-add-rate' type='button'>Add a Rate</button>
       </Collapsible>
 
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
 
-      <p style={{margin: '10px 0px -8px 0', fontSize: '13px', color: 'var(--gray)'}}>* edited fields</p>
+      <p style={{margin: '10px 0px -8px 0', fontSize: '13px', color: 'var(--gray)'}}>
+        {`* ${formType === 'edit' ? 'edited' : 'required'} fields`}
+      </p>
       <input type='submit' className='edit-lot-btn' value='Edit Lot' />
       </section>
       </form>
