@@ -2,7 +2,9 @@ import { useRef } from 'react';
 import { DisableableInput } from '.'
 import TimeSelector from './TimeSelector';
 
-function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj, errorMsgs }){
+function EditRate({ rateObj, setFormData, originalRateObj, errorMsgs }){
+  const rateNumber = rateObj.rateNumber
+  
   const onDisable = (name) => {
     if(rateObj[name] == null){
       setFormData(prev => {
@@ -21,6 +23,14 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj,
       }); 
     }
   };
+
+  const onChange = (e) => {
+    setFormData(prev => {
+      const newRates = prev.rates;
+      newRates[rateNumber][e.target.name] = e.target.value
+      return { ...prev}
+    });
+  }
 
   const setPermitType = (e) => {
     setFormData(prev => {
@@ -104,6 +114,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj,
     <div className='hbox'>
 
     </div>
+    
     {/* hourly rate */}
     <div className='hbox'>  
       <div style={{width: '48%'}}>

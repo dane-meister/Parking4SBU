@@ -20,3 +20,5 @@ export { default as PopularTimes } from './PopularTimes';
 export { default as DisableableInput } from './DisableableInput'
 export { default as EditRate } from './EditRate'
 export { default as TicketForm } from './TicketForm';
+export { default as EditLotCapacity } from './EditLotCapacity'
+export { default as EditLotLocation } from './EditLotLocation'
