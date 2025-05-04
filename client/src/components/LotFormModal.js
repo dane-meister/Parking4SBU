@@ -272,7 +272,6 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const [openCapacity, setOpenCapacity] = useState(false);
   const [openRates, setOpenRates] = useState(false);
   useEffect(() => {
-    console.log("useEFFECT!")
     const isAddingLot = formType === 'add';
     setOpenLocation(isAddingLot);
     setOpenCapacity(isAddingLot);
