@@ -119,8 +119,6 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const coordinatesErr = useRef(null);
   const capacityErr = useRef(null);
 
-  
-
   const [rateErrMsgs, setRateErrMsgs] = useState({});
   const anyRateErrs = (rateErrMsgs) => {
     for(const index in rateErrMsgs){
@@ -274,11 +272,12 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const [openCapacity, setOpenCapacity] = useState(false);
   const [openRates, setOpenRates] = useState(false);
   useEffect(() => {
+    console.log("useEFFECT!")
     const isAddingLot = formType === 'add';
     setOpenLocation(isAddingLot);
     setOpenCapacity(isAddingLot);
     setOpenRates(isAddingLot);
-  }, [formType]);
+  }, [isOpen]);
 
   return (
     <Modal 
@@ -332,8 +331,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         persistentChildren
         startOpen={formType === 'add'}
         asterisk={anyCapacityModified()}
-        externalOpen={openCapacity}
-        externalSetOpen={setOpenCapacity}
+        externalOpen={openCapacity} externalSetOpen={setOpenCapacity}
       >
         <EditLotCapacity 
           isCapacityModified={isCapacityModified}
@@ -349,8 +347,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         className={'rates-collapsible'}
         wideCollapse
         startOpen={formType === 'add'}
-        externalOpen={openRates}
-        externalSetOpen={setOpenRates}
+        externalOpen={openRates} externalSetOpen={setOpenRates}
       >
         {formData.rates.map((rate, idx) => (
           <EditRate 
