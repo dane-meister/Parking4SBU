@@ -52,7 +52,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         capacity: lot?.capacity ?? defaultCapacity,
         general_capacity: lot?.general_capacity ?? defaultCapacity
       },
-      rates: rates ?? []
+      rates: rates ?? [],
+      numRates: rates ? rates.length : 0
     }
     setFormData(data);
     if(formType === 'add'){
@@ -72,7 +73,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         sheet_price: null,
         yearly: null,
         rateNumber: 0
-      }
+      };
       setFormData(prev => {
         return { ...prev, coordinates: [''], rates: [emptyRate] }
       });
@@ -155,6 +156,34 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
     }
 
     return false;
+  };
+
+  const emptyRate = {
+    daily: null,
+    event_parking_price: null,
+    hourly: null,
+    lot_end_time: "23:59:59",
+    lot_start_time: "0:00:00",
+    max_hours: null,
+    monthly: null,
+    parking_lot_id: null,
+    permit_type: 'Core',
+    semesterly_fall_spring: null,
+    semesterly_summer: null,
+    sheet_number: null,
+    sheet_price: null,
+    yearly: null,
+    rateNumber: 0
+  };
+  const addRate = () => {
+    setFormData(prev => {
+      const newRate = JSON.parse(JSON.stringify(emptyRate));
+      newRate.rateNumber = formData.numRates;
+
+      const newRates = formData.rates.concat(newRate);
+      const newNumRates = formData.numRates + 1;
+      return { ...prev, rates: newRates, numRates: newNumRates };
+    });
   };
 
   const validateRate = (rateObj) => {
@@ -380,8 +409,9 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
           <EditRate 
             rateObj={rate} 
             key={idx} 
-            setFormData={setFormData}
+            formData={formData} setFormData={setFormData}
             originalRateObj={originalData.current.rates[idx]}
+            originalFormData={originalData.current}
             errorMsgs={rateErrMsgs[idx]}
             formType={formType}
           />)
@@ -389,7 +419,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         {formData.rates.length === 0 && (
           <div style={{margin: '8px 0 0'}}>No rates to this lot currently!</div>
         )}
-        <button id='lot-modal-add-rate' type='button'>Add a Rate</button>
+        <button id='lot-modal-add-rate' type='button' onClick={addRate}>Add a Rate</button>
       </Collapsible>
 
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>

@@ -1,9 +1,9 @@
 import { DisableableInput } from '.'
 import TimeSelector from './TimeSelector';
 
-function EditRate({ rateObj, setFormData, originalRateObj, errorMsgs, formType }){
+function EditRate({ rateObj, formData, setFormData, originalRateObj, originalFormData, errorMsgs, formType }){
   const rateNumber = rateObj.rateNumber
-  
+
   const onDisable = (name) => {
     if(rateObj[name] == null){
       setFormData(prev => {
@@ -64,9 +64,26 @@ function EditRate({ rateObj, setFormData, originalRateObj, errorMsgs, formType }
   ]
 
   const isModified = (field) =>{
-    if(formType === 'add') return false;
+    if(formType === 'add' || !rateObj || !originalRateObj) return false;
     return rateObj[field] !== originalRateObj[field];
   };
+
+  const isRateModified = () => {
+    const fields = [
+      'daily', 'event_parking_price', 'hourly', 'lot_end_time', 'lot_start_time',
+      'max_hours', 'monthly', 'permit_type', 'semesterly_fall_spring', 
+      'semesterly_summer', 'sheet_number', 'sheet_price', 'yearly'
+    ];
+    const fieldModified = fields.some(field => isModified(field));
+    
+    const isNewRate = !Object.values(
+        originalFormData.rates.map(r => r.rateNumber)
+      )
+      .includes(rateObj.rateNumber);
+    
+    return fieldModified || isNewRate;
+  };
+
   return (<>
     {/* 
     - means started
@@ -89,14 +106,16 @@ function EditRate({ rateObj, setFormData, originalRateObj, errorMsgs, formType }
     */}
     {rateNumber !== 0 && <div name='spacer' style={{height: '15px'}}/>}
     <div className='hbox lot-modal-rate-header'>
-      <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
+      <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}${isRateModified() ? '*' : ''}`}</h2>
       <span className='flex'/>
       <img src='/images/x.png' alt='close' 
         style={{height: '20px', alignSelf: 'center', filter: 'invert(1)'}}
       />
     </div>
 
-    <div><label htmlFor={`permit-select-${rateNumber}`}>Permit Type</label></div>
+    <div>
+      <label htmlFor={`permit-select-${rateNumber}`}>Permit Type{isModified('permit_type') && '*'}</label>
+    </div>
     <select 
       id={`permit-select-${rateNumber}`} style={{width: '48%'}} 
       value={fromTitleCase(rateObj.permit_type)}
