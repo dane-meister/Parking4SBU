@@ -170,6 +170,7 @@
     font-size: 16px;
     margin-top: 10px;
     width: 100%;
+    cursor: pointer;
 }
 .edit-lot-btn:hover{
     background-color: var(--btn-color-hover);
@@ -187,4 +188,31 @@
     border-radius: 4px;
     margin-top: 15px;
     width: 140px;
+}
+
+#lot-modal-add-rate:hover, .add-lot-button:hover, .location-collapsible button:hover{
+    background-color: #b31b20;
+}
+
+.location-collapsible button{
+    background-color: var(--red);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+#lot-modal-rate-close{
+    filter: invert(1);
+}
+#lot-modal-rate-close:hover{
+    filter: invert(.8);
+}
+
+.lot-edit-h2 .hover-black{
+    filter: invert(1);
+}
+.lot-edit-h2 .hover-black:hover{
+    filter: invert(.8);
 }

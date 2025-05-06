@@ -1,26 +1,35 @@
-import { useRef } from 'react';
 import { DisableableInput } from '.'
 import TimeSelector from './TimeSelector';
 
-function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj, errorMsgs }){
+function EditRate({ 
+  rateObj, 
+  formData, setFormData, 
+  originalRateObj, originalFormData, 
+  errorMsgs, 
+  formType,
+  isModified, isRateModified
+}){
+  const rateNumber = rateObj.rateNumber
+  
   const onDisable = (name) => {
-    if(rateObj[name] == null){
-      setFormData(prev => {
-        const newRate = prev.rates[rateNumber];
-        newRate[name] = '';
+    setFormData(prev => {
+      const newRates = { ...prev.rates };
+      newRates[rateNumber] = { ...newRates[rateNumber] };
+      newRates[rateNumber][name] = prev.rates[rateNumber][name] === null ? '' : null;
+      
 
-        const newRates = prev.rates
-        newRates[rateNumber] = newRate;
-        return { ...prev,  newRates};
-      }); 
-    }else{
-      setFormData(prev => {
-        prev.rates[rateNumber][name] = null;
-
-        return { ...prev };
-      }); 
-    }
+      return { ...prev, rates: newRates};
+    });
   };
+
+  const onChange = (e) => {
+    setFormData(prev => {
+      const newRates = prev.rates;
+      const newRate = newRates[rateNumber];
+      newRate[e.target.name] = e.target.value;
+      return { ...prev, rates: newRates };
+    });
+  }
 
   const setPermitType = (e) => {
     setFormData(prev => {
@@ -52,9 +61,16 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj,
     'faculty', 'faculty-life-sciences-1', 'faculty-life-sciences-2', 'faculty-garage-gated-1', 'faculty-garage-gated-2', 
     'premium', 'resident-zone1', 'resident-zone2', 'resident-zone3', 'resident-zone4', 'resident-zone5', 'resident-zone6',
     'core', 'perimeter', 'satellite', 'visitor'
-  ]
+  ];
 
-  const isModified = (field) => rateObj[field] !== originalRateObj[field];
+  const removeRate = () => {
+    setFormData(prev => {
+      const newRates = formData.rates;
+      delete newRates[rateNumber];
+
+      return { ...prev, rates: newRates };
+    });
+  };
 
   return (<>
     {/* 
@@ -76,16 +92,20 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj,
     (-) sheet_number: null
     (-) sheet_price: null
     */}
-    {rateNumber !== 0 && <div name='spacer' style={{height: '15px'}}/>}
+    {rateNumber !== Object.values(formData.rates)[0].rateNumber && <div name='spacer' style={{height: '15px'}}/>}
     <div className='hbox lot-modal-rate-header'>
-      <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}`}</h2>
+      <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}${isRateModified() ? '*' : ''}`}</h2>
       <span className='flex'/>
       <img src='/images/x.png' alt='close' 
-        style={{height: '20px', alignSelf: 'center', filter: 'invert(1)'}}
+        id='lot-modal-rate-close'
+        style={{height: '20px', alignSelf: 'center', cursor: 'pointer'}}
+        onClick={removeRate}
       />
     </div>
 
-    <div><label htmlFor={`permit-select-${rateNumber}`}>Permit Type</label></div>
+    <div>
+      <label htmlFor={`permit-select-${rateNumber}`}>Permit Type{isModified('permit_type') && '*'}</label>
+    </div>
     <select 
       id={`permit-select-${rateNumber}`} style={{width: '48%'}} 
       value={fromTitleCase(rateObj.permit_type)}
@@ -104,6 +124,7 @@ function EditRate({ rateObj, rateNumber, onChange, setFormData, originalRateObj,
     <div className='hbox'>
 
     </div>
+    
     {/* hourly rate */}
     <div className='hbox'>  
       <div style={{width: '48%'}}>

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const DisableableInput = (props) => {
   const { value, onChange, inputId, inputName, isMoney, isInt, onDisable, isModified, label } = props;
-  const [disabled, setDisabled] = useState(props.disabled ?? false)
+  const [disabled, setDisabled] = useState(props.disabled ?? false);
 
   const onKeyDown = (e) => {
     const allowedKeys = [
