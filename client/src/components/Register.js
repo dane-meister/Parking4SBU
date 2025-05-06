@@ -418,8 +418,8 @@ export default function RegisterPage() {
             <div className="modal-content">
               <h3>Registration received!</h3>
               <p>
-                Please wait while our admin reviews your account.<br />
-                You’ll also get an email confirmation shortly.
+                Please wait while our admin reviews your account.
+                You will also get an email confirmation shortly.
               </p>
               <p>You will be redirected after closing...</p>
               <button onClick={() => setAwaitingApproval(false)}>OK</button>
