@@ -8,6 +8,18 @@ const { Op } = require('sequelize');
 const salt_rounds = 12;
 const authenticate = require("../middleware/authMiddleware"); // Middleware to authenticate users
 
+//to sign one-time tokens and email them
+const nodemailer = require('nodemailer');
+const mailer = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: +process.env.SMTP_PORT,
+    secure: false,  //port 587
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    }
+});
+
 // Route to get the currently authenticated user's details
 router.get("/me", authenticate, async (req, res) => {
     try {
@@ -80,12 +92,24 @@ router.post("/register", async (req, res) => {
             country,
         });
 
+        await mailer.sendMail({
+            to: new_user.email,
+            from: process.env.SMTP_FROM,
+            replyTo: process.env.SMTP_FROM,
+            subject: "Registration received – pending admin approval",
+            text:
+                `Hi ${new_user.first_name},\n\n` +
+                `Thanks for registering with SBU Parking! Our admin team will review your account shortly.\n` +
+                `You’ll receive another email once it’s approved.\n\n` +
+                `– The SBU Parking Team06`
+        });
+
         // Respond with the created user, omitting the password
         const safeUser = { ...new_user.toJSON() };
         delete safeUser.password;
 
         res.status(201).json({
-            message: "User registered successfully",
+            message: "User registered successfully, awaiting admin approval.",
             user: new_user,
         });
 
@@ -109,6 +133,17 @@ router.post("/login", async (req, res) => {
         const is_valid = await bcrypt.compare(password, user.password);
         if (!is_valid) {
             return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        //ensure user has been approved:
+        if (!user.isApproved) {
+            return res.status(403).json({ message: "Account pending admin approval" });
+        }
+
+        //ensure user has clicked on magic link
+        if (!user.isVerified) {
+            console.log("verified: ", user.isVerified);
+            return res.status(403).json({ message: "Please verify your email via the link we sent" });
         }
 
         // Generate a JWT token with user details
@@ -347,6 +382,8 @@ router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
     }
 });
 
+
+
 router.put("/edit-profile/:userId", authenticate, async (req, res) => {
     try {
         const { userId } = req.params;
@@ -436,5 +473,36 @@ router.post("/feedback/add", authenticate, async (req, res) => {
         res.status(500).json({ message: "Error submitting feedback", error: error.message });
     }
 });
+
+
+
+router.get('/verify', async (req, res) => {
+    console.log("in verify");
+    const { token } = req.query;
+    try {
+    const { user_id, type } = jwt.verify(token, process.env.JWT_SECRET);
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('VERIFY payload:', payload);
+
+      if (type !== 'email-verify') {
+        console.log("error");
+        throw new Error();
+    }
+  
+      const user = await User.findByPk(user_id);
+      console.log('VERIFY user before:', user.toJSON());
+
+      user.isVerified = true;
+      await user.save();
+
+      console.log('VERIFY user after:', (await user.reload()).toJSON());
+  
+      return res.json({ message: 'Email verified! Please log in.' });
+    } catch {
+      return res.status(400).json({ message: 'Invalid or expired link' });
+    }
+  });
+  
 
 module.exports = router;

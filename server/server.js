@@ -91,7 +91,8 @@ app.get("/api/wayfinding/:buildingId", async (req, res) => {
   }
 });
   
-sequelize.authenticate()
+sequelize
+.authenticate()
   .then(() => {
     console.log("Database connected successfully.");
 
