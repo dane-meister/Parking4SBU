@@ -159,3 +159,17 @@
     max-width: 90%;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
+
+  .field-error {
+    color: #e53935;
+    font-size: 0.85em;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .auth-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  

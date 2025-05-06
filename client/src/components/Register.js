@@ -10,7 +10,11 @@ export default function RegisterPage() {
   const [step, setStep] = useState(1); // Tracks the current step in the multi-step form
   const [error, setError] = useState(''); // Stores error messages
   const [passwordMatchMessage, setPasswordMatchMessage] = useState(''); // Message for password match validation
-  const [dlNumberError, setDlNumberError] = useState(''); // Placeholder for driver's license number validation errors
+  const [isRegistering, setIsRegistering] = useState(false); // Flag to indicate if the user is registering (clicked button)
+  const [isRegistered, setIsRegistered] = useState(false); // Flag to indicate if the user is registered
+
+  const [errors, setErrors] = useState({});
+
 
   // Form state to store user input
   const [form, setForm] = useState({
@@ -44,8 +48,14 @@ export default function RegisterPage() {
   const countries = ["USA", "Canada", "Mexico", "UK", "Other"];
 
   // Handles changes to form inputs and updates the state
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  
+    // Clear field-specific error
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   // Dynamically checks if passwords match and updates the message
@@ -62,44 +72,48 @@ export default function RegisterPage() {
   }, [form.password, form.confirm_password]);
 
   // Validates the current step of the form
-  const isStepValid = () => {
+  const validateStep = () => {
+    const newErrors = {};
+  
     if (step === 1) {
-      return (
-        form.first_name &&
-        form.last_name &&
-        form.email &&
-        form.password &&
-        form.confirm_password &&
-        form.phone_number &&
-        form.password === form.confirm_password
-      );
+      if (!form.first_name) newErrors.first_name = "First name is required";
+      if (!form.last_name) newErrors.last_name = "Last name is required";
+      if (!form.email) newErrors.email = "Email is required";
+      if (!form.password) newErrors.password = "Password is required";
+      if (!form.confirm_password) newErrors.confirm_password = "Confirm your password";
+      else if (form.password !== form.confirm_password) {
+        newErrors.confirm_password = "Passwords do not match";
+      }
+      if (!form.phone_number) newErrors.phone_number = "Phone number is required";
     }
+  
     if (step === 2) {
-      if (!form.user_type) return false;
-      if (form.user_type !== 'visitor' && !form.permit_type) return false;
-      return true;
+      if (!form.user_type) newErrors.user_type = "Select a user type";
+      if (!form.permit_type) {
+        newErrors.permit_type = "Select a permit type";
+      }
     }
+  
     if (step === 3) {
-      return (
-        form.driver_license_number &&
-        form.dl_state &&
-        form.address_line &&
-        form.city &&
-        form.state_region &&
-        form.postal_zip_code &&
-        form.country
-      );
+      if (!form.driver_license_number) newErrors.driver_license_number = "Driver's license number is required";
+      if (!form.dl_state) newErrors.dl_state = "Select a license state";
+      if (!form.address_line) newErrors.address_line = "Address is required";
+      if (!form.city) newErrors.city = "City is required";
+      if (!form.state_region) newErrors.state_region = "State/Region is required";
+      if (!form.postal_zip_code) newErrors.postal_zip_code = "Zip code is required";
+      if (!form.country) newErrors.country = "Country is required";
     }
-    return false;
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
+  
 
   // Moves to the next step if the current step is valid
   const next = () => {
-    if (!isStepValid()) {
-      alert("Please complete all required fields before proceeding.");
-      return;
+    if (validateStep()) {
+      setStep(prev => prev + 1);
     }
-    setStep(prev => prev + 1);
   };
 
   // Moves back to the previous step
@@ -108,22 +122,34 @@ export default function RegisterPage() {
   };
 
   const [awaitingApproval, setAwaitingApproval] = useState(false);
+  useEffect(() => {
+    if (isRegistered && !awaitingApproval) {
+      const timer = setTimeout(() => {
+        navigate('/login');
+      }, 2000); // 5 seconds
+  
+      return () => clearTimeout(timer);
+    }
+  }, [isRegistered, navigate, awaitingApproval]);
 
   // Handles the registration form submission
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (!validateStep()) return
     if (form.password !== form.confirm_password) {
       setError("Passwords do not match.");
       return;
     }
     try {
+      setIsRegistering(true); // Set the registration flag to true
       // Sends a POST request to the registration endpoint
       const response = await axios.post(`${HOST}/api/auth/register`, form, {
         withCredentials: true
       });
-      // navigate('/login'); // Redirects to the login page upon successful registration
-      setAwaitingApproval(true);
+      setAwaitingApproval(true); // Set the awaiting approval flag to true
+      setIsRegistered(true); // Set the registration flag to true
     } catch (err) {
+      setIsRegistering(false); // Reset the registration flag on error
       setError(err.response?.data?.message || "Registration failed.");
       console.error(err);
     }
@@ -149,6 +175,7 @@ export default function RegisterPage() {
                     required
                     autoComplete='given-name'
                   />
+                  {errors.first_name && <span className="field-error">{errors.first_name}</span>}
                 </div>
                 <div>
                   <label htmlFor="last_name">Last Name</label>
@@ -160,6 +187,7 @@ export default function RegisterPage() {
                     required
                     autoComplete='family-name'
                   />
+                  {errors.last_name && <span className="field-error">{errors.last_name}</span>}
                 </div>
               </div>
 
@@ -173,6 +201,7 @@ export default function RegisterPage() {
                 required
                 autoComplete='email'
               />
+              {errors.email && <span className="field-error">{errors.email}</span>}
 
               <label htmlFor="password" style={{ marginTop: '16px' }}>Password</label>
               <input
@@ -183,6 +212,8 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 required
               />
+              {errors.password && <span className="field-error">{errors.password}</span>}
+
 
               <label htmlFor="confirm_password" style={{ marginTop: '16px' }}>Confirm Password</label>
               <input
@@ -193,6 +224,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 required
               />
+              {errors.confirm_password && <span className="field-error">{errors.confirm_password}</span>}
               {passwordMatchMessage && (
                 <span
                   className={`password-match ${passwordMatchMessage === "Passwords match" ? "valid" : "invalid"}`}
@@ -211,6 +243,8 @@ export default function RegisterPage() {
                 required
                 autoComplete='tel'
               />
+              {errors.phone_number && <span className="field-error">{errors.phone_number}</span>}
+
             </>
           )}
 
@@ -231,6 +265,7 @@ export default function RegisterPage() {
                 <option value="commuter">Commuter</option>
                 <option value="visitor">Visitor</option>
               </select>
+              {errors.user_type && <span className="field-error">{errors.user_type}</span>}
 
               {form.user_type && (
                 <>
@@ -276,6 +311,9 @@ export default function RegisterPage() {
                       </>
                     )}
                   </select>
+                  {errors.permit_type && (
+                    <span className="field-error">{errors.permit_type}</span>
+                  )}
                 </>
               )}
             </>
@@ -290,8 +328,11 @@ export default function RegisterPage() {
                 name="driver_license_number"
                 value={form.driver_license_number}
                 onChange={handleChange}
-                required
               />
+              {errors.driver_license_number && (
+                <span className="field-error">{errors.driver_license_number}</span>
+              )}
+
 
               <label htmlFor="dl_state" style={{ marginTop: '16px' }}>Driver License State</label>
               <select
@@ -299,13 +340,13 @@ export default function RegisterPage() {
                 name="dl_state"
                 value={form.dl_state}
                 onChange={handleChange}
-                required
               >
                 <option value="">Select State</option>
                 {us_states.map((state) => (
                   <option key={state} value={state}>{state}</option>
                 ))}
               </select>
+              {errors.dl_state && <span className="field-error">{errors.dl_state}</span>}
 
               <label htmlFor="address_line">Address</label>
               <input
@@ -313,8 +354,8 @@ export default function RegisterPage() {
                 name="address_line"
                 value={form.address_line}
                 onChange={handleChange}
-                required
               />
+              {errors.address_line && <span className="field-error">{errors.address_line}</span>}
 
               <div className="form-row" style={{ marginTop: '16px' }}>
                 <div>
@@ -324,8 +365,8 @@ export default function RegisterPage() {
                     name="city"
                     value={form.city}
                     onChange={handleChange}
-                    required
                   />
+                  {errors.city && <span className="field-error">{errors.city}</span>}
                 </div>
                 <div>
                   <label htmlFor="state_region">State/Region</label>
@@ -334,8 +375,8 @@ export default function RegisterPage() {
                     name="state_region"
                     value={form.state_region}
                     onChange={handleChange}
-                    required
                   />
+                  {errors.state_region && <span className="field-error">{errors.state_region}</span>}
                 </div>
               </div>
 
@@ -347,8 +388,8 @@ export default function RegisterPage() {
                     name="postal_zip_code"
                     value={form.postal_zip_code}
                     onChange={handleChange}
-                    required
                   />
+                  {errors.postal_zip_code && <span className="field-error">{errors.postal_zip_code}</span>}
                 </div>
                 <div>
                   <label htmlFor="country">Country</label>
@@ -357,9 +398,9 @@ export default function RegisterPage() {
                     name="country"
                     value={form.country}
                     onChange={handleChange}
-                    required
                     autoComplete='country'
                   />
+                  {errors.postal_zip_code && <span className="field-error">{errors.postal_zip_code}</span>}
                 </div>
               </div>
             </>
@@ -368,7 +409,7 @@ export default function RegisterPage() {
           <div className="auth-buttons">
             {step > 1 && <button type="button" className="auth-button secondary" onClick={back}>Back</button>}
             {step < 3 && <button type="button" className="auth-button" onClick={next}>Next</button>}
-            {step === 3 && <button type="submit" className="auth-button">Register</button>}
+            {step === 3 && <button type="submit" className="auth-button" disabled={isRegistering}>Register</button>}
           </div>
         </form>
 
@@ -380,6 +421,7 @@ export default function RegisterPage() {
                 Please wait while our admin reviews your account.<br />
                 You’ll also get an email confirmation shortly.
               </p>
+              <p>You will be redirected after closing...</p>
               <button onClick={() => setAwaitingApproval(false)}>OK</button>
             </div>
           </div>
