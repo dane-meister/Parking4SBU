@@ -13,6 +13,8 @@
     "populate:reservations": "node populate_db/populateReservations.js",
     "finalize": "node populate_db/finalize.js",
     "populate": "run-s populate:buildings populate:lots populate:rates populate:users populate:vehicles populate:reservations finalize",
+    "generate-schema": "node generateSchema.js",
+    "generate-schema-populate": "run-s generate-schema populate",
     "sync": "node sync.js",
     "sync-populate": "run-s sync populate"
   },
@@ -33,6 +35,7 @@
     "fs": "^0.0.1-security",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.1",
     "nodemon": "^3.1.9",
     "pg": "^8.14.0",
     "pg-hstore": "^2.3.4",

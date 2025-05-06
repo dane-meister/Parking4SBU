@@ -162,7 +162,7 @@
   height: auto;
 }
 
-.capacity-img, .rates-img, .location-img, img.rate {
+.capacity-img, .capacity-img, .rates-img, .location-img, img.rate {
   height: 20px;
 }
 
@@ -220,18 +220,26 @@
 .ticket-popup-form {
   background: white;
   border-radius: 10px;
-  padding: 30px;
   max-width: 600px;
-  width: 100%;
+  width: 550px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  overflow-y: auto;
+  overflow-y: hidden;
+  height: min(775px, 90vh);
   max-height: 90vh;
 }
 
 .ticket-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  /* gap: 16px; */
+  /* overflow-y: auto; */
+}
+
+.ticket-form h2 {
+  margin: 0;
+  padding: 20px 30px 15px;
+  background-color: var(--red);
+  color: #fff;
 }
 
 .ticket-form label {
@@ -249,6 +257,9 @@
   background-color: #fff;
   width: 100%;
   resize: vertical;
+  font-family: sans-serif;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
 
 .ticket-form textarea {
@@ -259,7 +270,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .capacity-analysis-container {
@@ -316,4 +327,8 @@
   top: 0;
   background-color: #BEBEBE;
   z-index: 2;
+}
+
+.ticket-form section {
+  padding: 15px 30px 20px;
 }

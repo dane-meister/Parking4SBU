@@ -1,10 +1,24 @@
 const express = require("express");
 const { User, Feedback, Reservation, ParkingLot } = require("../models");
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { Op } = require('sequelize');
 
 const authenticate = require("../middleware/authMiddleware");
 const requireAdmin = require("../middleware/adminMiddleware");
+
+
+//to sign one-time tokens and email them
+const nodemailer = require('nodemailer');
+const mailer = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: +process.env.SMTP_PORT,
+    secure: false,  //port 587
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    }
+});
 
 // Get all users
 router.get("/users", authenticate, requireAdmin, async (req, res) => {
@@ -19,39 +33,87 @@ router.get("/users", authenticate, requireAdmin, async (req, res) => {
   }
 });
 
-// Approve a user account
-router.put("/users/:user_id/approve", authenticate, requireAdmin, async (req, res) => {
+// Approve a user account (for admin use)
+router.put("/users/:user_id/approve", authenticate, async (req, res) => {
+  console.log("user: ", req.user.user_id, " approved");
   try {
-    const { user_id } = req.params;
+      if (req.user.user_type !== "admin") {
+          return res.status(403).json({ message: "Forbidden" });
+      }
 
-    const user = await User.findByPk(user_id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+      const { user_id } = req.params;
 
-    user.isApproved = true;
-    await user.save();
+      const user = await User.findByPk(user_id);
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
 
-    res.json({ message: "User approved successfully" });
+      user.isApproved = true;
+      await user.save();
+
+      //send magic-link
+      const token = jwt.sign(
+          { user_id, type: 'email-verify' },
+          process.env.JWT_SECRET,
+          { expiresIn: '10m' }
+      );
+
+      const link = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
+      await mailer.sendMail({
+          to: user.email,
+          from: process.env.SMTP_FROM,
+          subject: 'Your account is approved – activate now',
+          text: `Hi ${user.first_name},\n\n` +
+              `Your account has been approved! Click within 10 minutes to activate:\n\n${link}`
+      });
+      res.json({ message: 'User approved & verification email sent' });
+
   } catch (error) {
-    res.status(500).json({ message: "Error approving user", error: error.message });
+      res.status(500).json({ message: "Error approving user", error: error.message });
   }
 });
 
-// Delete a user account
-router.delete("/user/:user_id/remove", authenticate, requireAdmin, async (req, res) => {
+// Delete a user account (for admin use)
+router.delete("/user/:user_id/remove", authenticate, async (req, res) => {
   try {
-    const { user_id } = req.params;
+      if (req.user.user_type !== "admin") {
+          return res.status(403).json({ message: "Forbidden" });
+      }
 
-    const deleted = await User.destroy({ where: { user_id } });
+      const { user_id } = req.params;
 
-    if (deleted === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
+      // const deleted = await User.destroy({ where: { user_id } });
 
-    res.json({ message: "User deleted successfully" });
+      // if (deleted === 0) {
+      //     return res.status(404).json({ message: "User not found" });
+      // }
+
+      //load user to check their approval state
+      const user = await User.findByPk(user_id);
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      //if still pending approval, so deletion means user is denied.
+      if (!user.isApproved) {
+          await mailer.sendMail({
+              to: user.email,
+              from: process.env.SMTP_FROM,
+              subject: 'Registration Denied',
+              text:
+                  `Hi ${user.first_name},\n\n` +
+                  `We’re sorry, but your registration request has been denied by our admin.\n\n` +
+                  `If you believe this was a mistake, please contact us.\n\n` +
+                  `– The SBU Parking Team-06`
+          });
+      }
+
+      //delete user
+      await user.destroy();
+
+      res.json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting user", error: error.message });
+      res.status(500).json({ message: "Error deleting user", error: error.message });
   }
 });
 

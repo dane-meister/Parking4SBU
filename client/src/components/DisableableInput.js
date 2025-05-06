@@ -44,7 +44,7 @@ const DisableableInput = (props) => {
         onKeyDown={onKeyDown}
         className={isModified ? 'field-modified' : ''}
       />
-      <button onClick={() => {setDisabled(!disabled); onDisable()}}>
+      <button type="button" onClick={() => {setDisabled(!disabled); onDisable()}}>
         <img src='/images/disable.png' alt='disable' />
       </button>
     </div>

@@ -7,14 +7,14 @@ import '../stylesheets/Search.css'; // Import CSS file for custom styling
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 const AutocompleteSearch = (props) => {
-  const { 
-    value, setValue, 
-    searchType, 
-    buildings, 
-    parkingLots, 
-    selectedBuilding, setSelectedBuilding, 
-    setLotResults, 
-    setBaseLots, 
+  const {
+    value, setValue,
+    searchType,
+    buildings,
+    parkingLots,
+    selectedBuilding, setSelectedBuilding,
+    setLotResults,
+    setBaseLots,
     setSelectedLot,
     setSort,
   } = props
@@ -114,7 +114,7 @@ const AutocompleteSearch = (props) => {
         .filter(bldg_name =>
           regexes.every(regex => regex.test(bldg_name))
         );
-      console.log("suggestions:",suggestions)
+      console.log("suggestions:", suggestions)
     } else { // For parking lots
       // Filter lot names based on regex match
       suggestions = lot_names.filter(lot =>
