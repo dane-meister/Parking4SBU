@@ -27,11 +27,12 @@ export const AuthProvider = ({ children }) => {
             });
 
             // Verify the login and fetch user data
-            const success = await checkAuth();
-            return success; // Return true if login was successful
+            const user = await checkAuth();
+            return { success: true, user }; // Return true if login was successful
         } catch (err) {
-            console.error("Login error:", err.response?.data || err.message);
-            return null; // Return null if login failed
+            const message = err.response?.data?.message || "Login failed"; // Extract error message from response
+            console.error("Login error:", message|| err.message);
+            return { success: false, message }; // Return message if login failed
         }
     };
 
@@ -72,7 +73,7 @@ export const AuthProvider = ({ children }) => {
 
         const interval = setInterval(() => {
             checkAuth();
-        }, 5 * 60 * 1000); // every 5 minutes
+        }, 30 * 1000); // every 5 minutes
     
         return () => clearInterval(interval);
     }, []);

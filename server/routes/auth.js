@@ -8,6 +8,18 @@ const { Op } = require('sequelize');
 const salt_rounds = 12;
 const authenticate = require("../middleware/authMiddleware"); // Middleware to authenticate users
 
+//to sign one-time tokens and email them
+const nodemailer = require('nodemailer');
+const mailer = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: +process.env.SMTP_PORT,
+    secure: false,  //port 587
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    }
+});
+
 // Route to get the currently authenticated user's details
 router.get("/me", authenticate, async (req, res) => {
     try {
@@ -80,12 +92,24 @@ router.post("/register", async (req, res) => {
             country,
         });
 
+        await mailer.sendMail({
+            to: new_user.email,
+            from: process.env.SMTP_FROM,
+            replyTo: process.env.SMTP_FROM,
+            subject: "Registration received – pending admin approval",
+            text:
+                `Hi ${new_user.first_name},\n\n` +
+                `Thanks for registering with SBU Parking! Our admin team will review your account shortly.\n` +
+                `You’ll receive another email once it’s approved.\n\n` +
+                `– The SBU Parking Team06`
+        });
+
         // Respond with the created user, omitting the password
         const safeUser = { ...new_user.toJSON() };
         delete safeUser.password;
 
         res.status(201).json({
-            message: "User registered successfully",
+            message: "User registered successfully, awaiting admin approval.",
             user: new_user,
         });
 
@@ -109,6 +133,17 @@ router.post("/login", async (req, res) => {
         const is_valid = await bcrypt.compare(password, user.password);
         if (!is_valid) {
             return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        //ensure user has been approved:
+        if (!user.isApproved) {
+            return res.status(403).json({ message: "Account pending admin approval" });
+        }
+
+        //ensure user has clicked on magic link
+        if (!user.isVerified) {
+            console.log("verified: ", user.isVerified);
+            return res.status(403).json({ message: "Please verify your email via the link we sent" });
         }
 
         // Generate a JWT token with user details
@@ -347,49 +382,7 @@ router.delete("/delete-vehicle/:vehicleId", authenticate, async (req, res) => {
     }
 });
 
-// Approve a user account (for admin use)
-router.put("/users/:user_id/approve", authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== "admin") {
-            return res.status(403).json({ message: "Forbidden" });
-        }
 
-        const { user_id } = req.params;
-
-        const user = await User.findByPk(user_id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        user.isApproved = true;
-        await user.save();
-
-        res.json({ message: "User approved successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error approving user", error: error.message });
-    }
-});
-
-// Delete a user account (for admin use)
-router.delete("/user/:user_id/remove", authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== "admin") {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
-        const { user_id } = req.params;
-
-        const deleted = await User.destroy({ where: { user_id } });
-
-        if (deleted === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json({ message: "User deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error deleting user", error: error.message });
-    }
-});
 
 router.put("/edit-profile/:userId", authenticate, async (req, res) => {
     try {
@@ -461,28 +454,6 @@ router.put("/edit-profile/:userId", authenticate, async (req, res) => {
     }
 });
 
-router.put("/users/:userId/edit", authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== "admin") {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
-        const user = await User.findByPk(req.params.userId);
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        const allowedUpdates = ['email', 'user_type', 'permit_type'];
-        allowedUpdates.forEach(field => {
-            if (req.body[field]) user[field] = req.body[field];
-        });
-
-        await user.save();
-        res.json({ message: "User updated successfully", user });
-    } catch (err) {
-        console.error("Error updating user:", err);
-        res.status(500).json({ message: "Update failed", error: err.message });
-    }
-});
-
 router.post("/feedback/add", authenticate, async (req, res) => {
     try {
         const { feedback_text, rating } = req.body;
@@ -503,106 +474,35 @@ router.post("/feedback/add", authenticate, async (req, res) => {
     }
 });
 
-router.get("/admin/feedback", authenticate, async (req, res) => {
+
+
+router.get('/verify', async (req, res) => {
+    console.log("in verify");
+    const { token } = req.query;
     try {
-        if (req.user.user_type !== "admin") {
-            return res.status(403).json({ message: "Forbidden" });
-        }
+    const { user_id, type } = jwt.verify(token, process.env.JWT_SECRET);
 
-        const feedbacks = await Feedback.findAll({
-            include: [{ model: User, attributes: ["first_name", "last_name", "email"] }]
-        });
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('VERIFY payload:', payload);
 
-        res.json(feedbacks);
-    } catch (error) {
-        res.status(500).json({ message: "Error retrieving feedback", error: error.message });
+      if (type !== 'email-verify') {
+        console.log("error");
+        throw new Error();
     }
-});
+  
+      const user = await User.findByPk(user_id);
+      console.log('VERIFY user before:', user.toJSON());
 
-router.put("/admin/feedback/:feedback_id/respond", authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== "admin") {
-            return res.status(403).json({ message: "Forbidden" });
-        }
+      user.isVerified = true;
+      await user.save();
 
-        const { feedback_id } = req.params;
-        const { response_text } = req.body;
-
-        const feedback = await Feedback.findByPk(feedback_id);
-        if (!feedback) {
-            return res.status(404).json({ message: "Feedback not found" });
-        }
-
-        feedback.admin_response = response_text;
-        await feedback.save();
-
-        res.status(200).json({ message: "Response saved", feedback });
-    } catch (err) {
-        res.status(500).json({ message: "Error saving response", error: err.message });
+      console.log('VERIFY user after:', (await user.reload()).toJSON());
+  
+      return res.json({ message: 'Email verified! Please log in.' });
+    } catch {
+      return res.status(400).json({ message: 'Invalid or expired link' });
     }
-});
-
-router.get('/admin/event-reservations', authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== 'admin') {
-            return res.status(403).json({ message: 'Forbidden' });
-        }
-
-        const events = await Reservation.findAll({
-            where: {
-                spot_count: {
-                    [Op.gt]: 1
-                },
-            }
-        });
-        console.log("Fetched event reservations:", events);
-        res.json(events);
-    } catch (err) {
-        console.error("Error fetching event reservations:", err);
-        res.status(500).json({ message: "Internal server error" });
-    }
-});
-
-router.put('/admin/event-reservations/:id/approve', authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== 'admin') {
-            return res.status(403).json({ message: 'Forbidden' });
-        }
-
-        const reservation = await Reservation.findByPk(req.params.id);
-        if (!reservation || reservation.spot_count <= 1 || reservation.status !== 'pending') {
-            return res.status(404).json({ message: 'Reservation not found or not valid for approval' });
-        }
-
-        reservation.status = 'confirmed';
-        await reservation.save();
-
-        res.json({ message: 'Reservation approved', reservation });
-    } catch (err) {
-        console.error("Approval failed:", err);
-        res.status(500).json({ message: "Failed to approve reservation", error: err.message });
-    }
-});
-
-router.put('/admin/event-reservations/:id/reject', authenticate, async (req, res) => {
-    try {
-        if (req.user.user_type !== 'admin') {
-            return res.status(403).json({ message: 'Forbidden' });
-        }
-
-        const reservation = await Reservation.findByPk(req.params.id);
-        if (!reservation || reservation.spot_count <= 1 || reservation.status !== 'pending') {
-            return res.status(404).json({ message: 'Reservation not found or not valid for rejection' });
-        }
-
-        reservation.status = 'cancelled';
-        await reservation.save();
-
-        res.json({ message: 'Reservation rejected', reservation });
-    } catch (err) {
-        console.error("Rejection failed:", err);
-        res.status(500).json({ message: "Failed to reject reservation", error: err.message });
-    }
-});
+  });
+  
 
 module.exports = router;

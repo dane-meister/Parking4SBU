@@ -12,14 +12,15 @@ const Map = ({ selectedLot, selectedBuilding }) => {
   useEffect(() => {
     //center of the campus
     const campusCenter = [40.911117, -73.122142];
+    
 
     //bounds for the campus area 
     const campusBounds = [
-      [40.889973, -73.147639], //s-w corner
-      [40.927587, -73.095441]  //n-e corner
+      [40.889973, -73.147639], // s-w corner
+      [40.927587, -73.095441]  // n-e corner
     ];
 
-    //prevent initialising the map multiple times
+    // prevent initializing the map multiple times
     if (L.DomUtil.get('map')._leaflet_id) {
       return;
     }
@@ -33,10 +34,10 @@ const Map = ({ selectedLot, selectedBuilding }) => {
     });
 
     mapRef.current.on('zoomend', function () {
-      console.log("Current zoom level:", mapRef.current.getZoom());
+      // console.log("Current zoom level:", mapRef.current.getZoom());
     });
 
-    //add OpenStreetMap tile layer to the map
+    // add OpenStreetMap tile layer to the map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(mapRef.current);
@@ -45,8 +46,8 @@ const Map = ({ selectedLot, selectedBuilding }) => {
   const lotIcon = L.icon({
     iconUrl: '/images/lot-marker.png',  
     iconSize: [30, 30],     
-    iconAnchor: [12, 41],    //point of the icon which will correspond to marker's location
-    popupAnchor: [1, -34],   //point from which the popup should open relative to the iconAnchor
+    iconAnchor: [12, 41],    // point of the icon which will correspond to marker's location
+    popupAnchor: [1, -34],   // point from which the popup should open relative to the iconAnchor
   });
 
   const buildingIcon = L.icon({
@@ -56,24 +57,30 @@ const Map = ({ selectedLot, selectedBuilding }) => {
     popupAnchor: [1, -34]
   });
 
-
-
   useEffect(() => {
+    console.log("Selected lot:", selectedLot);
+    console.log("Selected building:", selectedBuilding);
+
     const campusCenter = [40.911117, -73.122142];
     const defaultZoom = 15;
-
-    //pan and zoom when lot is selected
+  
     if (selectedLot && selectedLot.location) {
-      const originalCoords = selectedLot.location.coordinates[0];
-      const coords = [originalCoords[1], originalCoords[0]];
-      console.log("Extracted coords (lat, lng):", coords);
+      const coordinates = selectedLot.location.coordinates;
+      console.log("Lot coordinates:", coordinates);
+      if (!coordinates || coordinates.length === 0) return;
+      let coord;
+      if (selectedLot.closest_point) {
+        console.log("Closest location point:", selectedLot.closest_point);
+        coord = [selectedLot.closest_point[0], selectedLot.closest_point[1]]; // lat, lng
+      } else if (coordinates.length > 0) {
+        coord = [coordinates[0][0], coordinates[0][1]]; // fallback
+      }
       if (mapRef.current) {
-        mapRef.current.setView(coords, 18, { animate: true });
-        // Remove previous marker if it exists
+        mapRef.current.setView(coord, 18, { animate: true });
         if (lotMarkerRef.current) {
           lotMarkerRef.current.remove();
         }
-        lotMarkerRef.current = L.marker(coords, { icon: lotIcon }).addTo(mapRef.current);
+        lotMarkerRef.current = L.marker(coord, { icon: lotIcon }).addTo(mapRef.current);
       }
     } else {
       if (mapRef.current) {
@@ -82,19 +89,16 @@ const Map = ({ selectedLot, selectedBuilding }) => {
           lotMarkerRef.current.remove();
           lotMarkerRef.current = null;
         }
-        console.log("Reset to campus center");
       }
     }
-  }, [selectedLot]);
-
+  }, [lotIcon, selectedBuilding, selectedLot]);
 
   useEffect(() => {
     if (selectedBuilding && selectedBuilding.location) {
       const coords = selectedBuilding.location.coordinates[0];
-      // const coords = [originalCoords[1], originalCoords[0]];
       console.log("Building marker at:", coords);
       if (mapRef.current) {
-        //pan the map if no lot is selected
+        // pan the map if no lot is selected
         if (!selectedLot) {
           mapRef.current.setView(coords, 18, { animate: true });
         }
@@ -103,18 +107,16 @@ const Map = ({ selectedLot, selectedBuilding }) => {
         }
         buildingMarkerRef.current = L.marker(coords, { icon: buildingIcon }).addTo(mapRef.current);
       }
-    } else {
-      console.log("no building selected");
-      if (buildingMarkerRef.current) {
+    } 
+    else if (buildingMarkerRef.current) {
         buildingMarkerRef.current.remove();
         buildingMarkerRef.current = null;
-      }
     }
-  }, [selectedBuilding, selectedLot]);
+  }, [buildingIcon, selectedBuilding, selectedLot]);
 
 
 
-  //render the map container
+  // render the map container
   return (
     <div id="map" style={{ height: '100%', width: '100%' }}></div>
   );

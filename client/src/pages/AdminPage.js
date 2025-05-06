@@ -2,31 +2,48 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
+import AdminTabSelector from '../components/AdminTabSelector';
+import AdminUsers from '../components/AdminUsers';
+import AdminLots from '../components/AdminLots';
+import AdminEvents from '../components/AdminEvents';
+import AdminFeedback from '../components/AdminFeedback';
+import AdminAnalysis from '../components/AdminAnalysis';
 import LotFormModal from '../components/LotFormModal';
 import Popup from '../components/Popup';
-// const HOST = "http://localhost:8000"
+import TicketForm from '../components/TicketForm';
+import FeedbackFormModal from '../components/FeedbackFormModal';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
-    console.log(process.env.REACT_APP_API_URL);
-    console.log(HOST);
-  
   const [adminOption, setAdminOption] = useState('users');
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [lots, setLots] = useState([]);
   const [editingLot, setEditingLot] = useState(null);
+  const [addingLot, setAddingLot] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [feedbackList, setFeedbackList] = useState([]);
   const [eventReservations, setEventReservations] = useState([]);
   const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
   const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
   const [activeFeedback, setActiveFeedback] = useState(null);
+  const [activeTicketUser, setActiveTicketUser] = useState(null);
+  const [newTicket, setNewTicket] = useState({
+    plate: '',
+    permit: '',
+    location: '',
+    space: '',
+    violation: '',
+    comments: '',
+    fine: '',
+    officer_id: ''
+  });
+  const [addLotForm, setAddLotForm] = useState(false);
 
   // Fetch users when 'Users' tab is selected
   useEffect(() => {
     if (adminOption === 'users') {
-      axios.get(`${HOST}/api/auth/users`, {
+      axios.get(`${HOST}/api/admin/users`, {
         withCredentials: true
       })
         .then(res => setUsers(res.data))
@@ -46,7 +63,7 @@ export default function Admin() {
         });
     }
     if (adminOption === 'events') {
-      axios.get(`${HOST}/api/auth/admin/event-reservations`, {
+      axios.get(`${HOST}/api/admin/event-reservations`, {
         withCredentials: true
       })
         .then(res => setEventReservations(res.data))
@@ -56,7 +73,7 @@ export default function Admin() {
         });
     }
     if (adminOption === 'feedback') {
-      axios.get(`${HOST}/api/auth/admin/feedback`, { withCredentials: true })
+      axios.get(`${HOST}/api/admin/feedback`, { withCredentials: true })
         .then(res => setFeedbackList(res.data))
         .catch(err => {
           console.error("Failed to fetch feedback", err);
@@ -68,14 +85,14 @@ export default function Admin() {
   // Handle user approval or rejection
   const handleApproval = (userId, approve) => {
     if (approve) {
-      axios.put(`${HOST}/api/auth/users/${userId}/approve`, {}, { withCredentials: true })
+      axios.put(`${HOST}/api/admin/users/${userId}/approve`, {}, { withCredentials: true })
         .then(() => {
           // Refresh user list after approval
           setUsers(prev => prev.map(u => u.user_id === userId ? { ...u, isApproved: true } : u));
         })
         .catch(err => console.error('Failed to approve user', err));
     } else {
-      axios.delete(`${HOST}/api/auth/user/${userId}/remove`, { withCredentials: true })
+      axios.delete(`${HOST}/api/admin/user/${userId}/remove`, { withCredentials: true })
         .then(() => {
           // Remove the user from the list
           setUsers(prev => prev.filter(u => u.user_id !== userId));
@@ -85,18 +102,18 @@ export default function Admin() {
   };
 
   // Handle lot deletion
-  const handleDeleteLot = (lotId) => {
+  const handleDeleteLot = (id) => {
     if (!window.confirm("Are you sure you want to delete this lot?")) return;
 
-    axios.delete(`${HOST}/api/admin/lots/${lotId}/remove`, { withCredentials: true })
+    axios.delete(`${HOST}/api/admin/parking-lots/${id}/remove`, { withCredentials: true })
       .then(() => {
-        setLots(prev => prev.filter(lot => lot.lot_id !== lotId));
+        setLots(prev => prev.filter(lot => lot.id !== id));
       })
       .catch(err => console.error("Failed to delete lot", err));
   };
 
   const handleUpdateUser = (user) => {
-    axios.put(`${HOST}/api/auth/users/${user.user_id}/edit`, user, {
+    axios.put(`${HOST}/api/admin/users/${user.user_id}/edit`, user, {
       withCredentials: true
     })
       .then(() => {
@@ -112,22 +129,9 @@ export default function Admin() {
       });
   };
 
-  const handleFeedbackResponse = async (feedbackId, responseText) => {
-    axios.put(`${HOST}/api/auth/admin/feedback/${feedbackId}/respond`, {
-      response_text: responseText
-    }, { withCredentials: true })
-      .then(() => {
-        setToggleFeedbackResponseRefresh(prev => !prev);
-      })
-      .catch(err => {
-        console.error('Failed to respond to feedback', err);
-        alert('Failed to save response');
-      });
-  };
-
   // Handle event reservation approval
   const handleApproveEvent = (reservationId) => {
-    axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/approve`, {}, {
+    axios.put(`${HOST}/api/admin/event-reservations/${reservationId}/approve`, {}, {
       withCredentials: true
     })
       .then(() => {
@@ -138,7 +142,7 @@ export default function Admin() {
 
   // Handle event reservation rejection
   const handleRejectEvent = (reservationId) => {
-    axios.put(`${HOST}/api/auth/admin/event-reservations/${reservationId}/reject`, {}, {
+    axios.put(`${HOST}/api/admin/event-reservations/${reservationId}/reject`, {}, {
       withCredentials: true
     })
       .then(() => {
@@ -152,227 +156,42 @@ export default function Admin() {
   return (
     <main className="admin">
       <h1>Admin</h1>
-      <div className='hbox'>
-        <div
-          className="hbox selection"
-          id="admin-selection"
-          style={{ marginRight: '35px' }}
-        >
-          <span
-            className={'type-hover ' + (adminOption === 'users' ? 'selected' : '')}
-            onClick={() => setAdminOption('users')}
-          >Users</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'lots' ? 'selected' : '')}
-            onClick={() => setAdminOption('lots')}
-          >Lots</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'events' ? 'selected' : '')}
-            onClick={() => setAdminOption('events')}
-          >Events</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'analysis' ? 'selected' : '')}
-            onClick={() => setAdminOption('analysis')}
-          >Analysis</span>
-          <span>/</span>
-          <span
-            className={'type-hover ' + (adminOption === 'feedback' ? 'selected' : '')}
-            onClick={() => setAdminOption('feedback')}
-          >Feedback</span>
-        </div>
-      </div>
+      <AdminTabSelector
+        adminOption={adminOption}
+        setAdminOption={setAdminOption}
+      />
       <div className='admin-content'>
         {adminOption === 'users' && (
-          <>
-            <h2>Unapproved Users</h2>
-            <div className="user-list">
-              {users.filter(user => !user.isApproved).length === 0 ? (
-                <p>No unapproved users found.</p>
-              ) : (
-                users
-                  .filter(user => !user.isApproved)
-                  .filter(user =>
-                    `${user.first_name} ${user.last_name} ${user.email}`.toLowerCase().includes(searchTerm.toLowerCase())
-                  )
-                  .map(user => (
-                    <div className="user-card" key={user.user_id}>
-                      <div className="user-info">
-                        <strong>{user.first_name} {user.last_name}</strong><br />
-                        ID: {user.user_id}<br />
-                        Email: {user.email}<br />
-                        Type: {user.user_type}<br />
-                        Permit: {user.permit_type}<br />
-                        Joined: {new Date(user.createdAt).toLocaleDateString()}<br />
-                      </div>
-                      <div className="user-actions">
-                        <img
-                          src="/images/check.png"
-                          alt="Approve"
-                          className="icon"
-                          onClick={() => handleApproval(user.user_id, true)}
-                        />
-                        <img
-                          src="/images/x.png"
-                          alt="Reject"
-                          className="icon"
-                          onClick={() => handleApproval(user.user_id, false)}
-                        />
-                      </div>
-                    </div>))
-              )}
-            </div>
-            <h2>All Users</h2>
-            <input
-              type="text"
-              className="user-search"
-              name='user-search'
-              placeholder="Search by name or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-
-            <div className="user-list">
-              {users.length === 0 ? (
-                <p>No users found.</p>
-              ) : (
-                users.map(user => (
-                  <div className="user-card" key={user.user_id} onClick={() => setEditingUser(user)}>
-                    <strong>{user.first_name} {user.last_name}</strong><br />
-                    ID: {user.user_id}<br />
-                    Email: {user.email}<br />
-                    Type: {user.user_type}<br />
-                    Permit: {user.permit_type}<br />
-                    Joined: {new Date(user.createdAt).toLocaleDateString()}<br />
-                    Approved: {user.isApproved ? 'Yes' : 'No'}<br />
-                  </div>
-                ))
-              )}
-            </div>
-          </>
+          <AdminUsers
+            users={users}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            handleApproval={handleApproval}
+            setEditingUser={setEditingUser}
+            setActiveTicketUser={setActiveTicketUser}
+          />
         )}
         {adminOption === 'lots' && (
-          <>
-            <button className="add-lot-button">Add a Lot</button>
-            <h2>Manage Parking Lots</h2>
-            <div className="user-list">
-              {lots.length === 0 ? (
-                <p>No parking lots found.</p>
-              ) : (
-                lots.map(lot => (
-                  <div className="user-card" key={lot.id} onClick={() => setEditingLot({ ...lot })}>
-                    <div className="user-info">
-                      <strong>{lot.name}</strong><br />
-                      ID: {lot.id}<br />
-                      Location: {Array.isArray(lot.location?.coordinates)
-                        ? `(${lot.location.coordinates[0][1]}, ${lot.location.coordinates[0][0]})`
-                        : 'N/A'}<br />
-                    </div>
-                    <div className="user-actions">
-                      <img
-                        src="/images/x.png"
-                        alt="Delete Lot"
-                        className="icon"
-                        onClick={() => handleDeleteLot(lot.lot_id)}
-                      />
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
+          <AdminLots
+            lots={lots}
+            setEditingLot={setEditingLot}
+            handleDeleteLot={handleDeleteLot}
+            setAddLotForm={setAddLotForm}
+          />
         )}
         {adminOption === 'events' && (
-          <>
-            <h2>Pending Event Parking Requests</h2>
-            <div className="user-list">
-              {eventReservations.filter(reservation => reservation.status === 'pending').length === 0 ? (
-                <p>No pending event reservations found.</p>
-              ) : (
-                eventReservations.filter(reservation => reservation.status === 'pending')
-                  .map(reservation => (
-                    <div key={reservation.id} className="user-card">
-                      <div className="user-info">
-                        <strong>Reservation #{reservation.id}</strong><br />
-                        User ID: {reservation.user_id}<br />
-                        Lot ID: {reservation.parking_lot_id}<br />
-                        Spots: {reservation.spot_count}<br />
-                        Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
-                        Description: {reservation.event_description || "N/A"}
-                      </div>
-                      <div className="user-actions">
-                        <img
-                          src="/images/check.png"
-                          alt="Approve"
-                          className="icon"
-                          onClick={() => handleApproveEvent(reservation.id)}
-                        />
-                        <img
-                          src="/images/x.png"
-                          alt="Reject"
-                          className="icon"
-                          onClick={() => handleRejectEvent(reservation.id)}
-                        />
-
-                      </div>
-                    </div>
-                  ))
-              )}
-            </div>
-            <h2>All Event Parking</h2>
-            <div className="user-list">
-              {eventReservations.length === 0 ? (
-                <p>No event reservations found.</p>
-              ) : (
-                eventReservations.map(reservation => (
-                  <div key={reservation.id} className="user-card">
-                    <div className="user-info">
-                      <strong>Reservation #{reservation.id}</strong><br />
-                      User ID: {reservation.user_id}<br />
-                      Lot ID: {reservation.parking_lot_id}<br />
-                      Spots: {reservation.spot_count}<br />
-                      Time: {new Date(reservation.start_time).toLocaleString()} - {new Date(reservation.end_time).toLocaleString()}<br />
-                      Description: {reservation.event_description || "N/A"}<br />
-                      Status: {reservation.status}<br />
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
+          <AdminEvents
+            eventReservations={eventReservations}
+            handleApproveEvent={handleApproveEvent}
+            handleRejectEvent={handleRejectEvent}
+          />
         )}
-        {adminOption === 'analysis' && (
-          <div>
-            <h2>Analysis</h2>
-            <p>Data analysis tools will be available here.</p>
-          </div>
-        )}
+        {adminOption === 'analysis' && <AdminAnalysis />}
         {adminOption === 'feedback' && (
-          <>
-            <h2>User Feedback</h2>
-            <div className="user-list">
-              {feedbackList.length === 0 ? (
-                <p>No feedback found.</p>
-              ) : (
-                feedbackList.map(feedback => (
-                  <div className="user-card" key={feedback.feedback_id}>
-                    <div className="user-info">
-                      User ID: {feedback.user_id}<br />
-                      Lot ID: {feedback.parking_lot_id}<br />
-                      Feedback: {feedback.feedback_text}<br />
-                      Rating: {feedback.rating}<br />
-                      Response: {feedback.admin_response || "No response yet"}<br />
-                      <button className="respond-button" onClick={() => setActiveFeedback(feedback)}>
-                        Respond
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
+          <AdminFeedback
+            feedbackList={feedbackList}
+            setActiveFeedback={setActiveFeedback}
+          />
         )}
       </div>
       {editingUser && (
@@ -455,37 +274,35 @@ export default function Admin() {
           </div>
         </div>
       )}
-      {activeFeedback && (
-        <Popup
-          name="feedback-response"
-          popupHeading={`Respond to Feedback #${activeFeedback.feedback_id}`}
-          closeFunction={() => setActiveFeedback(null)}
-        >
-          <textarea
-            value={activeFeedback.admin_response || ""}
-            onChange={(e) =>
-              setActiveFeedback(prev => ({ ...prev, admin_response: e.target.value }))
-            }
-            rows={5}
-            style={{ width: "100%", marginTop: "1rem" }}
-          />
-          <div className="form-buttons" style={{ marginTop: "1rem" }}>
-            <button onClick={() => setActiveFeedback(null)}>Cancel</button>
-            <button
-              className="save-button"
-              onClick={() => handleFeedbackResponse(activeFeedback.feedback_id, activeFeedback.admin_response)}
-            >
-              Save Response
-            </button>
-          </div>
-        </Popup>
-      )}
 
       <LotFormModal
-        isOpen={!!editingLot}
+        isOpen={!!editingLot || addLotForm}
         lot={editingLot}
-        onRequestClose={() => setEditingLot(false)}
-      ></LotFormModal>
+        onRequestClose={() => {
+          setEditingLot(null);
+          setAddLotForm(false);
+        }}
+        formType={!!editingLot ? 'edit' : 'add'}
+      />
+
+      <FeedbackFormModal
+        isOpen={activeFeedback !== null}
+        onRequestClose={() => setActiveFeedback(null)}
+        feedback={activeFeedback}
+        refreshFeedbackList={() => setToggleFeedbackResponseRefresh(prev => !prev)}
+      />
+
+      {activeTicketUser && (
+        <div className="ticket-popup-overlay" onClick={() => setActiveTicketUser(null)}>
+          <div className="ticket-popup-form" onClick={(e) => e.stopPropagation()}>
+            <TicketForm
+              user={activeTicketUser}
+              onSuccess={() => setActiveTicketUser(null)}
+              onCancel={() => setActiveTicketUser(null)}
+            />
+          </div>
+        </div>
+      )}
 
     </main>
   );

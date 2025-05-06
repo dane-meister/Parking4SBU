@@ -1,200 +1,365 @@
 .landing-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: calc(100vh - 60px - 60px - 50px);
-  }
-  
-  .landing-content {
-    width: 80%;
-    max-width: 1000px;
-    margin-top: 2rem;
-    text-align: center;
-  }
-  
-  .slogan {
-    font-size: 4rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
-  
-  .pricing-options {
-    margin-bottom: 1.5rem;
-  }
-  
-  .pricing-options .option {
-    font-size: 1rem;              /* Slightly smaller font */
-    margin: 0 0.25rem;            /* Reduced side margins */
-    padding: 0.25rem 1.5rem;       /* Less vertical, more horizontal padding */
-    background: transparent;
-    border: 2px solid #333;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s;
-  }
-  
-  .pricing-options .option.selected,
-  .pricing-options .option:hover {
-    background: #333;
-    color: #fff;
-  }
-  
-  .duration-selector-container {
-    margin-bottom: 1.5rem;
-    cursor: pointer;
-  }
-  
-  .duration-summary {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 0.5rem;
-    background: #f9f9f9;
-  }
-  
-  .calendar-icon img {
-    height: 24px;
-    width: 24px;
-    margin-right: 0.5rem;
-  }
-  
-  .search-submit {
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-    cursor: pointer;
-    border: none;
-    background: #333;
-    color: #fff;
-    border-radius: 5px;
-    transition: background 0.3s;
-  }
-  
-  .search-submit:hover {
-    background: #555;
-  }
-  
-  .landing-page .time-selector-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 600px;           /* to match search bar width */
-    margin: 1rem auto;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  
-  /* Individual container for each (arrive / exit) */
-  .landing-page .time-input {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 0.5rem;
-  }
-  
-  /* Label styling */
-  .landing-page .time-label {
-    font-size: 0.75rem;
-    color: #777;
-    margin-bottom: 2px;
-  }
-  
-  /* Row for time values and edit button */
-  .landing-page .time-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100vh - 60px - 60px - 50px);
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  /* min-height: 100vh; */
+  padding: 4rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.landing-content {
+  width: 80%;
+  max-width: 1000px;
+  margin-top: 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
 
-  
-  .landing-page .time-value {
-    font-size: 1rem;
-    margin-right: 5px;
-    color: #333;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .building-lot-toggle {
-    display: flex;
-    justify-content: center; /* center the buttons horizontally */
-    gap: 2rem;              /* more space between options */
-    margin-bottom: 1rem;
-  }
-  
-  /* Each toggle option */
-  .building-lot-toggle .toggle-option {
-    font-size: 1rem;
-    cursor: pointer;
-    padding-bottom: 0.25rem;
-    transition: color 0.3s, border-bottom 0.3s;
-    height: 27px;
-  }
-  
-  /* Underline selected option */
-  .building-lot-toggle .toggle-option.selected {
-    border-bottom: 2px solid #333;
-    color: #333;
-  }
-  
-  /* Hover styles */
-  .building-lot-toggle .toggle-option:hover {
-    color: #555;
-    border-bottom: 2px solid #555;
-  }
+}
 
-  .find-parking-btn button {
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    background-color: var(--red);   /* Red color */
-    color: #fff;
-    border: none;
-    border-radius: 30px;         /* Oval-ish curved corners */
-    cursor: pointer;
-    transition: background 0.3s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    /* Optionally, add a box-shadow for extra visual pop */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    margin: 8px;
-  }
-  
-  .find-parking-btn button:hover {
-    background-color: var(--dark-red);
-  }
 
-  .landing-page [role="combobox"] {
-    margin-bottom: 1.5rem;
-    width: 100%;
-    max-width: 600px;           /* Adjust max width as needed */
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;        /* Some internal padding */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
-  }
+.slogan {
+  animation: fadeIn 0.6s ease-out;
+  font-size: 4rem;
+  line-height: 1.1;
+  min-height: calc(2 * 1.1 * 4rem);
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
 
-  .landing-page .suggestions-container{
-    margin-top: -5px;
-    margin-left: -1px;
-    width: calc(100% + 2px);
-    border: 1px solid #ddd;
-    border-top: none;
-  }
+.pricing-options {
+  margin-bottom: 1.5rem;
+}
 
-  .landing-page .autocomplete-container{
-    z-index: 1; /* display OVER the white arrow */
-  }
+.pricing-options .option {
+  font-size: 1rem;
+  margin: 0 0.25rem;
+  padding: 0.25rem 1.5rem;
+  background: transparent;
+  /* border: 2px solid #333; */
+  border: 2px solid rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
 
-  .landing-page .suggestions-container:empty{
-    border-bottom: none;
-    border-top: none;
-  }
+.pricing-options .option.selected,
+.pricing-options .option:hover {
+  background: rgba(255,255,255,0.2);
+  color: #FFFFFF;
+}
 
-  .landing-page .arrow-container{
-    z-index: 0;
+.duration-selector-container {
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+}
+
+.duration-summary {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  background: #f9f9f9;
+}
+
+.search-submit {
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: none;
+  background: #333;
+  color: #fff;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.search-submit:hover {
+  background: #555;
+}
+
+
+
+.landing-page .time-selector-container {
+  background: rgba(255,255,255,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  /* to match search bar width */
+  margin: 1rem auto;
+  padding: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+}
+
+/* Individual container for each (arrive / exit) */
+.landing-page .time-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.5rem;
+  color: #333;
+}
+
+/* Label styling */
+.landing-page .time-label {
+  font-size: 0.75rem;
+  color: #333;  
+  margin-bottom: 2px;
+}
+
+/* Row for time values and edit button */
+.landing-page .time-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: #333;
+}
+
+.landing-arrow-icon {
+  width: 30px;
+  height: 30px;
+  color:#333;
+  filter: brightness(0);
+}
+
+
+.landing-page .time-value {
+  font-size: 1rem;
+  margin-right: 5px;
+  color: #333;  
+}
+
+.building-lot-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+/* Each toggle option */
+.building-lot-toggle .toggle-option {
+  font-size: 1rem;
+  cursor: pointer;
+  padding-bottom: 0.25rem;
+  transition: color 0.3s, border-bottom 0.3s;
+  height: 27px;
+}
+
+/* Underline selected option */
+.building-lot-toggle .toggle-option.selected {
+  border-bottom: 2px solid #fff;
+  border-bottom-color: #FFFFFF;
+  color: #fff;
+}
+
+/* Hover styles */
+.building-lot-toggle .toggle-option:hover {
+  color: #fff;
+  border-bottom: 2px solid #fff;
+}
+
+
+.controls-container {
+  background: rgba(255,255,255,0.6);   /* 30% white */
+  backdrop-filter: blur(10px);          
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;                         /* space between search, time, button */
+  max-width: 600px;
+  margin: 0 auto;                       /* center it */
+}
+
+
+.find-parking-btn button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background-color: var(--red);
+  /* Red color */
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  /* Oval-ish curved corners */
+  cursor: pointer;
+  transition: background 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* Optionally, add a box-shadow for extra visual pop */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin: 8px;
+}
+
+.find-parking-btn button:hover {
+  background-color: var(--dark-red);
+}
+
+
+
+.landing-page .search-container .autocomplete-container {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  border: none !important;
+  /* box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; */
+
+}
+
+.landing-page [role="combobox"]:hover,
+.landing-page [role="combobox"]:focus-within {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.2);
+  /* color: #FFFFFF; */
+}
+
+.landing-page .autocomplete-input {
+  background:  transparent url('../../public/images/search-icon.webp') no-repeat 10px center;
+  background-size: 24px 24px;
+  border: none !important;
+  outline: none !important;
+  color: #333 !important;                 
+  font-size: 1rem;
+}
+
+.landing-page .search-container .suggestions-container {
+  margin-top: -4px;
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  background-color: rgba(255,255,255,1) !important;
+  border-color: rgba(255,255,255,0.4) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  color: #333;
+  z-index: 1000;
+}
+
+.landing-page .suggestion-highlighted {
+  background: rgba(0,0,0,0.05) !important;
+}
+
+.landing-page .autocomplete-container {
+  background: transparent !important;
+  z-index: 1;
+  color: #333
+}
+
+.landing-page .arrow-container {
+  color: #333;
+  z-index: 0;
+}
+
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
+}
+
+.spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+
+
+/* ————— FEATURES  ————— */
+.features {
+  background: #fff;
+  padding: 4rem 1rem;
+}
+.features-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+.features-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  background: rgba(250,250,250,0.8);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.feature-card i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--red);
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.feature-card p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+#react-autowhatever-1:empty{
+  display: none;
+}
