@@ -1,33 +1,33 @@
 import { DisableableInput } from '.'
 import TimeSelector from './TimeSelector';
 
-function EditRate({ rateObj, formData, setFormData, originalRateObj, originalFormData, errorMsgs, formType }){
+function EditRate({ 
+  rateObj, 
+  formData, setFormData, 
+  originalRateObj, originalFormData, 
+  errorMsgs, 
+  formType,
+  isModified, isRateModified
+}){
   const rateNumber = rateObj.rateNumber
-
+  
   const onDisable = (name) => {
-    if(rateObj[name] == null){
-      setFormData(prev => {
-        const newRate = prev.rates[rateNumber];
-        newRate[name] = '';
+    setFormData(prev => {
+      const newRates = { ...prev.rates };
+      newRates[rateNumber] = { ...newRates[rateNumber] };
+      newRates[rateNumber][name] = prev.rates[rateNumber][name] === null ? '' : null;
+      
 
-        const newRates = prev.rates
-        newRates[rateNumber] = newRate;
-        return { ...prev,  newRates};
-      }); 
-    }else{
-      setFormData(prev => {
-        prev.rates[rateNumber][name] = null;
-
-        return { ...prev };
-      }); 
-    }
+      return { ...prev, rates: newRates};
+    });
   };
 
   const onChange = (e) => {
     setFormData(prev => {
       const newRates = prev.rates;
-      newRates[rateNumber][e.target.name] = e.target.value
-      return { ...prev}
+      const newRate = newRates[rateNumber];
+      newRate[e.target.name] = e.target.value;
+      return { ...prev, rates: newRates };
     });
   }
 
@@ -61,27 +61,15 @@ function EditRate({ rateObj, formData, setFormData, originalRateObj, originalFor
     'faculty', 'faculty-life-sciences-1', 'faculty-life-sciences-2', 'faculty-garage-gated-1', 'faculty-garage-gated-2', 
     'premium', 'resident-zone1', 'resident-zone2', 'resident-zone3', 'resident-zone4', 'resident-zone5', 'resident-zone6',
     'core', 'perimeter', 'satellite', 'visitor'
-  ]
+  ];
 
-  const isModified = (field) =>{
-    if(formType === 'add' || !rateObj || !originalRateObj) return false;
-    return rateObj[field] !== originalRateObj[field];
-  };
+  const removeRate = () => {
+    setFormData(prev => {
+      const newRates = formData.rates;
+      delete newRates[rateNumber];
 
-  const isRateModified = () => {
-    const fields = [
-      'daily', 'event_parking_price', 'hourly', 'lot_end_time', 'lot_start_time',
-      'max_hours', 'monthly', 'permit_type', 'semesterly_fall_spring', 
-      'semesterly_summer', 'sheet_number', 'sheet_price', 'yearly'
-    ];
-    const fieldModified = fields.some(field => isModified(field));
-    
-    const isNewRate = !Object.values(
-        originalFormData.rates.map(r => r.rateNumber)
-      )
-      .includes(rateObj.rateNumber);
-    
-    return fieldModified || isNewRate;
+      return { ...prev, rates: newRates };
+    });
   };
 
   return (<>
@@ -104,12 +92,14 @@ function EditRate({ rateObj, formData, setFormData, originalRateObj, originalFor
     (-) sheet_number: null
     (-) sheet_price: null
     */}
-    {rateNumber !== 0 && <div name='spacer' style={{height: '15px'}}/>}
+    {rateNumber !== Object.values(formData.rates)[0].rateNumber && <div name='spacer' style={{height: '15px'}}/>}
     <div className='hbox lot-modal-rate-header'>
       <h2 style={{fontSize: '16px', padding: '5px'}}>{`Rate ${rateNumber+1}${isRateModified() ? '*' : ''}`}</h2>
       <span className='flex'/>
       <img src='/images/x.png' alt='close' 
-        style={{height: '20px', alignSelf: 'center', filter: 'invert(1)'}}
+        id='lot-modal-rate-close'
+        style={{height: '20px', alignSelf: 'center', cursor: 'pointer'}}
+        onClick={removeRate}
       />
     </div>
 

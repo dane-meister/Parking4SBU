@@ -1,5 +1,5 @@
 import Modal from 'react-modal';
-import { Collapsible, EditRate, EditLotCapacity, EditLotLocation } from '.';
+import { Collapsible, EditRate, EditLotCapacity, EditLotLocation, EditRateForm } from '.';
 import { useEffect, useRef, useState } from 'react';
 import '../stylesheets/LotFormModal.css'
 import formatMoney from '../utils/formatMoney'
@@ -35,6 +35,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
           }
         }
       });
+
+      rates = Object.assign({}, rates);
     }
     const defaultCapacity = formType === 'add' ? '' : 0;
     const data = {
@@ -53,7 +55,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         general_capacity: lot?.general_capacity ?? defaultCapacity
       },
       rates: rates ?? [],
-      numRates: rates ? rates.length : 0
+      numRates: rates ? Object.keys(rates).length : 0
     }
     setFormData(data);
     if(formType === 'add'){
@@ -75,7 +77,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         rateNumber: 0
       };
       setFormData(prev => {
-        return { ...prev, coordinates: [''], rates: [emptyRate] }
+        return { ...prev, coordinates: [''], rates: [emptyRate], numRates: 1 }
       });
     }
     originalData.current = JSON.parse(JSON.stringify(data));
@@ -102,49 +104,13 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   };
 
   const MAX_TOTAL_CAPACITY = 10000;
-  const numericKeyDown = (e) => {
-    if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
-      e.preventDefault();
-    }
-  };
-
-  const isCoordinateModified = (idx) => {
-    if(formType === 'add' || !originalData.current || !formData){
-      return false;
-    }
-
-    if(originalData.current.coordinates.length <= idx){
-      return true; // new point
-    }
-
-    const current = formData.coordinates[idx].replaceAll(' ', '');
-    const original = originalData.current.coordinates[idx].replaceAll(' ', '');
-    if(current.split(',').length != 2){ return false; }
-
-    const [c_lat, c_lon] = current.split(',');
-    const [o_lat, o_lon] = original.split(',');
-
-    return (Number(c_lat) !== Number(o_lat)) || (Number(c_lon) !== Number(o_lon))
-  };
-
-  const isCapacityModified = (field) => {
-    if(formType === 'add') return false;
-    else if(formData.capacity[`${field}_capacity`] === undefined) return false;
-    return originalData.current.capacity[`${field}_capacity`] !== formData.capacity[`${field}_capacity`]
-  };
-
-  const anyCapacityModified = () => {
-    return [
-      'commuter_core', 'commuter_perimiter', 'commuter_satellite', 'resident',
-      'faculty', 'metered', 'ev_charging', 'ada', 'general'
-    ].some(str => isCapacityModified(str))
-  };
 
   const nameErr = useRef(null);
   const coordinatesErr = useRef(null);
   const capacityErr = useRef(null);
 
   const [rateErrMsgs, setRateErrMsgs] = useState({});
+  useEffect(() => setRateErrMsgs({}), [isOpen]);
   const anyRateErrs = (rateErrMsgs) => {
     if(rateErrMsgs.length === 0) return true;
 
@@ -156,34 +122,6 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
     }
 
     return false;
-  };
-
-  const emptyRate = {
-    daily: null,
-    event_parking_price: null,
-    hourly: null,
-    lot_end_time: "23:59:59",
-    lot_start_time: "0:00:00",
-    max_hours: null,
-    monthly: null,
-    parking_lot_id: null,
-    permit_type: 'Core',
-    semesterly_fall_spring: null,
-    semesterly_summer: null,
-    sheet_number: null,
-    sheet_price: null,
-    yearly: null,
-    rateNumber: 0
-  };
-  const addRate = () => {
-    setFormData(prev => {
-      const newRate = JSON.parse(JSON.stringify(emptyRate));
-      newRate.rateNumber = formData.numRates;
-
-      const newRates = formData.rates.concat(newRate);
-      const newNumRates = formData.numRates + 1;
-      return { ...prev, rates: newRates, numRates: newNumRates };
-    });
   };
 
   const validateRate = (rateObj) => {
@@ -298,9 +236,9 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
 
     // rate
     const rateErrs = {};
-    formData.rates.forEach((rateObj, index) => {
+    Object.values(formData.rates).forEach(rateObj => {
       const rateErrMsg = validateRate(rateObj);
-      rateErrs[index] = rateErrMsg;
+      rateErrs[rateObj.rateNumber] = rateErrMsg;
     });
     setRateErrMsgs(rateErrs);
 
@@ -346,7 +284,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         {formType==='add' ? 'Lot Add' : 'Lot Edit'}
         <span className='flex'/>
         <img className='hover-black' src='/images/x.png' alt='close'
-          style={{filter: 'invert(1)', height: '29px', padding: '1px 0'}}
+          style={{height: '29px', padding: '1px 0'}}
           onClick={onRequestClose}
         />
       </h2>
@@ -362,65 +300,31 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         <div className='lot-form-error' ref={nameErr} />
       </div>
 
-      <Collapsible
-        name={'Location'}
-        subtext={'(Latitude, Longitude)'}
-        className={'location-collapsible'}
-        startOpen={formType === 'add'}
-        wideCollapse
-        persistentChildren
-        asterisk={formType === 'add' || formData.coordinates.some((c, idx) => isCoordinateModified(idx))}
-        externalOpen={openLocation} externalSetOpen={setOpenLocation}
-      >
-        <EditLotLocation 
-          formData={formData} setFormData={setFormData} 
-          isCoordinateModified={isCoordinateModified}
-          coordinatesErr={coordinatesErr}
-        />
-      </Collapsible>
+      
+      <EditLotLocation 
+        formData={formData} setFormData={setFormData} 
+        originalData={originalData}
+        coordinatesErr={coordinatesErr}
+        formType={formType}
+        openLocation={openLocation} setOpenLocation={setOpenLocation}
+      />
+      
+      <EditLotCapacity 
+        formData={formData} setFormData={setFormData} 
+        originalData={originalData}
+        getNewCapacity={getNewCapacity}
+        capacityErr={capacityErr}
+        formType={formType}
+        openCapacity={openCapacity} setOpenCapacity={setOpenCapacity}
+      />
 
-      <Collapsible 
-        name={`Capacity`} 
-        className={'capacity-collapsible'}
-        wideCollapse
-        persistentChildren
-        startOpen={formType === 'add'}
-        asterisk={formType === 'add' || anyCapacityModified()}
-        externalOpen={openCapacity} externalSetOpen={setOpenCapacity}
-      >
-        <EditLotCapacity 
-          isCapacityModified={isCapacityModified}
-          formData={formData} setFormData={setFormData} 
-          numericKeyDown={numericKeyDown} 
-          getNewCapacity={getNewCapacity} 
-          capacityErr={capacityErr}
-        />
-      </Collapsible>
-
-      <Collapsible 
-        name={'Rates'} 
-        className={'rates-collapsible'}
-        wideCollapse
-        startOpen={formType === 'add'}
-        externalOpen={openRates} externalSetOpen={setOpenRates}
-        asterisk={formType === 'add'} 
-      >
-        {formData.rates.map((rate, idx) => (
-          <EditRate 
-            rateObj={rate} 
-            key={idx} 
-            formData={formData} setFormData={setFormData}
-            originalRateObj={originalData.current.rates[idx]}
-            originalFormData={originalData.current}
-            errorMsgs={rateErrMsgs[idx]}
-            formType={formType}
-          />)
-        )}
-        {formData.rates.length === 0 && (
-          <div style={{margin: '8px 0 0'}}>No rates to this lot currently!</div>
-        )}
-        <button id='lot-modal-add-rate' type='button' onClick={addRate}>Add a Rate</button>
-      </Collapsible>
+      <EditRateForm 
+        formData={formData} setFormData={setFormData} 
+        originalData={originalData}
+        formType={formType}
+        openRates={openRates} setOpenRates={setOpenRates}
+        rateErrMsgs={rateErrMsgs}
+      />
 
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
 
