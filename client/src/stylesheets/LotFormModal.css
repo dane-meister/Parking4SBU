@@ -42,7 +42,8 @@
 .location-collapsible,
 .capacity-collapsible,
 .rates-collapsible,
-.single-rate-collapsible {
+.single-rate-collapsible,
+.other-collapsible {
     padding-bottom: 10px;
     margin-top: 10px;
     border-bottom: #aaa solid 1px;
@@ -215,4 +216,8 @@
 }
 .lot-edit-h2 .hover-black:hover{
     filter: invert(.8);
+}
+
+.lot-resident-zone-box label{
+    width: 107px;
 }

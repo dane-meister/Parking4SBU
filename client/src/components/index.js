@@ -23,3 +23,4 @@ export { default as TicketForm } from './TicketForm';
 export { default as EditLotCapacity } from './EditLotCapacity';
 export { default as EditLotLocation } from './EditLotLocation';
 export { default as EditRateForm } from './EditRateForm';
+export { default as EditLotOther } from './EditLotOther';

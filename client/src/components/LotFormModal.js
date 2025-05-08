@@ -1,9 +1,11 @@
 import Modal from 'react-modal';
-import { Collapsible, EditRate, EditLotCapacity, EditLotLocation, EditRateForm } from '.';
+import { EditLotCapacity, EditLotLocation, EditRateForm, EditLotOther } from '.';
 import { useEffect, useRef, useState } from 'react';
 import '../stylesheets/LotFormModal.css'
 import formatMoney from '../utils/formatMoney'
 import { isNonNullAndEmpty, isNullOrHasMoneyPrecision } from '../utils/validateField';
+import axios from 'axios';
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 Modal.setAppElement('#root'); // should only render once, or else constant warnings!
 
 export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
@@ -38,7 +40,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
 
       rates = Object.assign({}, rates);
     }
-    const defaultCapacity = formType === 'add' ? '' : 0;
+    const defaultCapacity = 0;
     const data = {
       name: lot?.name ?? '',
       coordinates: coords ?? [],
@@ -55,7 +57,9 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         general_capacity: lot?.general_capacity ?? defaultCapacity
       },
       rates: rates ?? [],
-      numRates: rates ? Object.keys(rates).length : 0
+      numRates: rates ? Object.keys(rates).length : 0,
+      covered: lot?.covered ?? false,
+      resident_zone: lot?.resident_zone ?? null
     }
     setFormData(data);
     if(formType === 'add'){
@@ -108,6 +112,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const nameErr = useRef(null);
   const coordinatesErr = useRef(null);
   const capacityErr = useRef(null);
+  const otherErrs = useRef(null);
 
   const [rateErrMsgs, setRateErrMsgs] = useState({});
   useEffect(() => setRateErrMsgs({}), [isOpen]);
@@ -247,14 +252,47 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
       errorOccurred = true;
     }
 
+    // other
+    if(isNonNullAndEmpty(formData.resident_zone)){
+      otherErrs.current.innerHTML = 'Resident Zone cannot be empty if nonnull!';
+      errorOccurred = true;
+    }else{
+      otherErrs.current.innerHTML = '';
+    }
     //alert?
-    if(errorOccurred) 
+    if(errorOccurred) {
       alert(`Error ${formType === 'add' ? 'adding' : 'editing'} lot!`);
-    else{
-      alert("TEST REPLACE, submitting...")
+      return;
+    }else{
+      editAddLot();
     }
   }
 
+  const editAddLot = async () => {
+    const { name, coordinates, capacity, rates, covered, resident_zone } = formData;
+    if(formType === 'add'){
+      await axios.post(`${HOST}/api/admin/lots/add`,
+        { 
+          name, 
+          coordinates, 
+          capacity, 
+          rates: Object.values(rates), 
+          covered,
+          resident_zone
+        }, 
+        { withCredentials: true }
+      )
+        .then(() => {
+          onRequestClose()
+        })
+        .catch((err) => {
+          alert(err.message)
+        });
+    }else{
+      alert('Edit Modal!!');
+    }
+    // console.log(response)
+  };
   // stops background scrolling
   if(isOpen){
     document.body.style.overflow = 'hidden';
@@ -265,11 +303,13 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
   const [openLocation, setOpenLocation] = useState(false);
   const [openCapacity, setOpenCapacity] = useState(false);
   const [openRates, setOpenRates] = useState(false);
+  const [openOther, setOpenOther] = useState(false);
   useEffect(() => {
     const isAddingLot = formType === 'add';
     setOpenLocation(isAddingLot);
     setOpenCapacity(isAddingLot);
     setOpenRates(isAddingLot);
+    setOpenOther(isAddingLot);
   }, [isOpen]);
 
   return (
@@ -328,10 +368,20 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
 
       <span style={{display: 'block', borderTop: '#aaa solid 1px'}}/>
 
+      <EditLotOther 
+        formData={formData} setFormData={setFormData}
+        originalData={originalData}
+        formType={formType}
+        openOther={openOther} setOpenOther={setOpenOther}
+        otherErrs={otherErrs} 
+      />
+
       <p style={{margin: '10px 0px -8px 0', fontSize: '13px', color: 'var(--gray)'}}>
         {`* ${formType === 'edit' ? 'edited' : 'required'} fields`}
       </p>
-      <input type='submit' className='edit-lot-btn' value='Edit Lot' />
+      <input type='submit' className='edit-lot-btn' 
+        value={formType === 'add'? 'Add Lot' : 'Edit Lot'} 
+      />
       </section>
       </form>
     </Modal>

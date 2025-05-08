@@ -97,5 +97,5 @@ export default function EditRateForm({
       )}
       <button id='lot-modal-add-rate' type='button' onClick={addRate}>Add a Rate</button>
     </Collapsible>
-  </>)
+  </>);
 }
