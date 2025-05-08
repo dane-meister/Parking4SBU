@@ -1,0 +1,43 @@
+#sort-by {
+    position: relative;
+    display: inline-block;
+  }
+  
+  #sort-by-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  
+    padding: 6px 28px 6px 10px;
+    font-size: 0.95rem;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.2s ease-in-out;
+    min-width: 130px;
+    text-align: center;
+    text-align-last: center;
+  }
+  
+  #sort-by-select:hover,
+  #sort-by-select:focus {
+    border-color: #666;
+  }
+  
+  #sort-by::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333;
+    transform: translateY(-50%);
+  }
+  
+  

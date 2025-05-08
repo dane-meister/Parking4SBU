@@ -101,6 +101,8 @@ async function getSortedParkingLots(buildingId) {
                 resident_availability: lot.resident_availability,
                 resident_capacity: lot.resident_capacity,
                 resident_zone: lot.resident_zone,
+                general_capacity: lot.general_capacity,
+                general_availability: lot.general_availability,
                 Rates: lot.Rates,
                 time: lot.time,
             };
