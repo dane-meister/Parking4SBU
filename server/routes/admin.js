@@ -74,6 +74,51 @@ router.put("/users/:user_id/approve", authenticate, async (req, res) => {
   }
 });
 
+// Resend verification email by email
+router.post("/resend-verification", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: "No account associated with that email" });
+    }
+
+    if (!user.isApproved) {
+      return res.status(400).json({ message: "Account is not approved yet" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Account is already verified" });
+    }
+
+    const token = jwt.sign(
+      { user_id: user.user_id, type: 'email-verify' },
+      process.env.JWT_SECRET,
+      { expiresIn: '10m' }
+    );
+
+    const link = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
+    await mailer.sendMail({
+      to: user.email,
+      from: process.env.SMTP_FROM,
+      subject: 'Verify your account',
+      text: `Hi ${user.first_name},\n\nYour account has been approved! Click the link below to verify it:\n\n${link}`
+    });
+
+    res.json({ message: "Verification email resent successfully" });
+  } catch (error) {
+    console.error("Error resending verification:", error.message);
+    res.status(500).json({ message: "Server error while resending verification email" });
+  }
+});
+
+
 // Delete a user account (for admin use)
 router.delete("/user/:user_id/remove", authenticate, async (req, res) => {
   try {

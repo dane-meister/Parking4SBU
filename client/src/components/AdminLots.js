@@ -20,7 +20,9 @@ export default function AdminLots({
                 <strong>{lot.name}</strong><br />
                 ID: {lot.id}<br />
                 Location: {Array.isArray(lot.location?.coordinates)
-                  ? `(${lot.location.coordinates[0][1]}, ${lot.location.coordinates[0][0]})`
+                  ? lot.location.coordinates.map(
+                    (coord, index) => `(${coord[1]}, ${coord[0]})`
+                  ).join(', ')
                   : 'N/A'}<br />
               </div>
               <div className="user-actions">

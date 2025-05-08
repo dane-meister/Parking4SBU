@@ -17,9 +17,6 @@ export default function AdminUsers({
         ) : (
           users
             .filter(user => !user.isApproved)
-            .filter(user =>
-              `${user.first_name} ${user.last_name} ${user.email}`.toLowerCase().includes(searchTerm.toLowerCase())
-            )
             .map(user => (
               <div className="user-card" key={user.user_id}>
                 <div className="user-info">
@@ -84,42 +81,48 @@ export default function AdminUsers({
         {users.length === 0 ? (
           <p>No users found.</p>
         ) : (
-          users.map(user => (
-            <div
-              className="user-card"
-              key={user.user_id}
-              onClick={() => setEditingUser(user)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setEditingUser(user);
-                }
-              }}
-              style={{ position: 'relative', paddingBottom: '50px' }}
-            >
-              <div className="user-info">
-                <strong style={{ fontSize: '1.1rem' }}>{user.first_name} {user.last_name}</strong><br />
-                <span><b>ID:</b> {user.user_id}</span><br />
-                <span><b>Email:</b> {user.email}</span><br />
-                <span><b>Type:</b> {user.user_type}</span><br />
-                <span><b>Permit:</b> {user.permit_type || 'N/A'}</span><br />
-                <span><b>Joined:</b> {new Date(user.createdAt).toLocaleDateString()}</span><br />
-                <span><b>Approved:</b> {user.isApproved ? 'Yes' : 'No'}</span><br />
+          users
+            .filter(user =>
+              `${user.first_name} ${user.last_name} ${user.email}`
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())
+            )
+            .map(user => (
+              <div
+                className="user-card"
+                key={user.user_id}
+                onClick={() => setEditingUser(user)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setEditingUser(user);
+                  }
+                }}
+                style={{ position: 'relative', paddingBottom: '50px' }}
+              >
+                <div className="user-info">
+                  <strong style={{ fontSize: '1.1rem' }}>{user.first_name} {user.last_name}</strong><br />
+                  <span><b>ID:</b> {user.user_id}</span><br />
+                  <span><b>Email:</b> {user.email}</span><br />
+                  <span><b>Type:</b> {user.user_type}</span><br />
+                  <span><b>Permit:</b> {user.permit_type || 'N/A'}</span><br />
+                  <span><b>Joined:</b> {new Date(user.createdAt).toLocaleDateString()}</span><br />
+                  <span><b>Approved:</b> {user.isApproved ? 'Yes' : 'No'}</span><br />
+                </div>
+                <div style={{ position: 'absolute', bottom: '10px', right: '10px' }}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveTicketUser(user);
+                    }}
+                    className="give-ticket-btn"
+                  >
+                    Give Ticket
+                  </button>
+                </div>
               </div>
-              <div style={{ position: 'absolute', bottom: '10px', right: '10px' }}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveTicketUser(user);
-                  }}
-                  className="give-ticket-btn"
-                >
-                  Give Ticket
-                </button>
-              </div>
-            </div>
-          ))
+            ))
         )}
       </div>
     </>
