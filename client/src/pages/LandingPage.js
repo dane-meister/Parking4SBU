@@ -60,8 +60,6 @@ function LandingPage() {
     fetchData();
   }, []);
 
-
-
   const handleTimeSelect = (mode, formatted) => {
     setTimes((prev) => ({
       ...prev,
@@ -123,17 +121,74 @@ function LandingPage() {
     "Because ‘I couldn’t find parking’ is not a valid excuse anymore.",
     "You miss 100% of the spots you didn’t reserve.",
     "Tap. Park. Flex.",
-    "Manhattan Distance."
+    "Manhattan Distance.",
+    "No more parking lot prayer circles.",
+    "Swipe right on your dream parking spot.",
+    "Parking problems? Unmatched.",
+    "Because parking should be boring—in a good way.",
+    "Don’t park like a freshman.",
+    "This is the way. (to your spot)",
+    "A+ in finding spots. Can’t help with finals though.",
+    "Your car called. It wants a real space.",
+    "No more parking sacrifices to the campus gods.",
+    "Less rage, more range (of available spots).",
+    "You study hard. We’ll handle parking logistics.",
+    "Leave the stress in reverse.",
+    "Because parking roulette is not a major.",
+    "Because your GPA shouldn't depend on finding Lot 12.",
+    "No goats were sacrificed to find this spot. Just code.",
+    "We can’t park for you, but we’re close.",
+    "This app has seen things... mostly you crying in traffic.",
+    "Just park it. Before someone else does.",
+    "Because you should fear midterms, not meters.",
+    "Built by people who have suffered. Just like you.",
+    "More accurate than your professor’s grading rubric.",
+    "The only place you won’t get ghosted: your reserved spot.",
+    "Good spots? We hoard them like it’s our Roman Empire.",
+    "You’ve tried manifesting. Now try the app.",
+    "Faster than your situationship texting back.",
+    "Less wandering. More wondering why you didn’t use this sooner.",
+    "Our spots are more committed than your situationship.",
+    "Because true love is a reserved space near Frey Hall.",
+    "We’ll never leave you on read — or on Circle Road.",
+    "‘Parking is hard’ — not on our watch, sweetheart.",
+    "Your car deserves a better love story than Twilight.",
+    "Seawolves mate for life. So do we... with spots.",
+    "Parking shouldn’t require a minor in urban planning.",
+    "Sleep in. Skip the lot hunt.",
+    "Helping you avoid your ex and parallel parking.",
+    "Let’s face it — parking should not be the most stressful part of your day.",
+    "You study for tests. We study lot availability.",
+    "You’ve got tuition, textbooks, and trauma — let’s take parking off that list.",
+    "We can’t help with your GPA, but we’ve got the parking thing.",
+    "Avoid parking drama like you avoid campus geese."
   ]
+  function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+  
+  const [shuffledSlogans, setShuffledSlogans] = useState(shuffleArray(slogans));
   const [sloganIndex, setSloganIndex] = useState(0);
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
-      setSloganIndex(i => (i + 1) % slogans.length);
-    }, 6000); // rotate every 4 seconds
+      setSloganIndex((prevIndex) => {
+        if (prevIndex + 1 >= shuffledSlogans.length) {
+          setShuffledSlogans(shuffleArray(slogans));
+          return 0;
+        } else {
+          return prevIndex + 1;
+        }
+      });
+    }, 6000);
+  
     return () => clearInterval(interval);
-  }, []);
-
+  }, [shuffledSlogans, slogans]);
 
 
   return (
