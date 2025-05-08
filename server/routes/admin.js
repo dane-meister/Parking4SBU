@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Feedback, Reservation, ParkingLot } = require("../models");
+const { User, Feedback, Reservation, ParkingLot, sequelize } = require("../models");
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { Op } = require('sequelize');
@@ -7,6 +7,7 @@ const { Op } = require('sequelize');
 const authenticate = require("../middleware/authMiddleware");
 const requireAdmin = require("../middleware/adminMiddleware");
 
+const coordinateConverter = require('../services/mercatorConversion');
 
 //to sign one-time tokens and email them
 const nodemailer = require('nodemailer');
@@ -220,6 +221,72 @@ router.put('/event-reservations/:id/reject', authenticate, requireAdmin, async (
     res.status(500).json({ message: "Failed to reject reservation", error: err.message });
   }
 });
+
+// Add a lot
+router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { name, coordinates, capacity, rates, covered, resident_zone } = req.body;
+
+    const numberCoordinates = coordinates
+      .map(c => c.replaceAll(' ', ''))          // trim whitespace
+      .map(c => c.split(','))                   // split to get lat long
+      .map(c => [c[1], c[0]])                   // reverse lat and long for some reason
+      .map(c => [Number(c[0]), Number(c[1])]);  // to numbers
+
+    const coordinates_formatted = numberCoordinates
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const coordinates_str = `ST_GeomFromText('MULTIPOINT(${coordinates_formatted})', 4326)`
+
+    const mercator_coordinates_formatted = numberCoordinates
+      .map(c => coordinateConverter.epsg4326toEpsg3857(c))
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const mercator_str = `ST_GeomFromText('MULTIPOINT(${mercator_coordinates_formatted})', 3857)`
+
+    const total_capacity = Object.keys(capacity).reduce(
+      (total, key) => key === 'capacity' ? total : total + capacity[key],
+      0
+    );
+    const newParkingLot = await ParkingLot.create({
+      name,
+      location: sequelize.literal(coordinates_str),
+      mercator_coordinates: sequelize.literal(mercator_str),
+      capacity: total_capacity,
+      faculty_capacity: capacity.faculty_capacity,
+      faculty_availability: capacity.faculty_capacity,
+      commuter_perimeter_capacity: capacity.commuter_perimeter_capacity,
+      commuter_perimeter_availability: capacity.commuter_perimeter_capacity,
+      commuter_core_capacity: capacity.commuter_core_capacity,
+      commuter_core_availability: capacity.commuter_core_capacity,
+      commuter_satellite_capacity: capacity.commuter_satellite_capacity,
+      commuter_satellite_availability: capacity.commuter_satellite_capacity,
+      metered_capacity: capacity.metered_capacity,
+      metered_availability: capacity.metered_capacity,
+      resident_capacity: capacity.resident_capacity,
+      resident_availability: capacity.resident_capacity,
+      resident_zone: resident_zone,
+      ada_capacity: capacity.ada_capacity,
+      ada_availability: capacity.ada_capacity,
+      ev_charging_capacity: capacity.ev_charging_capacity,
+      ev_charging_availability: capacity.ev_charging_capacity,
+      general_capacity: capacity.general_capacity,
+      general_availability: capacity.general_capacity,
+      covered: covered,
+    });
+    res.status(201).json({ message: 'Successfully added lot!' });
+  } catch (err) {
+    console.error("Failed adding lot:", err);
+    res.status(500).json({ error: `Failed to add lot: ${err}`});
+  }
+});
+
+// Add a rate
+router.post('lots/:lot_id/rates/add', authenticate, requireAdmin, async (req, res) => {});
+// Edit a lot
+
+// Edit a rate
+
 
 // Delete a lot
 router.delete('/parking-lots/:id/remove', authenticate, requireAdmin, async (req, res) => {

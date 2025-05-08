@@ -162,13 +162,14 @@
   height: auto;
 }
 
-.capacity-img, .capacity-img, .rates-img, .location-img, img.rate {
+.capacity-img, .capacity-img, .rates-img, .location-img, img.rate, .other-img{
   height: 20px;
 }
 
 .capacity-collapsible-name,
 .rates-collapsible-name,
 .location-collapsible-name,
+.other-collapsible-name,
 .lot-lbl {
   font-weight: bold;
   font-size: 18px;
@@ -177,6 +178,12 @@
 
 #lot-form-modal input {
   width: 100%;
+}
+
+#lot-form-modal #covered{
+  width: auto;
+  margin-bottom: 0;
+  margin-left: 10px;
 }
 
 #lot-form-modal>div {
