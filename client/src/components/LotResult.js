@@ -25,6 +25,8 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     resident_availability,
     resident_capacity,
     resident_zone,
+    general_availability,
+    general_capacity,
     rate,
     time,
     location,
@@ -42,8 +44,9 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
   );
 
   // Determine what to display for rate
-  let displayRate = '';
+  let displayRate = 'Permitted Lot';
   let timeRange = '';
+
   if (desiredRateObj) {
     displayRate = `$${desiredRateObj[rateType].toFixed(2)} / ${rateType}`;
     timeRange = formatTimeRange(desiredRateObj.lot_start_time, desiredRateObj.lot_end_time);
@@ -51,6 +54,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     displayRate = 'Free visitor parking';
     timeRange = formatTimeRange(freeRateObj.lot_start_time, freeRateObj.lot_end_time);
   }
+
   
 
   const availableCapacity = 
@@ -61,6 +65,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     ev_charging_availability +
     faculty_availability +
     metered_availability +
+    general_availability +
     resident_availability;
 
     function getRelevantRate(rates, rateType) {
