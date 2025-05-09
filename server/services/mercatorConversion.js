@@ -21,7 +21,7 @@ function metersToMiles(meters) {
 }
 
 // Input coordinates (Longitude, Latitude)
-const lonLat1 = [-73.127930, 40.920929]; 
+const lonLat1 = [40.920929, -73.127930]; 
 
 // Convert to Web Mercator (EPSG:3857)
 const mercatorCoords1 = epsg4326toEpsg3857(lonLat1);

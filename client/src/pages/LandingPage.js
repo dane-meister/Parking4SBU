@@ -163,6 +163,7 @@ function LandingPage() {
     "We can’t help with your GPA, but we’ve got the parking thing.",
     "Avoid parking drama like you avoid campus geese."
   ]
+
   function shuffleArray(array) {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -206,7 +207,7 @@ function LandingPage() {
       <Header />
 
       <div className="landing-content">
-        <h1 key={sloganIndex} className="slogan">{slogans[sloganIndex]}</h1>
+        <h1 key={sloganIndex} className="slogan">{shuffledSlogans[sloganIndex]}</h1>
 
         {/* Pricing options (Hourly / Daily) */}
         <div className="pricing-options">
