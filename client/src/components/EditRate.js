@@ -1,5 +1,5 @@
-import { DisableableInput } from '.'
-import TimeSelector from './TimeSelector';
+import { DisableableInput, HourSelector } from '.';
+import { useState } from 'react';
 
 function EditRate({ 
   rateObj, 
@@ -72,6 +72,25 @@ function EditRate({
     });
   };
 
+  const [timeEditMode, setTimeEditMode] = useState(null);
+  const handleTimeSelect = (mode, formatted) => {
+    setFormData(prev => {
+      const newRates = { ...prev.rates };
+      const newRate = newRates[rateNumber];
+      newRate[mode] = formatted;
+
+      return { ...prev, rates: newRates};
+    });
+    setTimeEditMode(null);
+  };
+
+  const formatHours = (hours) => {
+    return new Date(`2000-01-01T${hours}Z`)
+      .toLocaleTimeString('en-US',
+        { timeZone:'UTC', hour12: true, hour: 'numeric', minute: 'numeric' }
+      );
+  };
+
   return (<>
     {/* 
     - means started
@@ -121,9 +140,47 @@ function EditRate({
     <div className='lot-form-error' />
     
     {/* rate times */}
-    <div className='hbox'>
-
+    <div style={{fontSize: '14px', marginTop: '6px'}}>
+      Rate Times{isModified('lot_start_time') || isModified('lot_end_time') ? '*' : ''}
     </div>
+    <div className="time-selector-container">
+      <div className="time-input">
+        <span className="time-label" style={{fontStyle: 'italic'}}>Lot Start Time{isModified('lot_start_time') ? '*' : ''}:</span>
+        <div className={`time-row ${isModified('lot_start_time') ? 'field-modified' : ''}`}>
+          <span className="time-value">{formatHours(rateObj.lot_start_time)}</span>
+          <button className="edit-button" type='button'
+            onClick={() => setTimeEditMode("lot_start_time")}
+          >
+            <img src="/images/edit-icon1.png" alt="Edit Arrival" className="edit-icon" />
+          </button>
+        </div>
+      </div>
+      <div className="arrow-container">
+        <img src="/images/arrow1.png" alt="Arrow" className="landing-arrow-icon" />
+      </div>
+      <div className="time-input">
+        <span className="time-label" style={{fontStyle: 'italic'}}>Lot End Time{isModified('lot_end_time') ? '*' : ''}:</span>
+        <div className={`time-row ${isModified('lot_end_time') ? 'field-modified' : ''}`}>
+          <span className="time-value">{formatHours(rateObj.lot_end_time)}</span>
+          <button className="edit-button" type='button'
+            onClick={() => setTimeEditMode("lot_end_time")}
+          >
+            <img src="/images/edit-icon1.png" alt="Edit Departure" className="edit-icon" />
+          </button>
+        </div>
+      </div>
+      {timeEditMode && (
+        <HourSelector
+          mode={timeEditMode}
+          initialTimes={{lot_start_time: rateObj.lot_start_time, lot_end_time: rateObj.lot_end_time}}
+          onSelect={handleTimeSelect}
+          onClose={() => setTimeEditMode(null)}
+        />
+      )}
+    </div>
+    <div className='lot-form-error' id='times-err'
+      style={errorMsgs?.times ? {} : {marginTop: '2px'}}
+    >{errorMsgs?.times}</div>
     
     {/* hourly rate */}
     <div className='hbox'>  

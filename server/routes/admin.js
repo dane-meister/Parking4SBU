@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Feedback, Reservation, ParkingLot, sequelize } = require("../models");
+const { User, Feedback, Reservation, ParkingLot, Rate, sequelize } = require("../models");
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { Op } = require('sequelize');
@@ -272,10 +272,14 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
   try {
     const { name, coordinates, capacity, rates, covered, resident_zone } = req.body;
 
+    if(!name || !coordinates || !capacity){
+      res.status(500).json({ error: 'Failed to create lot! (Missing fields)'});
+      return;
+    }
+
     const numberCoordinates = coordinates
       .map(c => c.replaceAll(' ', ''))          // trim whitespace
       .map(c => c.split(','))                   // split to get lat long
-      .map(c => [c[1], c[0]])                   // reverse lat and long for some reason
       .map(c => [Number(c[0]), Number(c[1])]);  // to numbers
 
     const coordinates_formatted = numberCoordinates
@@ -284,6 +288,7 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
     const coordinates_str = `ST_GeomFromText('MULTIPOINT(${coordinates_formatted})', 4326)`
 
     const mercator_coordinates_formatted = numberCoordinates
+      .map(c => [c[1], c[0]])  // reverse lat and long because of dane
       .map(c => coordinateConverter.epsg4326toEpsg3857(c))
       .map(c => `(${c[0]} ${c[1]})`)
       .join(',');
@@ -293,6 +298,7 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
       (total, key) => key === 'capacity' ? total : total + capacity[key],
       0
     );
+
     const newParkingLot = await ParkingLot.create({
       name,
       location: sequelize.literal(coordinates_str),
@@ -319,6 +325,158 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
       general_availability: capacity.general_capacity,
       covered: covered,
     });
+
+    // now add rates
+    for(const rate of rates){
+      await Rate.create({
+        permit_type: rate.permit_type,
+        hourly: rate.hourly,
+        daily: rate.daily,
+        max_hours: rate.max_hours,
+        monthly: rate.monthly,
+        semesterly_fall_spring: rate.semesterly_fall_spring,
+        semesterly_summer: rate.semesterly_summer,
+        yearly: rate.yearly,
+        lot_start_time: rate.lot_start_time,
+        lot_end_time: rate.lot_end_time,
+        event_parking_price: rate.event_parking_price,
+        sheet_number: rate.sheet_number,
+        sheet_price: rate.sheet_price,
+        
+        // Foreign key column
+        parking_lot_id: newParkingLot.id
+      });
+    }
+
+
+    res.status(201).json({ message: 'Successfully added lot!' });
+  } catch (err) {
+    console.error("Failed adding lot:", err);
+    res.status(500).json({ error: `Failed to add lot: ${err}`});
+  }
+});
+
+// Edit a lot
+router.put('/lots/:id/update', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { name, coordinates, capacity, rates, covered, resident_zone } = req.body;
+
+    if(!name || !coordinates || !capacity){
+      res.status(500).json({ error: 'Failed to edit lot! (Missing fields)'});
+      return;
+    }
+
+    // check if lot exists
+    const { id } = req.params;
+    const lot = await ParkingLot.findByPk(id);
+    if(!lot){
+      res.status(404).json({ error: 'Lot not found!' });
+      return;
+    }
+
+    const numberCoordinates = coordinates
+      .map(c => c.replaceAll(' ', ''))          // trim whitespace
+      .map(c => c.split(','))                   // split to get lat long
+      .map(c => [Number(c[0]), Number(c[1])]);  // to numbers
+
+    const coordinates_formatted = numberCoordinates
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const coordinates_str = `ST_GeomFromText('MULTIPOINT(${coordinates_formatted})', 4326)`
+
+    const mercator_coordinates_formatted = numberCoordinates
+      .map(c => [c[1], c[0]])  // reverse lat and long because of dane
+      .map(c => coordinateConverter.epsg4326toEpsg3857(c))
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const mercator_str = `ST_GeomFromText('MULTIPOINT(${mercator_coordinates_formatted})', 3857)`
+
+    const total_capacity = Object.keys(capacity).reduce(
+      (total, key) => key === 'capacity' ? total : total + capacity[key],
+      0
+    );
+
+    await lot.update({
+      name,
+      location: sequelize.literal(coordinates_str),
+      mercator_coordinates: sequelize.literal(mercator_str),
+      capacity: total_capacity,
+      faculty_capacity: capacity.faculty_capacity,
+      faculty_availability: capacity.faculty_capacity,
+      commuter_perimeter_capacity: capacity.commuter_perimeter_capacity,
+      commuter_perimeter_availability: capacity.commuter_perimeter_capacity,
+      commuter_core_capacity: capacity.commuter_core_capacity,
+      commuter_core_availability: capacity.commuter_core_capacity,
+      commuter_satellite_capacity: capacity.commuter_satellite_capacity,
+      commuter_satellite_availability: capacity.commuter_satellite_capacity,
+      metered_capacity: capacity.metered_capacity,
+      metered_availability: capacity.metered_capacity,
+      resident_capacity: capacity.resident_capacity,
+      resident_availability: capacity.resident_capacity,
+      resident_zone: resident_zone,
+      ada_capacity: capacity.ada_capacity,
+      ada_availability: capacity.ada_capacity,
+      ev_charging_capacity: capacity.ev_charging_capacity,
+      ev_charging_availability: capacity.ev_charging_capacity,
+      general_capacity: capacity.general_capacity,
+      general_availability: capacity.general_capacity,
+      covered: covered,
+    });
+
+    // delete missing rates
+    const rate_ids = rates.map(r => r.id);
+    const old_rates = await Rate.findAll({
+      where: { parking_lot_id: id }
+    });
+    for(const old_rate of old_rates){
+      if(!rate_ids.includes(old_rate.id)){
+        // no longer a rate
+        await old_rate.destroy();
+      }
+    }
+
+    // now add/edit rates
+    for(const rate of rates){
+      if(rate.id === undefined){
+        // new rate to add
+        await Rate.create({
+          permit_type: rate.permit_type,
+          hourly: rate.hourly,
+          daily: rate.daily,
+          max_hours: rate.max_hours,
+          monthly: rate.monthly,
+          semesterly_fall_spring: rate.semesterly_fall_spring,
+          semesterly_summer: rate.semesterly_summer,
+          yearly: rate.yearly,
+          lot_start_time: rate.lot_start_time,
+          lot_end_time: rate.lot_end_time,
+          event_parking_price: rate.event_parking_price,
+          sheet_number: rate.sheet_number,
+          sheet_price: rate.sheet_price,
+          parking_lot_id: id
+        });
+      } else {
+        // old rate to edit
+        const rate_db_obj = await Rate.findByPk(rate.id);
+        await rate_db_obj.update({
+          permit_type: rate.permit_type,
+          hourly: rate.hourly,
+          daily: rate.daily,
+          max_hours: rate.max_hours,
+          monthly: rate.monthly,
+          semesterly_fall_spring: rate.semesterly_fall_spring,
+          semesterly_summer: rate.semesterly_summer,
+          yearly: rate.yearly,
+          lot_start_time: rate.lot_start_time,
+          lot_end_time: rate.lot_end_time,
+          event_parking_price: rate.event_parking_price,
+          sheet_number: rate.sheet_number,
+          sheet_price: rate.sheet_price,
+          parking_lot_id: id
+        })
+      }
+    } 
+
     res.status(201).json({ message: 'Successfully added lot!' });
   } catch (err) {
     console.error("Failed adding lot:", err);
@@ -327,10 +485,9 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
 });
 
 // Add a rate
-router.post('lots/:lot_id/rates/add', authenticate, requireAdmin, async (req, res) => {});
-// Edit a lot
-
+// router.post('lots/:lot_id/rates/add', authenticate, requireAdmin, async (req, res) => {});
 // Edit a rate
+
 
 
 // Delete a lot

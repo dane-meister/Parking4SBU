@@ -24,3 +24,4 @@ export { default as EditLotCapacity } from './EditLotCapacity';
 export { default as EditLotLocation } from './EditLotLocation';
 export { default as EditRateForm } from './EditRateForm';
 export { default as EditLotOther } from './EditLotOther';
+export { default as HourSelector } from './HourSelector';
