@@ -1,6 +1,7 @@
-export default function Buildings({
+export default function AdminBuildings({
   buildings,
   setEditingBuilding,
+  editingBuilding,
   setAddingBuilding,
   handleDeleteBuilding,
   refreshBuildings
@@ -15,7 +16,7 @@ export default function Buildings({
         .map(building => (
           <div className="user-card" key={building.id}>
           <div className="user-info">
-            <strong>{building.building_name}</strong><br />
+            <strong style={{fontFamily: 'Barlow Bold, sans-serif'}}>{building.building_name}</strong><br />
             ID: {building.id}<br />
             Location: {Array.isArray(building.location?.coordinates)
               ? building.location.coordinates.map(
