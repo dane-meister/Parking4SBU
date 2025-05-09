@@ -81,7 +81,8 @@
 	font-size: 17px;
 }
 
-.make-reservation-pay-btn{
+.make-reservation-pay-btn,
+.add-vehicle-btn { 
 	--btn-color: var(--red);
 	--btn-color-hover: var(--bright-red);
 	--btn-color-active: var(--red);
