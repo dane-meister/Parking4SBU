@@ -67,8 +67,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         daily: null,
         event_parking_price: null,
         hourly: null,
-        lot_end_time: "23:59:59",
-        lot_start_time: "0:00:00",
+        lot_start_time: "07:00:00",
+        lot_end_time: "16:00:00",
         max_hours: null,
         monthly: null,
         parking_lot_id: null,
@@ -134,6 +134,14 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
     // permit type checks
     // - empty rn
 
+    // time checks
+    const isEndBeforeStart = (start, end) => Number(end.slice(0, 2)) < Number(start.slice(0, 2));
+    if(isEndBeforeStart(rateObj.lot_start_time, rateObj.lot_end_time)){
+      currentRateErrMsgs['times'] = 'Start time must be before end time!';
+    }else{
+      currentRateErrMsgs['times'] = '';
+    }
+
     // price checks
     [
       'hourly', 'daily', 'monthly', 'semesterly_fall_spring',
@@ -157,6 +165,19 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         currentRateErrMsgs[key] = "Number must be larger than 0!";
       }else{
         currentRateErrMsgs[key] = "";
+      }
+
+      //sheet checks
+      if(rateObj.sheet_number !== null && rateObj.sheet_price === null){
+        // dont override previous errors
+        if(!isNonNullAndEmpty(rateObj.sheet_number)){
+          currentRateErrMsgs['sheet_number'] = 'Sheet number must have a sheet price!'
+        }
+      }else if(rateObj.sheet_number === null && rateObj.sheet_price !== null){
+        const value = rateObj.sheet_price;
+        if(!isNonNullAndEmpty(rateObj.sheet_price) && !(value !== null && value == 0)){
+          currentRateErrMsgs['sheet_price'] = 'Sheet price must have a sheet number!'
+        }
       }
     });
 

@@ -44,10 +44,9 @@ export default function EditLotOther({
       externalOpen={openOther} externalSetOpen={setOpenOther}
       asterisk={formType === 'add' || anyOtherModified()} 
     >
-      {console.log(`isModified: ${isModified('covered')}`)}
       <div className="hbox" style={{marginBottom: '5px'}}>
         <label htmlFor="covered" style={{width: '70px'}}>
-          Covered{isModified('covered') && '*'}: 
+          Covered{formType==='edit' && isModified('covered') && '*'}: 
         </label>
         <input type="checkbox" id='covered'
           checked={isChecked}
@@ -63,7 +62,7 @@ export default function EditLotOther({
           disabled={formData.resident_zone === null}
           onChange={onResidentZoneChange}
           onDisable={onResidentZoneDisable}
-          isModified={isModified('resident_zone')}
+          isModified={formType==='edit' && isModified('resident_zone')}
           label='Resident Zone'
         />
       </div>
