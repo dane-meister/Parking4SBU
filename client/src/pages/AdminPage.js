@@ -12,6 +12,7 @@ import LotFormModal from '../components/LotFormModal';
 import Popup from '../components/Popup';
 import TicketForm from '../components/TicketForm';
 import FeedbackFormModal from '../components/FeedbackFormModal';
+import { AdminBuildings } from '../components';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
@@ -23,6 +24,10 @@ export default function Admin() {
   const [addingLot, setAddingLot] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [feedbackList, setFeedbackList] = useState([]);
+  
+  const [buildings, setBuildings] = useState([]);
+  const [editingBuilding, setEditingBuilding] = useState(null);
+  
   const [eventReservations, setEventReservations] = useState([]);
   const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
   const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
@@ -61,6 +66,16 @@ export default function Admin() {
         .catch(err => {
           console.error("Failed to fetch lots", err);
           setLots([]);
+        });
+    }
+    if (adminOption === 'buildings') {
+      axios.get(`${HOST}/api/buildings`, {
+        withCredentials: true
+      })
+        .then(res => setBuildings(res.data))
+        .catch(err => {
+          console.error("Failed to fetch buildings", err);
+          setBuildings([]);
         });
     }
     if (adminOption === 'events') {
@@ -178,6 +193,11 @@ export default function Admin() {
             setEditingLot={setEditingLot}
             handleDeleteLot={handleDeleteLot}
             setAddLotForm={setAddLotForm}
+          />
+        )}
+        {adminOption === 'buildings' && (
+          <AdminBuildings 
+            buildings={buildings}
           />
         )}
         {adminOption === 'events' && (
