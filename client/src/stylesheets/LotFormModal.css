@@ -42,7 +42,8 @@
 .location-collapsible,
 .capacity-collapsible,
 .rates-collapsible,
-.single-rate-collapsible {
+.single-rate-collapsible,
+.other-collapsible {
     padding-bottom: 10px;
     margin-top: 10px;
     border-bottom: #aaa solid 1px;
@@ -215,4 +216,96 @@
 }
 .lot-edit-h2 .hover-black:hover{
     filter: invert(.8);
+}
+
+.lot-resident-zone-box label{
+    width: 107px;
+}
+
+.rates-collapsible .time-selector-container{
+    --border-color: #d0d0d0;
+    width: 100%;
+    justify-self: center;
+    justify-content: space-between;
+    border-top: var(--border-color) solid 1px;
+}
+
+.rates-collapsible .time-input, .rates-collapsible .time-row{
+    width: 165px;
+    gap: 0;
+    margin-bottom: 0;
+}
+
+.rates-collapsible .time-row{
+    display: flex;
+    justify-content: space-between;
+    border: solid rgb(118, 118, 118) 1px;
+    border-radius: 2px;
+    padding-left: 3px;
+    font-size: 14px;
+    height: 21px;
+    margin-bottom: 3px;
+}
+
+.rates-collapsible .time-label, .rates-collapsible .time-value {
+    color: black;
+    font-family: Lato;
+    font-weight: 400;
+}
+
+.rates-collapsible .time-label{
+    font-size: 13px;
+    padding-left: 3px;
+    margin: 0
+}
+
+.rates-collapsible .time-selector-container .edit-button{
+    padding-top: 3px;
+    background-color: #f0f0f0;
+    height: 19px;
+    border-left: #aaa 1px solid;
+    /* border-top: solid rgb(118, 118, 118) 1px;
+    border-bottom: solid rgb(118, 118, 118) 1px; */
+}
+
+.rates-collapsible .time-selector-container .edit-button img{
+    height: 13px;
+    width: 13px;
+}
+
+.rates-collapsible .landing-arrow-icon{
+    height: 100%;
+    padding-top: 10px;
+
+}
+
+.hour-selector-card h3{
+    margin: -20px -20px 15px;
+    padding: 15px 20px ;
+    background-color: var(--red);
+    color: white;
+    border-radius: 5px 5px 0 0;
+}
+
+.hour-selector-card .time-selector-buttons button:last-child{
+    background-color: #dadada;
+    color: black;
+
+    &:hover{
+        background-color: #ccc;
+    }
+}
+.hour-selector-card .dropdown-options{
+    /* top: 100%; */
+    margin-top: -8px;
+    margin-left: -1px;
+    margin-right: -1px;
+    padding-top: 5px;
+    border-radius: 0 0 0 4px;
+}
+.rates-collapsible #times-err{
+    --border-color: #d0d0d0;
+    border-bottom: var(--border-color) solid 1px;
+    padding-bottom: 3px;
+    margin-bottom: 5px;
 }
