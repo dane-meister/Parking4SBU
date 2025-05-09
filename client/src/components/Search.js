@@ -18,7 +18,7 @@ const AutocompleteSearch = (props) => {
     setSelectedLot,
     setSort,
   } = props
-
+  console.log("inside Search:\n"+parkingLots.map(p => `${p.name}\n`))
   const outletContext = useOutletContext();
 
   const times = outletContext?.times;
@@ -30,7 +30,7 @@ const AutocompleteSearch = (props) => {
 
   // Extract lot names from parkingLots array, filtering only lots with capacity > 0
   const lot_names = parkingLots
-    .filter(lot => lot.capacity > 0)
+    // .filter(lot => lot.capacity > 0)
     .map(lot => lot.name);
 
   const startTime = times?.arrival ? getDateWithTime(times.arrival) : null;

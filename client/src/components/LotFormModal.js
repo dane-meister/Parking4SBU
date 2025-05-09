@@ -8,7 +8,7 @@ import axios from 'axios';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 Modal.setAppElement('#root'); // should only render once, or else constant warnings!
 
-export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
+export default function LotFormModal({ isOpen, onRequestClose, lot, formType, toggleLotRefresh }){
   const [formData, setFormData] = useState({
     name: '',
     coordinates: [],
@@ -304,13 +304,31 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType }){
         { withCredentials: true }
       )
         .then(() => {
-          onRequestClose()
+          toggleLotRefresh();
+          onRequestClose();
         })
         .catch((err) => {
           alert(err.message)
         });
     }else{
-      alert('Edit Modal!!');
+      await axios.put(`${HOST}/api/admin/lots/${lot.id}/update`,
+        { 
+          name, 
+          coordinates, 
+          capacity, 
+          rates: Object.values(rates), 
+          covered,
+          resident_zone
+        }, 
+        { withCredentials: true }
+      )
+        .then(() => {
+          toggleLotRefresh();
+          onRequestClose();
+        })
+        .catch((err) => {
+          alert(err.message)
+        });
     }
     // console.log(response)
   };

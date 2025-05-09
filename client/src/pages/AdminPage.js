@@ -26,6 +26,7 @@ export default function Admin() {
   const [eventReservations, setEventReservations] = useState([]);
   const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
   const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
+  const [toggleLotRefresh, setToggleLotRefresh] = useState(false);
   const [activeFeedback, setActiveFeedback] = useState(null);
   const [activeTicketUser, setActiveTicketUser] = useState(null);
   const [newTicket, setNewTicket] = useState({
@@ -80,7 +81,7 @@ export default function Admin() {
           setFeedbackList([]);
         });
     }
-  }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh]);
+  }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh, toggleLotRefresh]);
 
   // Handle user approval or rejection
   const handleApproval = (userId, approve) => {
@@ -283,6 +284,7 @@ export default function Admin() {
           setAddLotForm(false);
         }}
         formType={!!editingLot ? 'edit' : 'add'}
+        toggleLotRefresh={() => setToggleLotRefresh(prev => !prev)}
       />
 
       <FeedbackFormModal

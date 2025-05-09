@@ -6,6 +6,8 @@ export default function AdminLots({
   handleDeleteLot,
   setAddLotForm
 }) {
+
+  lots = lots.toSorted((lot1, lot2) => lot1.id - lot2.id);
   return (
     <>
       <button className="add-lot-button" onClick={() => setAddLotForm(true)}>Add a Lot</button>
