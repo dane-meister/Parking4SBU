@@ -227,7 +227,7 @@ export default function LotDetails({ lotObj, rateType }) {
 					{ev_charging_capacity > 0 && (
 						<li>EV Charging: {minAvailability.ev_charging ?? ev_charging_availability} / {ev_charging_capacity}</li>
 					)}
-					{capacity > 0 && (
+					{capacity && (
 						<li><strong>Total:</strong> {minAvailability.total ?? 'unknown'} / {capacity} Available</li>
 					)}
 				</ul>
