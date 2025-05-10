@@ -141,18 +141,16 @@ function Reservation(){
 		let subtotal = 0;
 
 		if (isEventParking) {
-			console.log(endTime, startTime);
 			const start = new Date(startTime);
 			const end = new Date(endTime);
 			const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)); // Calculate number of days between start and end
-			console.log(dayCount);
-
+			
 			const { sheet_number, sheet_price, event_parking_price, hourly, lot_start_time, lot_end_time, max_hours, daily } = selectedRate;
 			if (sheet_number != null && sheet_price != null) {
-				const sheetsNeeded = Math.ceil(spotCount / sheet_number);
+				const sheetsNeeded = Math.ceil(Number(spotCount) / sheet_number);
 				subtotal = sheetsNeeded * sheet_price * dayCount;
 			} else if (event_parking_price != null) {
-				subtotal = event_parking_price * spotCount * dayCount; // Flat per-spot rate (daily)
+				subtotal = event_parking_price * Number(spotCount) * dayCount; // Flat per-spot rate (daily)
 			} else if (hourly != null && lot_start_time && lot_end_time && max_hours != null && daily != null) {
 				const result = calculateReservationCharge({
 					startTime,
@@ -163,7 +161,7 @@ function Reservation(){
 					maxHours: max_hours,
 					dailyMaxRate: daily
 				});
-				subtotal = result.subtotal * spotCount;
+				subtotal = result.subtotal * Number(spotCount);
 			} else {
 				console.warn("No valid event rate found. Defaulting to $0.");
 				subtotal = 0;
@@ -288,7 +286,7 @@ function Reservation(){
 			hasError = true;
 		}
 
-		if (isEventParking && spotCount > minAvailability[selectedSpotType]) {
+		if (isEventParking && Number(spotCount) > minAvailability[selectedSpotType]) {
 			errors.availability = `Only ${minAvailability[selectedSpotType]} ${selectedSpotType.replace('_', ' ')} spots are available.`;
 			hasError = true;
 		}
@@ -415,7 +413,7 @@ function Reservation(){
 					onKeyDown={numericKeyDown}
 					min="2"
 					value={spotCount}
-					onChange={(e) => setSpotCount(Number(e.target.value))}
+					onChange={(e) => setSpotCount(e.target.value)}
 					style={{ marginLeft: '10px', width: '60px' }}
 					id='spots-needed'
 				/>
@@ -436,7 +434,7 @@ function Reservation(){
 					/>
 				</label>
 				{errorMessages.eventDescription && (
-					<div className="error-text">{errorMessages.eventDescription}</div>
+					<div className="error-text" style={{marginTop: 0, marginBottom: '8px'}}>{errorMessages.eventDescription}</div>
 				)}
 			</div>
 		)}
@@ -568,6 +566,9 @@ function Reservation(){
 					if (isEventParking && !eventDescription.trim()) {
 						errors.eventDescription = "Event description is required for event parking.";
 						hasError = true;
+					}else if (isEventParking && Number(spotCount) < 2){
+						errors.eventDescription = `Events parking has a minimum of 2 spots.`
+						hasError = true;
 					}
 					if (!selectedSpotType) {
 						errors.spotType = "Please select a spot type.";
@@ -577,8 +578,7 @@ function Reservation(){
 						errors.availability = `No ${selectedSpotType.replace('_', ' ')} spots available during the selected time range.`;
 						hasError = true;
 					}
-
-					if (isEventParking && spotCount > minAvailability[selectedSpotType]) {
+					if (isEventParking && Number(spotCount) > minAvailability[selectedSpotType]) {
 						errors.availability = `Only ${minAvailability[selectedSpotType]} ${selectedSpotType.replace('_', ' ')} spots are available.`;
 						hasError = true;
 					}
