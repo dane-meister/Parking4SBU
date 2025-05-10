@@ -147,7 +147,7 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
         {/* campus drop down */}
         <div id='campus-wrapper' style={{ borderBottom: '#aaa solid 1px', paddingBottom: '10px'}}>
           <div style={{marginTop: '10px'}}>
-            <label className='lot-lbl' htmlFor='campus'>Campus{isModified('campus') && '*'}</label>
+            <label className='lot-lbl' htmlFor='campus'>Campus{(formType==='add' || isModified('campus')) && '*'}</label>
           </div>
           <select 
             id='campus' style={{width: '50%'}}
@@ -164,7 +164,7 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
 
         {/* location input */}
         <label htmlFor='lot-name' className='lot-lbl' style={{display: 'block', marginTop: '10px'}}>
-            Location{anyCoordinateModified() && '*'}
+            Location{(formType==='add' || anyCoordinateModified()) && '*'}
         </label>
         <div id='building-coordinates' style={{borderBottom: '#aaa solid 1px', paddingBottom: '10px'}}>
           {formData.coordinates && formData.coordinates.map((coord, idx) => {
