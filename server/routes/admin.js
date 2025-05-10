@@ -195,6 +195,26 @@ router.get("/feedback", authenticate, requireAdmin, async (req, res) => {
   }
 });
 
+// Get feedback by ID
+router.get("/auth/feedback/my", authenticate, async (req, res) => {
+  try {
+    const userFeedback = await Feedback.findAll({
+      where: { user_id: req.user.user_id },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (!userFeedback) {
+      return res.status(200).json(null); // No feedback submitted yet
+    }
+
+    res.json(userFeedback);
+  } catch (error) {
+    console.error("Error fetching user feedback:", error);
+    res.status(500).json({ error: "Failed to load feedback" });
+  }
+});
+
+
 // Answer feedback
 router.put("/feedback/:feedback_id/respond", authenticate, requireAdmin, async (req, res) => {
   try {

@@ -14,14 +14,25 @@
 
 .feedback-page textarea {
   width: 100%;
-  max-width: 600px;
-  padding: 15px;
-  font-size: 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  resize: vertical;
-  margin-bottom: 20px;
+  max-width: 700px;
+  min-height: 120px;
+  padding: 18px 16px;
+  font-size: 17px;
+  border-radius: 8px;
+  border: 1.5px solid #b0b8c1;
+  background-color: #fff;
+  color: #222;
+  resize: none;
+  margin-bottom: 22px;
   font-family: inherit;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.feedback-page textarea:focus {
+  border-color: var(--royal-blue, #0056b3);
+  outline: none;
+  box-shadow: 0 4px 16px rgba(0,86,179,0.08);
 }
 
 .feedback-page label {
@@ -43,7 +54,7 @@
 }
 
 .feedback-page button {
-  background-color: #007bff;
+  background-color: var(--royal-blue);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -51,6 +62,10 @@
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+}
+
+.feedback-page button:hover {
+  background-color: #014176;
 }
 
 .feedback-card {
@@ -69,3 +84,49 @@
   margin-top: 0.5rem;
   margin-right: 0.5rem;
 }
+
+/* Container for all feedback responses */
+.existing-feedback-block {
+  background: #f9f9f9;
+  border-left: 4px solid #0077cc;
+  padding: 1.5em;
+  margin: 2em 0;
+  border-radius: 6px;
+}
+
+.existing-feedback-block h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  margin-bottom: 1em;
+  color: #333;
+}
+
+/* Individual feedback entry */
+.feedback-entry {
+  margin-bottom: 1.5em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+.feedback-entry:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* Admin reply styling */
+.admin-response {
+  background-color: #f0f0f0;
+  padding: 0.75em 1em;
+  border-left: 3px solid #444;
+  margin-top: 0.75em;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.rating-stars span {
+  font-size: 2em;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
