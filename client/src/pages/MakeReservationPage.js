@@ -438,8 +438,16 @@ function Reservation(){
 			<div className='make-reservation-lot-box' style={{ paddingBottom: '20px' }}>
 				<h4>Vehicle Selection</h4>
 				{vehicles.length === 0 ? (
-					<div style={{ marginLeft: '25px', color: 'gray' }}>
+					<div style={{ marginLeft: '25px', color: 'gray', marginRight: '25px' }}>
 					No vehicles available.
+					<button 
+						className='add-vehicle-btn'
+						onClick={() => {
+							navigate('/profile', { state: { from: 'reservation' } });
+						}}
+					> 
+					Add Vehicle
+					</button>
 					</div>
 				) : (
 					<select
