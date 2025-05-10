@@ -17,6 +17,14 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
 
   const originalData = useRef({});
   useEffect(() => {
+    // reset errors
+    setErrorMsgs({
+      name: '',
+      campus: '',
+      coordinates: ''
+    });
+
+    // load state
     let coords = building?.location?.coordinates
     if(!!coords) coords = coords.map(coord => coord.join(", "));
 
@@ -38,8 +46,48 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
     })
   };
 
-  const handleEditSubmit = () => {
-    alert("edit submit");
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+
+    // name checks
+    if(!formData.name.trim()){
+      setErrorMsgs(prev => ({ ...prev, name: 'Building name cannot be empty!' }));
+    }else{
+      setErrorMsgs(prev => ({ ...prev, name: '' }));
+    }
+    // campus checks
+    // empty
+
+    // location checks
+    const emptyCoords = [];
+    formData.coordinates.forEach((coord, index) => {
+      if(!coord.trim()) emptyCoords.push({ coord, index })
+    });
+
+    const improperFormatCoords = [];
+    formData.coordinates.forEach((coord, index) => {
+      if(!coord.match(/^[ ]*-?\d+[.]?\d*[ ]*,[ ]*-?\d+[.]?\d*[ ]*$/)) 
+        improperFormatCoords.push({ coord, index })
+    });
+
+    const impreciseCoords = [];
+    formData.coordinates.forEach((coord, index) => {
+      if(!coord.match(/^[ ]*-?\d+[.]\d{2,}[ ]*,[ ]*-?\d+[.]\d{2,}[ ]*$/)) 
+        impreciseCoords.push({ coord, index })
+    });
+
+    if(!!emptyCoords.length){
+      const emptyPnts = `(Point${emptyCoords.length !== 1 ? 's' : ''} ${emptyCoords.map(c => c.index + 1).join(', ')})`;
+      setErrorMsgs(prev => ({ ...prev, coordinates: `Lot coordinates cannot be empty! ${emptyPnts}`}));
+    }else if(!!improperFormatCoords.length){
+      const improperFormatPnts = `(Point${improperFormatCoords.length !== 1 ? 's' : ''} ${improperFormatCoords.map(c => c.index + 1).join(', ')})`;
+      setErrorMsgs(prev => ({ ...prev, coordinates: `Lot coordinates must be valid numbers in the format "Latitude, Longitude"!\n${improperFormatPnts}`}));
+    }else if(!!impreciseCoords.length){
+      const imprecisePnts = `(Point${impreciseCoords.length !== 1 ? 's' : ''} ${impreciseCoords.map(c => c.index + 1).join(', ')})`
+      setErrorMsgs(prev => ({ ...prev, coordinates: `All lot coordinates needs 2 decimal places of precision! ${imprecisePnts}`}));
+    }else{
+      setErrorMsgs(prev => ({ ...prev, coordinates: '' }));
+    }
   }
 
   const campuses = ['SBU WEST', 'SBU R&D', 'SBU EAST', 'SBU SOUTH'];  
@@ -198,7 +246,7 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
           {`* ${formType === 'edit' ? 'edited' : 'required'} fields`}
         </p>
         <input type='submit' className='edit-lot-btn' 
-          value={formType === 'add'? 'Add Building' : 'Edit Building'} 
+          value={formType === 'add' ? 'Add Building' : 'Edit Building'} 
         />
 
       </section>
