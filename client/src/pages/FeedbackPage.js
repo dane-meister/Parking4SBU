@@ -10,6 +10,7 @@ export default function FeedbackPage() {
     const [feedback, setFeedback] = useState("");
     const [rating, setRating] = useState(5);
     const [existingFeedback, setExistingFeedback] = useState(null);
+    const [refresh, setRefresh] = useState(false);
 
 
     useEffect(() => {
@@ -25,7 +26,8 @@ export default function FeedbackPage() {
         };
 
         fetchExistingFeedback();
-    }, []);
+        setRefresh(false); // Reset refresh state after fetching
+    }, [refresh]);
 
 
     const handleSubmit = async () => {
@@ -39,6 +41,7 @@ export default function FeedbackPage() {
             alert("Feedback submitted successfully!"); // Keep as an alert?
             setFeedback("");
             setRating(5);
+            setRefresh(!refresh); // Trigger a refresh to fetch new feedback
         } catch (error) {
             console.error("Error submitting feedback:", error.response?.data || error.message);
             alert("Failed to submit feedback."); // Keep as an alert?
@@ -78,6 +81,8 @@ export default function FeedbackPage() {
                     </span>
                 ))}
             </div>
+            <button type="submit" onClick={handleSubmit}>Submit</button>
+
              {existingFeedback?.length > 0 && (
                 <div className="existing-feedback-block">
                     <h2>Your Submitted Feedback</h2>
@@ -95,7 +100,6 @@ export default function FeedbackPage() {
                     ))}
                 </div>
             )}
-            <button type="submit" onClick={handleSubmit}>Submit</button>
         </main>
     );
 }

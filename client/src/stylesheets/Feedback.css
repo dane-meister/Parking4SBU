@@ -89,9 +89,10 @@
 .existing-feedback-block {
   background: #f9f9f9;
   border-left: 4px solid #0077cc;
-  padding: 1.5em;
+  padding: 1.5em 1.5em 0em;
   margin: 2em 0;
   border-radius: 6px;
+  overflow-wrap: anywhere;
 }
 
 .existing-feedback-block h2 {
@@ -105,7 +106,7 @@
 .feedback-entry {
   margin-bottom: 1.5em;
   padding-bottom: 1em;
-  border-bottom: 1px solid #ddd;
+ 
 }
 
 .feedback-entry:last-child {
