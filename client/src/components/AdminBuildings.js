@@ -1,11 +1,23 @@
+import axios from "axios";
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
+
 export default function AdminBuildings({
-  buildings,
+  buildings, setBuildings,
   setEditingBuilding,
-  editingBuilding,
   setAddingBuilding,
-  handleDeleteBuilding,
-  refreshBuildings
 }) {  
+  const handleDeleteBuilding = async (bldg_id) => {
+    if (!window.confirm("Are you sure you want to delete this lot?")) return;
+
+    axios.delete(`${HOST}/api/admin/buildings/${bldg_id}/remove`, { withCredentials: true })
+      .then(() => {
+        setBuildings(prev => prev.filter(bldg => bldg.id !== bldg_id))
+      })
+      .catch((err) => {
+        console.error(`Error deleting building: ${err}`);
+        alert(`Error deleting building!`)
+      });
+  }
 
   return (<>
     <button className="add-lot-button" onClick={() => setAddingBuilding(true)}>Add a Building</button>

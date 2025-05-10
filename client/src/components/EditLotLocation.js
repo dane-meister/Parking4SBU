@@ -44,6 +44,19 @@ export default function EditLotCapacity({ formData, setFormData, originalData, c
     return (Number(c_lat) !== Number(o_lat)) || (Number(c_lon) !== Number(o_lon))
   };
 
+  const anyCoordinateModified = () => {
+    if(formType === 'add' || !originalData || !originalData.current || !formData){
+      return false;
+    }
+
+    // differ in length
+    if(formData.coordinates.length !== originalData.current.coordinates.length){
+      return true;
+    }
+
+    return formData.coordinates.some((c, idx) => isCoordinateModified(idx))
+  };
+
   return (<>
     <Collapsible
       name={'Location'}
@@ -52,7 +65,7 @@ export default function EditLotCapacity({ formData, setFormData, originalData, c
       startOpen={formType === 'add'}
       wideCollapse
       persistentChildren
-      asterisk={formType === 'add' || formData.coordinates.some((c, idx) => isCoordinateModified(idx))}
+      asterisk={formType === 'add' || anyCoordinateModified()}
       externalOpen={openLocation} externalSetOpen={setOpenLocation}
     >
       <div>

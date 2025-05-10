@@ -117,12 +117,12 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
         style={lotImgSrc ? {height: '120px'} : {margin: '0px 25px 0px 10px'}} // Adjust styling based on image availability
         alt='lot'
       /> */}
-      
+      {(name === 'TESTLOT' || name === 'AAA') && console.log(name + " Distance: "+distance)}
       <section className="lot-result-info-container hbox wide tall">
         {/* Left section containing lot details */}
         <div className='lot-result-info vbox'>
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
-          <div className="result-dist-row">{distance ? formatDistance(distance) : ''}</div> {/* Display distance if available */}
+          <div className="result-dist-row">{(distance !== null || distance !== undefined) ? formatDistance(distance) : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
             <span className='result-price'>{displayRate}</span>
             <span className="result-time">{timeRange}</span>

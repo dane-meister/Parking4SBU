@@ -18,7 +18,6 @@ const AutocompleteSearch = (props) => {
     setSelectedLot,
     setSort,
   } = props
-  console.log("inside Search:\n"+parkingLots.map(p => `${p.name}\n`))
   const outletContext = useOutletContext();
 
   const times = outletContext?.times;
@@ -114,7 +113,6 @@ const AutocompleteSearch = (props) => {
         .filter(bldg_name =>
           regexes.every(regex => regex.test(bldg_name))
         );
-      console.log("suggestions:", suggestions)
     } else { // For parking lots
       // Filter lot names based on regex match
       suggestions = lot_names.filter(lot =>
@@ -124,7 +122,6 @@ const AutocompleteSearch = (props) => {
 
     const MAX_RETURN = 5; // Limit the number of suggestions returned
     if (suggestions.length === 0) {
-      console.log("0 length!")
       return ['No results found']; // Return a default message if no matches
     }
     return suggestions.slice(0, MAX_RETURN);

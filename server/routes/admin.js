@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Feedback, Reservation, ParkingLot, Rate, sequelize } = require("../models");
+const { User, Feedback, Reservation, ParkingLot, Rate, sequelize, Building } = require("../models");
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { Op } = require('sequelize');
@@ -285,14 +285,14 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
     const coordinates_formatted = numberCoordinates
       .map(c => `(${c[0]} ${c[1]})`)
       .join(',');
-    const coordinates_str = `ST_GeomFromText('MULTIPOINT(${coordinates_formatted})', 4326)`
+    const coordinates_str = `ST_GeomFromText('MULTIPOINT(${coordinates_formatted})', 4326)`;
 
     const mercator_coordinates_formatted = numberCoordinates
       .map(c => [c[1], c[0]])  // reverse lat and long because of dane
       .map(c => coordinateConverter.epsg4326toEpsg3857(c))
       .map(c => `(${c[0]} ${c[1]})`)
       .join(',');
-    const mercator_str = `ST_GeomFromText('MULTIPOINT(${mercator_coordinates_formatted})', 3857)`
+    const mercator_str = `ST_GeomFromText('MULTIPOINT(${mercator_coordinates_formatted})', 3857)`;
 
     const total_capacity = Object.keys(capacity).reduce(
       (total, key) => key === 'capacity' ? total : total + capacity[key],
@@ -477,18 +477,12 @@ router.put('/lots/:id/update', authenticate, requireAdmin, async (req, res) => {
       }
     } 
 
-    res.status(201).json({ message: 'Successfully added lot!' });
+    res.status(201).json({ message: 'Successfully edited lot!' });
   } catch (err) {
     console.error("Failed adding lot:", err);
-    res.status(500).json({ error: `Failed to add lot: ${err}`});
+    res.status(500).json({ error: `Failed to edit lot: ${err}`});
   }
 });
-
-// Add a rate
-// router.post('lots/:lot_id/rates/add', authenticate, requireAdmin, async (req, res) => {});
-// Edit a rate
-
-
 
 // Delete a lot
 router.delete('/parking-lots/:id/remove', authenticate, requireAdmin, async (req, res) => {
@@ -504,6 +498,116 @@ router.delete('/parking-lots/:id/remove', authenticate, requireAdmin, async (req
     res.json({ success: true, message: `Parking lot ${lotId} deleted successfully` });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete parking lot', error: error.message });
+  }
+});
+
+// Add a building
+router.post('/buildings/add', authenticate, requireAdmin, async (req, res) => {
+  try{
+    const { name, campus, coordinates } = req.body;
+
+    if(!name || !campus || !coordinates){
+      res.status(500).json({ error: 'Failed to create building! (Missing fields)'});
+      return;
+    }
+
+    const numberCoordinates = coordinates
+      .map(c => c.replaceAll(' ', ''))          // trim whitespace
+      .map(c => c.split(','))                   // split to get lat long
+      .map(c => [Number(c[0]), Number(c[1])]);  // to numbers
+
+    const coordinates_formatted = numberCoordinates
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const coordinates_str = `ST_GeomFromText('MULTIPOINT(${coordinates_formatted})', 4326)`;
+
+    const mercator_coordinates_formatted = numberCoordinates
+      .map(c => [c[1], c[0]])  // reverse lat and long because of dane
+      .map(c => coordinateConverter.epsg4326toEpsg3857(c))
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const mercator_str = `ST_GeomFromText('MULTIPOINT(${mercator_coordinates_formatted})', 3857)`;
+
+    await Building.create({
+      building_name: name,
+      campus,
+      location: sequelize.literal(coordinates_str),
+      mercator_coordinates: sequelize.literal(mercator_str),
+    });
+
+    res.status(201).json({ message: 'Successfully added building!' });
+  } catch (err){
+    console.error("Failed adding building:", err);
+    res.status(500).json({ error: `Failed to add building: ${err}`});
+  }
+});
+
+// Edit a building
+router.put('/buildings/:id/update', authenticate, requireAdmin, async (req, res) => {
+  try{
+    const { id } = req.params;
+    const { name, campus, coordinates } = req.body;
+
+    if(!name || !campus || !coordinates){
+      res.status(500).json({ error: 'Failed to edit building! (Missing fields)'});
+      return;
+    }
+
+    // check if exists
+    const bldg = await Building.findByPk(id);
+    if(!bldg){
+      res.status(404).json({ error: 'Building not found!' });
+      return;
+    }
+
+    const numberCoordinates = coordinates
+      .map(c => c.replaceAll(' ', ''))          // trim whitespace
+      .map(c => c.split(','))                   // split to get lat long
+      .map(c => [Number(c[0]), Number(c[1])]);  // to numbers
+
+    const coordinates_formatted = numberCoordinates
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const coordinates_str = `ST_GeomFromText('MULTIPOINT(${coordinates_formatted})', 4326)`;
+
+    const mercator_coordinates_formatted = numberCoordinates
+      .map(c => [c[1], c[0]])  // reverse lat and long because of dane
+      .map(c => coordinateConverter.epsg4326toEpsg3857(c))
+      .map(c => `(${c[0]} ${c[1]})`)
+      .join(',');
+    const mercator_str = `ST_GeomFromText('MULTIPOINT(${mercator_coordinates_formatted})', 3857)`;
+
+    await bldg.update({
+      building_name: name,
+      campus,
+      location: sequelize.literal(coordinates_str),
+      mercator_coordinates: sequelize.literal(mercator_str),
+    });
+
+    res.status(201).json({ message: 'Successfully edited building!' });
+  } catch (err){
+    console.error("Failed editing building:", err);
+    res.status(500).json({ error: `Failed to edit building: ${err}`});
+  }
+});
+
+// Delete a building
+router.delete('/buildings/:id/remove', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const bldg = await Building.findByPk(id);
+    if(!bldg){
+      res.status(404).json({ error: 'Building not found!' });
+      return;
+    }
+  
+    await bldg.destroy();
+
+    res.json({ success: true, message: `Building ${id} deleted successfully` });
+  } catch (err) {
+    console.error("Failed deleting building:", err);
+    res.status(500).json({ error: `Failed to delete building: ${err}`});
   }
 });
 
