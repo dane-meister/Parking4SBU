@@ -16,7 +16,7 @@ export default function AdminEvents({
             .map(reservation => (
               <div key={reservation.id} className="user-card">
                 <div className="user-info">
-                  <strong>Reservation #{reservation.id}</strong><br />
+                  <strong style={{fontFamily: 'Barlow Bold, sans-serif'}}>Reservation #{reservation.id}</strong><br />
                   User ID: {reservation.user_id}<br />
                   Lot ID: {reservation.parking_lot_id}<br />
                   Spots: {reservation.spot_count}<br />

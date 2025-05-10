@@ -29,6 +29,14 @@ export default function AdminTabSelector({ adminOption, setAdminOption }) {
       >Lots</span>
       <span>/</span>
       <span
+        className={'type-hover ' + (adminOption === 'buildings' ? 'selected' : '')}
+        onClick={() => setAdminOption('buildings')}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => handleKeyDown(e, 'buildings')}
+      >Buildings</span>
+      <span>/</span>
+      <span
         className={'type-hover ' + (adminOption === 'events' ? 'selected' : '')}
         onClick={() => setAdminOption('events')}
         role="button"

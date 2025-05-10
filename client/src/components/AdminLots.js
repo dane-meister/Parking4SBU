@@ -19,7 +19,7 @@ export default function AdminLots({
           lots.map(lot => (
             <div className="user-card" key={lot.id}>
               <div className="user-info">
-                <strong>{lot.name}</strong><br />
+                <strong style={{fontFamily: 'Barlow Bold, sans-serif'}}>{lot.name}</strong><br />
                 ID: {lot.id}<br />
                 Location: {Array.isArray(lot.location?.coordinates)
                   ? lot.location.coordinates.map(
