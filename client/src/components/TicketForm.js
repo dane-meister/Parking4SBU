@@ -34,8 +34,6 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 				fine: parseFloat(formData.fine)
 			};
 
-			console.log("Issuing ticket with payload:", payload);
-
 			await axios.post(`${HOST}/api/tickets`, payload, { withCredentials: true });
 
 			alert("Ticket successfully issued.");

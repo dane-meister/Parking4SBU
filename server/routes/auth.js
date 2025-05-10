@@ -142,7 +142,6 @@ router.post("/login", async (req, res) => {
 
         //ensure user has clicked on magic link
         if (!user.isVerified) {
-            console.log("verified: ", user.isVerified);
             return res.status(403).json({ message: "Please verify your email via the link we sent" });
         }
 
@@ -483,20 +482,16 @@ router.get('/verify', async (req, res) => {
     const { user_id, type } = jwt.verify(token, process.env.JWT_SECRET);
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('VERIFY payload:', payload);
 
       if (type !== 'email-verify') {
-        console.log("error");
+        console.error("error");
         throw new Error();
     }
   
       const user = await User.findByPk(user_id);
-      console.log('VERIFY user before:', user.toJSON());
 
       user.isVerified = true;
       await user.save();
-
-      console.log('VERIFY user after:', (await user.reload()).toJSON());
   
       return res.json({ message: 'Email verified! Please log in.' });
     } catch {

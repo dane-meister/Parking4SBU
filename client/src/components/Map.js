@@ -33,10 +33,6 @@ const Map = ({ selectedLot, selectedBuilding }) => {
       maxBoundsViscosity: 1.0
     });
 
-    mapRef.current.on('zoomend', function () {
-      // console.log("Current zoom level:", mapRef.current.getZoom());
-    });
-
     // add OpenStreetMap tile layer to the map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -58,19 +54,15 @@ const Map = ({ selectedLot, selectedBuilding }) => {
   });
 
   useEffect(() => {
-    console.log("Selected lot:", selectedLot);
-    console.log("Selected building:", selectedBuilding);
-
+    // center of the campus
     const campusCenter = [40.911117, -73.122142];
     const defaultZoom = 15;
   
     if (selectedLot && selectedLot.location) {
       const coordinates = selectedLot.location.coordinates;
-      console.log("Lot coordinates:", coordinates);
       if (!coordinates || coordinates.length === 0) return;
       let coord;
       if (selectedLot.closest_point) {
-        console.log("Closest location point:", selectedLot.closest_point);
         coord = [selectedLot.closest_point[0], selectedLot.closest_point[1]]; // lat, lng
       } else if (coordinates.length > 0) {
         coord = [coordinates[0][0], coordinates[0][1]]; // fallback
@@ -96,7 +88,6 @@ const Map = ({ selectedLot, selectedBuilding }) => {
   useEffect(() => {
     if (selectedBuilding && selectedBuilding.location) {
       const coords = selectedBuilding.location.coordinates[0];
-      console.log("Building marker at:", coords);
       if (mapRef.current) {
         // pan the map if no lot is selected
         if (!selectedLot) {

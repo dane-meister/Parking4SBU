@@ -316,7 +316,6 @@ function Reservation(){
 				spot_type: selectedSpotType
 			};
 			const res = await axios.post(`${HOST}/api/reservations`, payload, { withCredentials: true });
-			console.log("Reservation successful:", res.data);
 			setReservationSuccess(true);
 			// Immediately fetch latest availability after a successful reservation
 			const updatedData = await fetchLotAvailability(startTime, endTime);
@@ -508,7 +507,6 @@ function Reservation(){
 					]
 					.filter(type => type.capacity > 0)
 					.map(({ key, label, capacity }) => {
-						console.log("minAvailability", minAvailability);
 						const available = minAvailability[key];
 						const display = available != null ? `${available} / ${capacity}` : `unknown / ${capacity}`;
 						return (

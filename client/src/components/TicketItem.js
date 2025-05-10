@@ -3,7 +3,6 @@ import React from 'react';
 // TicketItem component displays the details of a parking ticket.
 // It takes a `ticket` object as a prop and renders its properties.
 export default function TicketItem({ ticket }) {
-    console.log("Rendering TicketItem with ticket:", ticket);
     return (
         <div className="ticket-details">
             {/* Left section displays general ticket information */}
