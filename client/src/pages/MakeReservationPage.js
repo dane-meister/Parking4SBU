@@ -332,6 +332,12 @@ function Reservation(){
 		}
 	};
 
+	const numericKeyDown = (e) => {
+		if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+			e.preventDefault();
+		}
+	};
+
 	return (<section className='make-reservation-page'>
 		<section className='make-reservation-left'>
 			<div className='make-reservation-lot-box'>
@@ -406,6 +412,7 @@ function Reservation(){
 				Spots Needed:
 				<input
 					type="number"
+					onKeyDown={numericKeyDown}
 					min="2"
 					value={spotCount}
 					onChange={(e) => setSpotCount(Number(e.target.value))}
