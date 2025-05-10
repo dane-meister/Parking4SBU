@@ -330,8 +330,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType, to
           alert(err.message)
         });
     }
-    // console.log(response)
   };
+  
   // stops background scrolling
   if(isOpen){
     document.body.style.overflow = 'hidden';

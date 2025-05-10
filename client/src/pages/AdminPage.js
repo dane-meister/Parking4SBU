@@ -99,7 +99,7 @@ export default function Admin() {
           setFeedbackList([]);
         });
     }
-  }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh, toggleLotRefresh]);
+  }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh, toggleLotRefresh, toggleBuildingRefresh]);
 
   // Handle user approval or rejection
   const handleApproval = (userId, approve) => {
@@ -200,9 +200,9 @@ export default function Admin() {
         )}
         {adminOption === 'buildings' && (
           <AdminBuildings 
-            buildings={buildings}
+            buildings={buildings} setBuildings={setBuildings}
             setAddingBuilding={setAddingBuilding}
-            editingBuilding={editingBuilding} setEditingBuilding={setEditingBuilding}
+            setEditingBuilding={setEditingBuilding}
           />
         )}
         {adminOption === 'events' && (
@@ -327,8 +327,9 @@ export default function Admin() {
           setEditingBuilding(null);
         }}
         formType={!!editingBuilding ? 'edit' : 'add'}
-        toggleBuildingRefresh={() => setToggleBuildingRefresh(prev => !prev)}
+        refreshBuildings={() => setToggleBuildingRefresh(prev => !prev)}
       />
+
       {activeTicketUser && (
         <div className="ticket-popup-overlay" onClick={() => setActiveTicketUser(null)}>
           <div className="ticket-popup-form" onClick={(e) => e.stopPropagation()}>

@@ -7,7 +7,7 @@ Modal.setAppElement('#root');
 
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
-export default function BuildingFormModal({ isOpen, onRequestClose, building,  formType, refreshBuildingRefresh }) {
+export default function BuildingFormModal({ isOpen, onRequestClose, building,  formType, refreshBuildings }) {
   const [formData, setFormData] = useState({});
   const [errorMsgs, setErrorMsgs] = useState({
     name: '',
@@ -49,9 +49,12 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
   const handleEditSubmit = (e) => {
     e.preventDefault();
 
+    let hadError = false;
+
     // name checks
     if(!formData.name.trim()){
       setErrorMsgs(prev => ({ ...prev, name: 'Building name cannot be empty!' }));
+      hadError = true;
     }else{
       setErrorMsgs(prev => ({ ...prev, name: '' }));
     }
@@ -79,16 +82,55 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
     if(!!emptyCoords.length){
       const emptyPnts = `(Point${emptyCoords.length !== 1 ? 's' : ''} ${emptyCoords.map(c => c.index + 1).join(', ')})`;
       setErrorMsgs(prev => ({ ...prev, coordinates: `Lot coordinates cannot be empty! ${emptyPnts}`}));
+      hadError = true;
     }else if(!!improperFormatCoords.length){
       const improperFormatPnts = `(Point${improperFormatCoords.length !== 1 ? 's' : ''} ${improperFormatCoords.map(c => c.index + 1).join(', ')})`;
       setErrorMsgs(prev => ({ ...prev, coordinates: `Lot coordinates must be valid numbers in the format "Latitude, Longitude"!\n${improperFormatPnts}`}));
+      hadError = true;
     }else if(!!impreciseCoords.length){
       const imprecisePnts = `(Point${impreciseCoords.length !== 1 ? 's' : ''} ${impreciseCoords.map(c => c.index + 1).join(', ')})`
       setErrorMsgs(prev => ({ ...prev, coordinates: `All lot coordinates needs 2 decimal places of precision! ${imprecisePnts}`}));
+      hadError = true;
     }else{
       setErrorMsgs(prev => ({ ...prev, coordinates: '' }));
     }
-  }
+
+    if(hadError){
+      alert('Error adding building!');
+      return;
+    }else{
+      editBuilding();
+    }    
+  };
+
+  const editBuilding = async () => {
+    const { name, campus, coordinates} = formData;
+    if(formType === 'add'){
+      await axios.post(`${HOST}/api/admin/buildings/add`,
+        { name, campus, coordinates }, 
+        { withCredentials: true }
+      )
+        .then(() => {
+          refreshBuildings();
+          onRequestClose();
+        })
+        .catch((err) => {
+          alert(err.message)
+        });
+    }else{
+      await axios.put(`${HOST}/api/admin/buildings/${building.id}/update`,
+        { name, campus, coordinates }, 
+        { withCredentials: true }
+      )
+        .then(() => {
+          refreshBuildings();
+          onRequestClose();
+        })
+        .catch((err) => {
+          alert(err.message)
+        });
+    }
+  };
 
   const campuses = ['SBU WEST', 'SBU R&D', 'SBU EAST', 'SBU SOUTH'];  
   const setCampus = (e) => {
@@ -142,6 +184,11 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
 
   const anyCoordinateModified = () => {
     if(!formData.coordinates) return false;
+
+    // different amount of coords
+    if(formData.coordinates.length !== originalData.current.coordinates.length){
+      return true;
+    }
 
     return formData.coordinates
       .map((_, idx) => idx)
@@ -212,7 +259,12 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
 
         {/* location input */}
         <label htmlFor='lot-name' className='lot-lbl' style={{display: 'block', marginTop: '10px'}}>
+          <div className='hbox' style={{alignItems: 'center'}}>
             Location{(formType==='add' || anyCoordinateModified()) && '*'}
+            <span
+              style={{color: '#aaa', marginLeft: '10px', fontSize: '14px', display: 'block'}}
+            >(Latitude, Longitude)</span>
+          </div>
         </label>
         <div id='building-coordinates' style={{borderBottom: '#aaa solid 1px', paddingBottom: '10px'}}>
           {formData.coordinates && formData.coordinates.map((coord, idx) => {
