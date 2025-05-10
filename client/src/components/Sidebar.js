@@ -236,7 +236,10 @@ function LotList({
     <div className='hbox selection' id='building-lot-selection'>
       <span 
         className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
-        onClick={() => setBuildingLotType('building')}   
+        onClick={() => {
+          setBuildingLotType('building');
+          setValue(''); // clear input
+        }}   
       >Building</span>
       <span>/</span>
       <span 
@@ -244,6 +247,8 @@ function LotList({
         onClick={() => {
           setBuildingLotType('lot');
           setSelectedBuilding(null);
+          setValue('');                     // clear input
+          setSortMethod('Alphabetical');    // change from nearest buildings to alphabetical on switch
         }}
       >Lot</span>
     </div>
@@ -311,7 +316,7 @@ function LotList({
             lotObj={lot}
             key={idx}
             setSelectedLot={setSelectedLot}
-            distance={selectedBuilding ? lot.distance_miles : ''}
+            distance={selectedBuilding ? lot.distance_miles : null}
             rateType={rateType}
             times={times}
           />
