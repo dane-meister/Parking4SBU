@@ -59,7 +59,7 @@ router.put("/users/:user_id/approve", authenticate, async (req, res) => {
           { expiresIn: '10m' }
       );
 
-      const link = `${process.env.FRONTEND_URL}auth/verify?token=${token}`;
+      const link = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
       await mailer.sendMail({
           to: user.email,
           from: process.env.SMTP_FROM,
