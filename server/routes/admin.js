@@ -119,20 +119,10 @@ router.post("/resend-verification", async (req, res) => {
 });
 
 
-// Delete a user account (for admin use)
-router.delete("/user/:user_id/remove", authenticate, async (req, res) => {
+// Delete a user account
+router.delete("/user/:user_id/remove", authenticate, requireAdmin, async (req, res) => {
   try {
-      if (req.user.user_type !== "admin") {
-          return res.status(403).json({ message: "Forbidden" });
-      }
-
       const { user_id } = req.params;
-
-      // const deleted = await User.destroy({ where: { user_id } });
-
-      // if (deleted === 0) {
-      //     return res.status(404).json({ message: "User not found" });
-      // }
 
       //load user to check their approval state
       const user = await User.findByPk(user_id);
