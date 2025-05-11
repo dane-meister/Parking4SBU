@@ -51,19 +51,16 @@ export default function LoginPage() {
       
       if (!success) {
         setError(message); // Set error message if login fails
-        console.log(message); // Log the error message for debugging
         return;
       }
 
       if (!user.isApproved) {
         setError("Your account is not approved yet.");
-        console.log("Your account is not approved yet.");
         return;
       }
 
       if (!user.isVerified) {
         setError("Please verify your email via the link we sent.");
-        console.log("Please verify your email via the link we sent.");
         return;
      }
 

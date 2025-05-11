@@ -526,6 +526,10 @@ router.post('/buildings/add', authenticate, requireAdmin, async (req, res) => {
   try{
     const { name, campus, coordinates } = req.body;
 
+    console.log("Coordinates:", coordinates);
+    console.log("Name:", name);
+    console.log("Campus:", campus);
+
     if(!name || !campus || !coordinates){
       res.status(500).json({ error: 'Failed to create building! (Missing fields)'});
       return;

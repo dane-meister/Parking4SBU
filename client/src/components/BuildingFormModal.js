@@ -30,13 +30,13 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
 
     const data = {
       name: building?.building_name ?? '',
-      campus: building?.campus ?? '',
+      campus: building?.campus ?? 'SBU WEST',
       coordinates: coords ?? [''],
     }
     
     setFormData(data);
     originalData.current = JSON.parse(JSON.stringify(data));
-  }, [isOpen]);
+  }, [building?.building_name, building?.campus, building?.location?.coordinates, isOpen]);
   
   const handleInputChange = (e) => {
     const name = e.target.name;

@@ -19,7 +19,6 @@ router.get('/user/:userId', async (req, res) => {
 // POST new ticket
 router.post('/', async (req, res) => {
 	try {
-        console.log(req.body)
 		const ticket = await Ticket.create(req.body);
 		res.status(201).json(ticket);
 	} catch (err) {

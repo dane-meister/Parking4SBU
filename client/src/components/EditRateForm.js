@@ -77,8 +77,6 @@ export default function EditRateForm({
       externalOpen={openRates} externalSetOpen={setOpenRates}
       asterisk={formType === 'add' || anyRateModified()} 
     >
-      {/* debugging btn */}
-      {/* <input type='button' onClick={() => console.log('rates:',formData.rates)} value={'See rates'}/> */}
       {Object.values(formData.rates).map(rate => (
         <EditRate 
           rateObj={rate} 

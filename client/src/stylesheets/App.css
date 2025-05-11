@@ -21,6 +21,7 @@ html, body, #root {
   transition: padding-top 0.3s ease;
 }
 
+
 .home-padding {
   padding-top: 120px; /* header (60px) + nav-banner (60px) */
 }

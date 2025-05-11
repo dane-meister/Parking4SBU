@@ -32,7 +32,6 @@ export default function FeedbackPage() {
 
     const handleSubmit = async () => {
         try {
-            console.log("Submitting feedback:", feedback, rating);
             const res = await axios.post(`${HOST}/api/auth/feedback/add`, {
                 feedback_text: feedback,
                 rating: rating,
