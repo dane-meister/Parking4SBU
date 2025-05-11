@@ -5,6 +5,7 @@ import '../stylesheets/ProfilePopup.css';
 import { ProfileSidebar, ProfileForm, VehiclesForm } from '../components'
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 // const HOST = "http://localhost:8000"
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
@@ -14,6 +15,16 @@ export default function ProfilePage() {
 
   // Get the authenticated user from the AuthContext
   const { user } = useAuth(); 
+
+  const location = useLocation();
+
+  // Automatically select 'vehicles' tab if navigated from reservation
+  useEffect(() => {
+    if (location.state?.from === 'reservation') {
+      setActiveTab('vehicles');
+    }
+  }, [location.state]);
+
 
   // State to store the user's vehicles (currently empty)
   const [ vehicles, setVehicles ] = useState([]); 
