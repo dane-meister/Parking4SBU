@@ -23,7 +23,8 @@ app.use(express.json()); // Parse JSON requests
 app.use(cookieParser()); // Parse cookies from requests
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:3000", // Allow requests from the client app
-  credentials: true // Allow cookies to be sent with requests
+  credentials: true, // Allow cookies to be sent with requests
+  crossDomain: true // Allow cross-domain requests
 }));
 
 // Authentication routes
