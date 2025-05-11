@@ -629,8 +629,13 @@ router.delete('/buildings/:id/remove', authenticate, requireAdmin, async (req, r
 router.get('/analytics/capacity-analysis', authenticate, requireAdmin, async (req, res) => {
   try {
     const lots = await ParkingLot.findAll();
+    const now = new Date();
     const reservations = await Reservation.findAll({
-      where: { status: 'confirmed' },
+      where: {
+        status: 'confirmed',
+        start_time: { [Op.lte]: now },
+        end_time: { [Op.gte]: now }
+      },
       include: [{ model: User, attributes: ['user_type'] }]
     });
 
