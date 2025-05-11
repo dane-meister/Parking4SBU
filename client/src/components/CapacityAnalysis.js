@@ -10,7 +10,7 @@ export default function CapacityAnalysis() {
 
   useEffect(() => {
     fetchCapacityAnalysis();
-  });
+  }, []);
 
   const fetchCapacityAnalysis = async () => {
     try {
