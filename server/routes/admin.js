@@ -12,13 +12,13 @@ const coordinateConverter = require('../services/mercatorConversion');
 //to sign one-time tokens and email them
 const nodemailer = require('nodemailer');
 const mailer = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: +process.env.SMTP_PORT,
-    secure: false,  //port 587
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
+  host: process.env.SMTP_HOST,
+  port: +process.env.SMTP_PORT,
+  secure: false,  //port 587
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
 });
 
 // Get all users
@@ -38,39 +38,39 @@ router.get("/users", authenticate, requireAdmin, async (req, res) => {
 router.put("/users/:user_id/approve", authenticate, async (req, res) => {
   console.log("user: ", req.user.user_id, " approved");
   try {
-      if (req.user.user_type !== "admin") {
-          return res.status(403).json({ message: "Forbidden" });
-      }
+    if (req.user.user_type !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
 
-      const { user_id } = req.params;
+    const { user_id } = req.params;
 
-      const user = await User.findByPk(user_id);
-      if (!user) {
-          return res.status(404).json({ message: "User not found" });
-      }
+    const user = await User.findByPk(user_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      user.isApproved = true;
-      await user.save();
+    user.isApproved = true;
+    await user.save();
 
-      //send magic-link
-      const token = jwt.sign(
-          { user_id, type: 'email-verify' },
-          process.env.JWT_SECRET,
-          { expiresIn: '10m' }
-      );
+    //send magic-link
+    const token = jwt.sign(
+      { user_id, type: 'email-verify' },
+      process.env.JWT_SECRET,
+      { expiresIn: '10m' }
+    );
 
-      const link = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
-      await mailer.sendMail({
-          to: user.email,
-          from: process.env.SMTP_FROM,
-          subject: 'Your account is approved – activate now',
-          text: `Hi ${user.first_name},\n\n` +
-              `Your account has been approved! Click within 10 minutes to activate:\n\n${link}`
-      });
-      res.json({ message: 'User approved & verification email sent' });
+    const link = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
+    await mailer.sendMail({
+      to: user.email,
+      from: process.env.SMTP_FROM,
+      subject: 'Your account is approved – activate now',
+      text: `Hi ${user.first_name},\n\n` +
+        `Your account has been approved! Click within 10 minutes to activate:\n\n${link}`
+    });
+    res.json({ message: 'User approved & verification email sent' });
 
   } catch (error) {
-      res.status(500).json({ message: "Error approving user", error: error.message });
+    res.status(500).json({ message: "Error approving user", error: error.message });
   }
 });
 
@@ -122,34 +122,34 @@ router.post("/resend-verification", async (req, res) => {
 // Delete a user account
 router.delete("/user/:user_id/remove", authenticate, requireAdmin, async (req, res) => {
   try {
-      const { user_id } = req.params;
+    const { user_id } = req.params;
 
-      //load user to check their approval state
-      const user = await User.findByPk(user_id);
-      if (!user) {
-          return res.status(404).json({ message: "User not found" });
-      }
+    //load user to check their approval state
+    const user = await User.findByPk(user_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      //if still pending approval, so deletion means user is denied.
-      if (!user.isApproved) {
-          await mailer.sendMail({
-              to: user.email,
-              from: process.env.SMTP_FROM,
-              subject: 'Registration Denied',
-              text:
-                  `Hi ${user.first_name},\n\n` +
-                  `We’re sorry, but your registration request has been denied by our admin.\n\n` +
-                  `If you believe this was a mistake, please contact us.\n\n` +
-                  `– The SBU Parking Team-06`
-          });
-      }
+    //if still pending approval, so deletion means user is denied.
+    if (!user.isApproved) {
+      await mailer.sendMail({
+        to: user.email,
+        from: process.env.SMTP_FROM,
+        subject: 'Registration Denied',
+        text:
+          `Hi ${user.first_name},\n\n` +
+          `We’re sorry, but your registration request has been denied by our admin.\n\n` +
+          `If you believe this was a mistake, please contact us.\n\n` +
+          `– The SBU Parking Team-06`
+      });
+    }
 
-      //delete user
-      await user.destroy();
+    //delete user
+    await user.destroy();
 
-      res.json({ message: "User deleted successfully" });
+    res.json({ message: "User deleted successfully" });
   } catch (error) {
-      res.status(500).json({ message: "Error deleting user", error: error.message });
+    res.status(500).json({ message: "Error deleting user", error: error.message });
   }
 });
 
@@ -282,8 +282,8 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
   try {
     const { name, coordinates, capacity, rates, covered, resident_zone } = req.body;
 
-    if(!name || !coordinates || !capacity){
-      res.status(500).json({ error: 'Failed to create lot! (Missing fields)'});
+    if (!name || !coordinates || !capacity) {
+      res.status(500).json({ error: 'Failed to create lot! (Missing fields)' });
       return;
     }
 
@@ -337,7 +337,7 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
     });
 
     // now add rates
-    for(const rate of rates){
+    for (const rate of rates) {
       await Rate.create({
         permit_type: rate.permit_type,
         hourly: rate.hourly,
@@ -352,7 +352,7 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
         event_parking_price: rate.event_parking_price,
         sheet_number: rate.sheet_number,
         sheet_price: rate.sheet_price,
-        
+
         // Foreign key column
         parking_lot_id: newParkingLot.id
       });
@@ -362,7 +362,7 @@ router.post('/lots/add', authenticate, requireAdmin, async (req, res) => {
     res.status(201).json({ message: 'Successfully added lot!' });
   } catch (err) {
     console.error("Failed adding lot:", err);
-    res.status(500).json({ error: `Failed to add lot: ${err}`});
+    res.status(500).json({ error: `Failed to add lot: ${err}` });
   }
 });
 
@@ -371,15 +371,15 @@ router.put('/lots/:id/update', authenticate, requireAdmin, async (req, res) => {
   try {
     const { name, coordinates, capacity, rates, covered, resident_zone } = req.body;
 
-    if(!name || !coordinates || !capacity){
-      res.status(500).json({ error: 'Failed to edit lot! (Missing fields)'});
+    if (!name || !coordinates || !capacity) {
+      res.status(500).json({ error: 'Failed to edit lot! (Missing fields)' });
       return;
     }
 
     // check if lot exists
     const { id } = req.params;
     const lot = await ParkingLot.findByPk(id);
-    if(!lot){
+    if (!lot) {
       res.status(404).json({ error: 'Lot not found!' });
       return;
     }
@@ -438,16 +438,16 @@ router.put('/lots/:id/update', authenticate, requireAdmin, async (req, res) => {
     const old_rates = await Rate.findAll({
       where: { parking_lot_id: id }
     });
-    for(const old_rate of old_rates){
-      if(!rate_ids.includes(old_rate.id)){
+    for (const old_rate of old_rates) {
+      if (!rate_ids.includes(old_rate.id)) {
         // no longer a rate
         await old_rate.destroy();
       }
     }
 
     // now add/edit rates
-    for(const rate of rates){
-      if(rate.id === undefined){
+    for (const rate of rates) {
+      if (rate.id === undefined) {
         // new rate to add
         await Rate.create({
           permit_type: rate.permit_type,
@@ -485,12 +485,12 @@ router.put('/lots/:id/update', authenticate, requireAdmin, async (req, res) => {
           parking_lot_id: id
         })
       }
-    } 
+    }
 
     res.status(201).json({ message: 'Successfully edited lot!' });
   } catch (err) {
     console.error("Failed adding lot:", err);
-    res.status(500).json({ error: `Failed to edit lot: ${err}`});
+    res.status(500).json({ error: `Failed to edit lot: ${err}` });
   }
 });
 
@@ -513,15 +513,15 @@ router.delete('/parking-lots/:id/remove', authenticate, requireAdmin, async (req
 
 // Add a building
 router.post('/buildings/add', authenticate, requireAdmin, async (req, res) => {
-  try{
+  try {
     const { name, campus, coordinates } = req.body;
 
     console.log("Coordinates:", coordinates);
     console.log("Name:", name);
     console.log("Campus:", campus);
 
-    if(!name || !campus || !coordinates){
-      res.status(500).json({ error: 'Failed to create building! (Missing fields)'});
+    if (!name || !campus || !coordinates) {
+      res.status(500).json({ error: 'Failed to create building! (Missing fields)' });
       return;
     }
 
@@ -550,26 +550,26 @@ router.post('/buildings/add', authenticate, requireAdmin, async (req, res) => {
     });
 
     res.status(201).json({ message: 'Successfully added building!' });
-  } catch (err){
+  } catch (err) {
     console.error("Failed adding building:", err);
-    res.status(500).json({ error: `Failed to add building: ${err}`});
+    res.status(500).json({ error: `Failed to add building: ${err}` });
   }
 });
 
 // Edit a building
 router.put('/buildings/:id/update', authenticate, requireAdmin, async (req, res) => {
-  try{
+  try {
     const { id } = req.params;
     const { name, campus, coordinates } = req.body;
 
-    if(!name || !campus || !coordinates){
-      res.status(500).json({ error: 'Failed to edit building! (Missing fields)'});
+    if (!name || !campus || !coordinates) {
+      res.status(500).json({ error: 'Failed to edit building! (Missing fields)' });
       return;
     }
 
     // check if exists
     const bldg = await Building.findByPk(id);
-    if(!bldg){
+    if (!bldg) {
       res.status(404).json({ error: 'Building not found!' });
       return;
     }
@@ -599,9 +599,9 @@ router.put('/buildings/:id/update', authenticate, requireAdmin, async (req, res)
     });
 
     res.status(201).json({ message: 'Successfully edited building!' });
-  } catch (err){
+  } catch (err) {
     console.error("Failed editing building:", err);
-    res.status(500).json({ error: `Failed to edit building: ${err}`});
+    res.status(500).json({ error: `Failed to edit building: ${err}` });
   }
 });
 
@@ -609,19 +609,19 @@ router.put('/buildings/:id/update', authenticate, requireAdmin, async (req, res)
 router.delete('/buildings/:id/remove', authenticate, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const bldg = await Building.findByPk(id);
-    if(!bldg){
+    if (!bldg) {
       res.status(404).json({ error: 'Building not found!' });
       return;
     }
-  
+
     await bldg.destroy();
 
     res.json({ success: true, message: `Building ${id} deleted successfully` });
   } catch (err) {
     console.error("Failed deleting building:", err);
-    res.status(500).json({ error: `Failed to delete building: ${err}`});
+    res.status(500).json({ error: `Failed to delete building: ${err}` });
   }
 });
 
@@ -629,21 +629,19 @@ router.delete('/buildings/:id/remove', authenticate, requireAdmin, async (req, r
 router.get('/analytics/capacity-analysis', authenticate, requireAdmin, async (req, res) => {
   try {
     const lots = await ParkingLot.findAll();
+    const now = new Date();
     const reservations = await Reservation.findAll({
-      where: { status: 'confirmed' },
+      where: {
+        status: 'confirmed',
+        start_time: { [Op.lte]: now },
+        end_time: { [Op.gte]: now }
+      },
       include: [{ model: User, attributes: ['user_type'] }]
-    });
-
-    const userCapacity = {};
-    reservations.forEach(res => {
-      const type = res.User.user_type || 'Unknown';
-      userCapacity[type] = (userCapacity[type] || 0) + (res.spot_count || 1);
     });
 
     const lotData = lots.map(lot => {
       const lotReservations = reservations.filter(r => r.parking_lot_id === lot.id);
-
-      const occupancy = lotReservations.length;
+      const occupancy = lotReservations.reduce((acc, r) => acc + (r.spot_count || 1), 0);
       const occupancyRate = lot.capacity > 0
         ? (occupancy / lot.capacity) * 100
         : 0;
@@ -657,13 +655,39 @@ router.get('/analytics/capacity-analysis', authenticate, requireAdmin, async (re
       };
     });
 
+    // Build per-lot user category summary
+    const userCategorySummary = {};
+
+    reservations.forEach(res => {
+      const lotId = res.parking_lot_id;
+      const userType = res.User.user_type || 'Unknown';
+      const spots = res.spot_count || 1;
+
+      if (!userCategorySummary[lotId]) {
+        userCategorySummary[lotId] = {};
+      }
+
+      userCategorySummary[lotId][userType] = (userCategorySummary[lotId][userType] || 0) + spots;
+    });
+
+    // Flatten for frontend
+    const userCategoryData = [];
+    for (const [lotId, categoryCounts] of Object.entries(userCategorySummary)) {
+      const total = Object.values(categoryCounts).reduce((acc, val) => acc + val, 0);
+      for (const [name, value] of Object.entries(categoryCounts)) {
+        userCategoryData.push({
+          lotId: parseInt(lotId),
+          name,
+          value,
+          percent: total > 0 ? ((value / total) * 100).toFixed(2) : '0.00'
+        });
+      }
+    }
+
     res.json({
       success: true,
       results: lotData,
-      userCategorySummary: Object.entries(userCapacity).map(([name, value]) => ({
-        name,
-        value
-      }))
+      userCategorySummary: userCategoryData
     });
 
   } catch (error) {

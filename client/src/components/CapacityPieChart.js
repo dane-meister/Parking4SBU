@@ -24,7 +24,12 @@ export default function CapacityPieChart({ data = [] }) {
           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
         ))}
       </Pie>
-      <Tooltip />
+      <Tooltip
+        formatter={(value, name, props) => [
+          `${value} spots (${props.payload.percent}%)`,
+          name
+        ]}
+      />
       <Legend />
     </PieChart>
   );

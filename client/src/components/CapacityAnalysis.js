@@ -7,10 +7,20 @@ const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // backen
 export default function CapacityAnalysis() {
   const [capacityData, setCapacityData] = useState([]);
   const [userCategoryData, setUserCategoryData] = useState([]);
+  const [selectedLotId, setSelectedLotId] = useState(null);
 
   useEffect(() => {
     fetchCapacityAnalysis();
-  });
+  }, []);
+
+  useEffect(() => {
+  console.log("User Category Data:", userCategoryData);
+}, [userCategoryData]);
+
+useEffect(() => {
+  console.log("Selected Lot ID:", selectedLotId);
+  console.log("Filtered Data:", filteredUserCategoryData);
+}, [selectedLotId]);
 
   const fetchCapacityAnalysis = async () => {
     try {
@@ -21,6 +31,10 @@ export default function CapacityAnalysis() {
       console.error(err);
     }
   };
+
+  const filteredUserCategoryData = selectedLotId
+    ? userCategoryData.filter((entry) => entry.lotId === selectedLotId)
+    : [];
 
   return (
     <div className="capacity-analysis">
@@ -40,7 +54,11 @@ export default function CapacityAnalysis() {
               </thead>
               <tbody>
                 {capacityData.map((lot) => (
-                  <tr key={lot.lotId}>
+                  <tr
+                    key={lot.lotId}
+                    onClick={() => setSelectedLotId(lot.lotId)}
+                    style={{ cursor: 'pointer', backgroundColor: selectedLotId === lot.lotId ? '#f0f0f0' : 'white' }}
+                  >
                     <td>{lot.lotName}</td>
                     <td>{lot.capacity}</td>
                     <td>{lot.currentOccupancy}</td>
@@ -53,7 +71,7 @@ export default function CapacityAnalysis() {
         </div>
         <div className="user-type-chart">
           <h3>Occupancy by User Types</h3>
-          <CapacityPieChart data={userCategoryData} />
+          <CapacityPieChart data={filteredUserCategoryData} />
         </div>
       </div>
     </div>
