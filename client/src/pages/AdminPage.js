@@ -23,8 +23,9 @@ export default function Admin() {
   const [addingLot, setAddingLot] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [feedbackList, setFeedbackList] = useState([]);
-  
+
   const [buildings, setBuildings] = useState([]);
+  const [isLoadingBuildings, setIsLoadingBuildings] = useState(false);
   const [editingBuilding, setEditingBuilding] = useState(null);
   const [addingBuilding, setAddingBuilding] = useState(null);
 
@@ -72,6 +73,7 @@ export default function Admin() {
         });
     }
     if (adminOption === 'buildings') {
+      setIsLoadingBuildings(true);
       axios.get(`${HOST}/api/buildings`, {
         withCredentials: true
       })
@@ -79,7 +81,7 @@ export default function Admin() {
         .catch(err => {
           console.error("Failed to fetch buildings", err);
           setBuildings([]);
-        });
+        }).finally(() => setIsLoadingBuildings(false));
     }
     if (adminOption === 'events') {
       axios.get(`${HOST}/api/admin/event-reservations`, {
@@ -118,6 +120,19 @@ export default function Admin() {
         })
         .catch(err => console.error('Failed to reject user', err));
     }
+  };
+
+  // Handle user delete
+  const handleDeleteUser = (user_id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    axios.delete(`${HOST}/api/admin/user/${user_id}/remove`, {
+      withCredentials: true
+    })
+      .then(() => {
+        setUsers(prev => prev.filter(u => u.user_id !== user_id));
+      })
+      .catch(err => console.error('Failed to delete user', err));
   };
 
   // Handle lot deletion
@@ -187,6 +202,7 @@ export default function Admin() {
             setSearchTerm={setSearchTerm}
             handleApproval={handleApproval}
             setEditingUser={setEditingUser}
+            handleDeleteUser={handleDeleteUser}
             setActiveTicketUser={setActiveTicketUser}
           />
         )}
@@ -199,10 +215,11 @@ export default function Admin() {
           />
         )}
         {adminOption === 'buildings' && (
-          <AdminBuildings 
+          <AdminBuildings
             buildings={buildings} setBuildings={setBuildings}
             setAddingBuilding={setAddingBuilding}
             setEditingBuilding={setEditingBuilding}
+            isLoading={isLoadingBuildings}
           />
         )}
         {adminOption === 'events' && (
@@ -319,10 +336,10 @@ export default function Admin() {
         refreshFeedbackList={() => setToggleFeedbackResponseRefresh(prev => !prev)}
       />
 
-      <BuildingFormModal 
+      <BuildingFormModal
         isOpen={!!editingBuilding || !!addingBuilding}
         building={editingBuilding}
-        onRequestClose={ () => { 
+        onRequestClose={() => {
           setAddingBuilding(null);
           setEditingBuilding(null);
         }}

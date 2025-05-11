@@ -6,6 +6,7 @@ export default function AdminUsers({
   setSearchTerm,
   handleApproval,
   setEditingUser,
+  handleDeleteUser,
   setActiveTicketUser
 }) {
   return (
@@ -20,7 +21,7 @@ export default function AdminUsers({
             .map(user => (
               <div className="user-card" key={user.user_id}>
                 <div className="user-info">
-                  <strong style={{fontFamily: 'Barlow Bold, sans-serif'}}>{user.first_name} {user.last_name}</strong><br />
+                  <strong style={{ fontFamily: 'Barlow Bold, sans-serif' }}>{user.first_name} {user.last_name}</strong><br />
                   ID: {user.user_id}<br />
                   Email: {user.email}<br />
                   Type: {user.user_type}<br />
@@ -91,35 +92,46 @@ export default function AdminUsers({
               <div
                 className="user-card"
                 key={user.user_id}
-                onClick={() => setEditingUser(user)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setEditingUser(user);
-                  }
-                }}
-                style={{ position: 'relative', paddingBottom: '50px' }}
+                style={{ position: 'relative', paddingBottom: '20px' }}
               >
                 <div className="user-info">
-                  <strong style={{ fontSize: '1.1rem', fontFamily: 'Barlow Bold, sans-serif'}}>{user.first_name} {user.last_name}</strong><br />
-                  <span><b>ID:</b> {user.user_id}</span><br />
+                  <strong style={{ fontSize: '1.1rem', fontFamily: 'Barlow Bold, sans-serif' }}>{user.first_name} {user.last_name}</strong><br />
+                  <span>ID: {user.user_id}</span><br />
                   <span><b>Email:</b> {user.email}</span><br />
                   <span><b>Type:</b> {user.user_type}</span><br />
                   <span><b>Permit:</b> {user.permit_type || 'N/A'}</span><br />
                   <span><b>Joined:</b> {new Date(user.createdAt).toLocaleDateString()}</span><br />
                   <span><b>Approved:</b> {user.isApproved ? 'Yes' : 'No'}</span><br />
+                  <span><b>Verified:</b> {user.isVerified ? 'Yes' : 'No'}</span><br />
                 </div>
-                <div style={{ position: 'absolute', bottom: '10px', right: '10px' }}>
-                  <button
+                <div className="user-actions">
+                  <img
+                    src="/images/ticket.png"
+                    alt="Give Ticket"
+                    className="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       setActiveTicketUser(user);
                     }}
-                    className="give-ticket-btn"
-                  >
-                    Give Ticket
-                  </button>
+                  />
+                  <img
+                    src="/images/edit-icon1.png"
+                    alt="Edit User"
+                    className="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingUser(user);
+                    }}
+                  />
+                  <img
+                    src="/images/x.png"
+                    alt="Delete User"
+                    className="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteUser(user.user_id);
+                    }}
+                  />
                 </div>
               </div>
             ))
