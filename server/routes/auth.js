@@ -173,8 +173,8 @@ router.post("/logout", (req, res) => {
     // Clear the authentication token cookie
     res.clearCookie("token", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        // secure: process.env.NODE_ENV === "production",
+        // sameSite: "Strict",
     });
     res.json({ message: "Logged out successfully" });
 });
