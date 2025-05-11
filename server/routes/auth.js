@@ -157,8 +157,8 @@ router.post("/login", async (req, res) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // true in prod (HTTPS), false in dev
-            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            // secure: process.env.NODE_ENV === 'production', // true in prod (HTTPS), false in dev
+            // sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
             maxAge: 2 * 60 * 60 * 1000, // 2 hours
         });
 
