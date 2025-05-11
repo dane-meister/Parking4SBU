@@ -20,7 +20,7 @@ export default function VerifyPage() {
     }
 
     axios
-      .get(`${API_BASE}/api/auth/verify?token=${token}`)
+      .get(`${API_BASE}api/auth/verify?token=${token}`)
       .then(res => {
         setStatus(res.data.message);
       })
