@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
-// const HOST = "http://localhost:8000";
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; 
 
 export default function CurrentReservationsPage() {
@@ -15,10 +14,10 @@ export default function CurrentReservationsPage() {
     const [pastReservations, setPastReservations] = useState([]);
     const [cancelledReservations, setCancelledReservations] = useState([]);
     const [otherReservations, setOtherReservations] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!user?.user_id) return;
-
+        setLoading(true);
         axios.get(`${HOST}/api/reservations/${user.user_id}`, { withCredentials: true })
             .then(res => {
                 const active = [];
@@ -38,7 +37,6 @@ export default function CurrentReservationsPage() {
                     } else if (r.status === 'pending') {
                         displayStatus = 'Pending';
                     } else if (r.status === 'confirmed') {
-                        // Only if confirmed, calculate based on time
                         if (now < start) {
                             displayStatus = 'Upcoming';
                         } else if (now >= start && now <= end) {
@@ -47,7 +45,6 @@ export default function CurrentReservationsPage() {
                             displayStatus = 'Past';
                         }
                     } else {
-                        // fallback catch (rare)
                         displayStatus = r.status.charAt(0).toUpperCase() + r.status.slice(1);
                     }
 
@@ -81,42 +78,49 @@ export default function CurrentReservationsPage() {
                 setCancelledReservations(cancelled);
                 setOtherReservations(other);
             })
-            .catch(err => console.error("Failed to fetch reservations", err));
-    }, [user]);
+            .catch(err => console.error("Failed to fetch reservations", err))
+            .finally(() => setLoading(false));
+    }, []);
 
     return (
         <main className="reservation-page">
             <h1>My Reservations</h1>
 
-            {activeReservations.length > 0 && (
+            {loading ? (
+                <p>Loading reservations...</p>
+            ) : (
                 <>
-                    <h2>Active/Upcoming Reservations</h2>
-                    {activeReservations.map(reservation => (
-                        <ReservationItem key={reservation.id} reservation={reservation} />
-                    ))}
-                </>
-            )}
+                    {activeReservations.length > 0 && (
+                        <>
+                            <h2>Active/Upcoming Reservations</h2>
+                            {activeReservations.map(reservation => (
+                                <ReservationItem key={reservation.id} reservation={reservation} />
+                            ))}
+                        </>
+                    )}
 
-            {pastReservations.length > 0 && (
-                <>
-                    <h2>Past Reservations</h2>
-                    {pastReservations.map(reservation => (
-                        <ReservationItem key={reservation.id} reservation={reservation} />
-                    ))}
-                </>
-            )}
+                    {pastReservations.length > 0 && (
+                        <>
+                            <h2>Past Reservations</h2>
+                            {pastReservations.map(reservation => (
+                                <ReservationItem key={reservation.id} reservation={reservation} />
+                            ))}
+                        </>
+                    )}
 
-            {cancelledReservations.length > 0 && (
-                <>
-                    <h2>Cancelled Reservations</h2>
-                    {cancelledReservations.map(reservation => (
-                        <ReservationItem key={reservation.id} reservation={reservation} />
-                    ))}
-                </>
-            )}
+                    {cancelledReservations.length > 0 && (
+                        <>
+                            <h2>Cancelled Reservations</h2>
+                            {cancelledReservations.map(reservation => (
+                                <ReservationItem key={reservation.id} reservation={reservation} />
+                            ))}
+                        </>
+                    )}
 
-            {activeReservations.length === 0 && pastReservations.length === 0 && cancelledReservations.length === 0 && (
-                <p>No reservations found.</p>
+                    {activeReservations.length === 0 && pastReservations.length === 0 && cancelledReservations.length === 0 && (
+                        <p>No reservations found.</p>
+                    )}
+                </>
             )}
         </main>
     );
