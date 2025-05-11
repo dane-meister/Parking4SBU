@@ -554,4 +554,26 @@ router.get('/verify', async (req, res) => {
     }
   });
 
+
+  //change password (from profile page)
+  router.put("/change-password", authenticate, async (req, res) => {
+      const { currentPassword, newPassword } = req.body;
+  
+      const user = await User.findByPk(req.user.user_id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+  
+      //hash and save the new password
+      const hashed = await bcrypt.hash(newPassword, salt_rounds);
+      await user.update({ password: hashed });
+  
+      return res.json({ message: "Password changed successfully" });
+    }
+  );
+  
+
 module.exports = router;
