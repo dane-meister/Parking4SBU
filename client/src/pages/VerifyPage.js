@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000/api'; 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000'; 
 
 export default function VerifyPage() {
   const [status, setStatus] = useState('Verifying your account…');
@@ -20,7 +20,7 @@ export default function VerifyPage() {
     }
 
     axios
-      .get(`${API_BASE}/auth/verify?token=${token}`)
+      .get(`${API_BASE}/api/auth/verify?token=${token}`)
       .then(res => {
         setStatus(res.data.message);
       })

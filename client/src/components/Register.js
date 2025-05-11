@@ -125,7 +125,7 @@ export default function RegisterPage() {
   useEffect(() => {
     if (isRegistered && !awaitingApproval) {
       const timer = setTimeout(() => {
-        navigate('/login');
+        navigate('/auth/login');
       }, 2000); // 5 seconds
   
       return () => clearTimeout(timer);
