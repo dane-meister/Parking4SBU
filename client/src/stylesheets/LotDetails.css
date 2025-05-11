@@ -27,6 +27,7 @@
 	}
 
 	.selected-lot-name{
+		font-family: 'Barlow Medium';
 		font-size: 50px;
 		height: 70px;
 		height: auto;

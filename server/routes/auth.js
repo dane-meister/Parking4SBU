@@ -478,22 +478,27 @@ router.post("/feedback/add", authenticate, async (req, res) => {
 
 
 router.get('/verify', async (req, res) => {
-    console.log("in verify");
     const { token } = req.query;
     try {
     const { user_id, type } = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("user_id:", user_id);
+    console.log("type:", type);
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
 
       if (type !== 'email-verify') {
         console.error("error");
+        throw new Error('Wrong token type');
         throw new Error();
     }
   
       const user = await User.findByPk(user_id);
+      console.log("user:", user);
 
       user.isVerified = true;
+      console.log("user.isVerified:", user.isVerified);
       await user.save();
+      console.log("user saved:", user);
   
       return res.json({ message: 'Email verified! Please log in.' });
     } catch {
@@ -550,5 +555,27 @@ router.get('/verify', async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired reset link.' });
     }
   });
+
+
+  //change password (from profile page)
+  router.put("/change-password", authenticate, async (req, res) => {
+      const { currentPassword, newPassword } = req.body;
+  
+      const user = await User.findByPk(req.user.user_id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+  
+      //hash and save the new password
+      const hashed = await bcrypt.hash(newPassword, salt_rounds);
+      await user.update({ password: hashed });
+  
+      return res.json({ message: "Password changed successfully" });
+    }
+  );
+  
 
 module.exports = router;

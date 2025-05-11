@@ -1,41 +1,43 @@
-import  React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Popup } from '../components';
 import axios from 'axios';
+import ChangePasswordModal from "../components/ChangePasswordModal";
 // const HOST = "http://localhost:8000"
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 // The form displays user data passed as a prop (`userData`) in a read-only format.
 export default function ProfileForm({ userData }) {
-  const [ popupVisible, setPopupVisible ] = useState(false);
-  const [ popupMsg, setPopupMsg ] = useState('');
-  
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupMsg, setPopupMsg] = useState('');
+
   // keep track of # of modified fields
-  const [ modifiedFields, setModifiedFields ] = useState(new Set());
+  const [modifiedFields, setModifiedFields] = useState(new Set());
+  const [showPwdModal, setShowPwdModal] = useState(false);
 
-  const [ email, setEmail ] = useState(userData.email);
-  const [ firstName, setFirstName ] = useState(userData.firstName);
-  const [ lastName, setLastName ] = useState(userData.lastName);
-  const [ mobile, setMobile ] = useState(userData.mobile);
-  const [ dlNumber, setDlNumber ] = useState(userData.dlNumber);
-  const [ dlState, setDlState ] = useState(userData.dlState);
-  const [ address, setAddress ] = useState(userData.address);
-  const [ city, setCity ] = useState(userData.city);
-  const [ state, setState ] = useState(userData.state);
-  const [ zip, setZip ] = useState(userData.zip);
-  const [ country, setCountry ] = useState(userData.country);
+  const [email, setEmail] = useState(userData.email);
+  const [firstName, setFirstName] = useState(userData.firstName);
+  const [lastName, setLastName] = useState(userData.lastName);
+  const [mobile, setMobile] = useState(userData.mobile);
+  const [dlNumber, setDlNumber] = useState(userData.dlNumber);
+  const [dlState, setDlState] = useState(userData.dlState);
+  const [address, setAddress] = useState(userData.address);
+  const [city, setCity] = useState(userData.city);
+  const [state, setState] = useState(userData.state);
+  const [zip, setZip] = useState(userData.zip);
+  const [country, setCountry] = useState(userData.country);
 
-  const emailErr = useRef(null);      
+  const emailErr = useRef(null);
   const firstNameErr = useRef(null);
-  const lastNameErr = useRef(null); 
-  const mobileNumberErr = useRef(null); 
-  const licenseErr = useRef(null); 
-  const dlStateErr = useRef(null); 
-  const addressErr = useRef(null); 
-  const cityErr = useRef(null); 
-  const stateErr = useRef(null); 
-  const zipErr = useRef(null); 
-  const countryErr = useRef(null); 
+  const lastNameErr = useRef(null);
+  const mobileNumberErr = useRef(null);
+  const licenseErr = useRef(null);
+  const dlStateErr = useRef(null);
+  const addressErr = useRef(null);
+  const cityErr = useRef(null);
+  const stateErr = useRef(null);
+  const zipErr = useRef(null);
+  const countryErr = useRef(null);
 
   const us_states = [
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID",
@@ -47,11 +49,11 @@ export default function ProfileForm({ userData }) {
 
   const handleEditProfileSubmit = (event) => {
     event.preventDefault();
-    if(!email.trim()){
+    if (!email.trim()) {
       emailErr.current.innerHTML = 'Email cannot be empty!';
-    }else if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())){
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
       emailErr.current.innerHTML = 'Email must be valid!, ex: email@website.com';
-    }else{
+    } else {
       emailErr.current.innerHTML = '';
     }
 
@@ -63,11 +65,11 @@ export default function ProfileForm({ userData }) {
       ? 'Last name cannot be empty!'
       : '';
 
-    if(!mobile.trim()){
+    if (!mobile.trim()) {
       mobileNumberErr.current.innerHTML = 'Mobile number cannot be empty';
-    }else if(!/^\d{10}$/.test(mobile.trim())){
+    } else if (!/^\d{10}$/.test(mobile.trim())) {
       mobileNumberErr.current.innerHTML = 'Mobile number must be a valid US 10 digit number';
-    }else{
+    } else {
       mobileNumberErr.current.innerHTML = '';
     }
 
@@ -89,11 +91,11 @@ export default function ProfileForm({ userData }) {
       ? 'State/region cannot be empty!'
       : '';
 
-    if(!zip.trim()){
+    if (!zip.trim()) {
       zipErr.current.innerHTML = 'Zip code cannot be empty!';
-    }else if(!/^\d{5}(?:[-\s]\d{4})?$/.test(zip.trim())){
+    } else if (!/^\d{5}(?:[-\s]\d{4})?$/.test(zip.trim())) {
       zipErr.current.innerHTML = 'Zip code must be valid!';
-    }else{
+    } else {
       zipErr.current.innerHTML = '';
     }
 
@@ -104,9 +106,9 @@ export default function ProfileForm({ userData }) {
     let hadError = [emailErr, firstNameErr, lastNameErr, mobileNumberErr, licenseErr, dlStateErr, addressErr, cityErr, stateErr, zipErr, countryErr]
       .map(elem => elem.current.innerHTML)
       .some(innerHTML => innerHTML !== '');
-    if(hadError) return;
+    if (hadError) return;
     /* backend here */
-    
+
     const hardcodedTuples = [
       [email, userData.email, 'Email Address'], [firstName, userData.firstName, 'First Name'], [lastName, userData.lastName, 'Last Name'],
       [mobile, userData.mobile, 'Mobile Number'], [dlNumber, userData.dlNumber, 'Driver License No.'], [dlState, userData.dlState, 'DL State'],
@@ -116,12 +118,12 @@ export default function ProfileForm({ userData }) {
 
     let differingFields = [];
     hardcodedTuples.map(tuple => {
-      if(tuple[0] !== tuple[1]){
+      if (tuple[0] !== tuple[1]) {
         differingFields.push([tuple[2], tuple[0]]);
       }
     });
 
-    if(differingFields.length === 0){
+    if (differingFields.length === 0) {
       alert('No changes to update!');
       return;
     }
@@ -133,15 +135,15 @@ export default function ProfileForm({ userData }) {
   const handleFieldChange = (current, original, inputId, labelId) => {
     const input = document.getElementById(inputId);
     const label = document.getElementById(labelId);
-    
-    if(current === original){
+
+    if (current === original) {
       const newSet = new Set(modifiedFields);
       newSet.delete(inputId);
       setModifiedFields(newSet);
 
       input.classList.remove('profile-modified');
       label.classList.remove('profile-modified');
-    }else{
+    } else {
       const newSet = new Set(modifiedFields);
       newSet.add(inputId);
       setModifiedFields(newSet);
@@ -152,20 +154,20 @@ export default function ProfileForm({ userData }) {
   }
 
   const handleEditConfirmation = () => {
-    axios.put(`${HOST}/api/auth/edit-profile/${userData.user_id}`, 
+    axios.put(`${HOST}/api/auth/edit-profile/${userData.user_id}`,
       {
         email,
         first_name: firstName,
-        last_name: lastName, 
-        phone_number: mobile, 
-        driver_license_number: dlNumber, 
-        dl_state: dlState, 
-        address_line: address, 
+        last_name: lastName,
+        phone_number: mobile,
+        driver_license_number: dlNumber,
+        dl_state: dlState,
+        address_line: address,
         city,
         state_region: state,
         postal_zip_code: zip,
         country
-      }, 
+      },
       { withCredentials: true }
     )
       .then(() => {
@@ -177,7 +179,7 @@ export default function ProfileForm({ userData }) {
         setPopupVisible(err);
       })
   };
-  
+
   const handleFieldReset = () => {
     setEmail(userData.email);
     handleFieldChange('', '', 'email', 'profile-email-lbl');
@@ -196,7 +198,7 @@ export default function ProfileForm({ userData }) {
     setCity(userData.city);
     handleFieldChange('', '', 'city', 'profile-city-lbl');
     setState(userData.state);
-    handleFieldChange('', '', 'state', 'profile-state-lbl'); 
+    handleFieldChange('', '', 'state', 'profile-state-lbl');
     setZip(userData.zip);
     handleFieldChange('', '', 'zipCode', 'profile-zip-lbl');
     setCountry(userData.country);
@@ -207,11 +209,11 @@ export default function ProfileForm({ userData }) {
 
   return (
     <section className="profile-form">
-      <div className='hbox' style={{justifyContent: 'space-between'}}>
-        <h2 style={{display: 'inline-block'}}>Edit Profile</h2>
-        <img src='/images/reset.png' alt='reset fields icon' 
+      <div className='hbox' style={{ justifyContent: 'space-between' }}>
+        <h2 style={{ display: 'inline-block' }}>Edit Profile</h2>
+        <img src='/images/reset.png' alt='reset fields icon'
           className={modifiedFields.size === 0 ? 'invisible-icon' : 'reset-icon'}
-          style={{height: '22px', margin: '23px 0 27px 0'}}
+          style={{ height: '22px', margin: '23px 0 27px 0' }}
           onClick={handleFieldReset}
         />
       </div>
@@ -223,7 +225,7 @@ export default function ProfileForm({ userData }) {
           autoComplete='email'
         />
         <p ref={emailErr} id='profile-email-err' className='profile-error'></p>
-        
+
         <div className="form-row">
           {/* First Name Field */}
           <div>
@@ -245,7 +247,7 @@ export default function ProfileForm({ userData }) {
 
         {/* Mobile Number Field */}
         <label htmlFor='tel' id='profile-tel-lbl'>Mobile Number</label>
-        <input id='tel' type="tel" value={mobile}  disabled={popupVisible}
+        <input id='tel' type="tel" value={mobile} disabled={popupVisible}
           onChange={(e) => { setMobile(e.target.value); handleFieldChange(e.target.value, userData.mobile, 'tel', 'profile-tel-lbl'); }}
           autoComplete='tel'
         />
@@ -318,25 +320,43 @@ export default function ProfileForm({ userData }) {
           </div>
         </div>
         <p
-          style={{margin: '0', marginTop: '-5px', fontSize: '13px', color: 'var(--gray)'}}
+          style={{ margin: '0', marginTop: '-5px', fontSize: '13px', color: 'var(--gray)' }}
         >* edited fields</p>
-        <Link className="profile-change-password" disabled={popupVisible} >Change Password</Link>
+
+        <div style={{ margin: "1rem 0" }}>
+          <button
+            type="button"
+            className="profile-change-password"
+            disabled={popupVisible}
+            onClick={() => setShowPwdModal(true)}
+          >
+            Change Password
+          </button>
+        </div>
+
+        {showPwdModal && (
+          <ChangePasswordModal
+            onClose={() => setShowPwdModal(false)}
+          />
+        )}
+
         <input className='profile-update-btn' type='submit' value='Update Profile' disabled={popupVisible} />
       </form>
 
       {popupVisible &&
-        <Popup name='profile' 
-          closeFunction={() => setPopupVisible(false)} 
+        <Popup name='profile'
+          closeFunction={() => setPopupVisible(false)}
           popupHeading={'Are you sure you want to edit the following fields?:'}
         >
-          <div style={{margin: '10px'}}>
+          <div style={{ margin: '10px' }}>
             {popupMsg.map((tuple, index) => {
               return <div key={index}>
                 <strong>{tuple[0]}</strong>: {tuple[1]}
-              </div>})}
+              </div>
+            })}
           </div>
-          <div className='profile-popup-btns' style={{display: 'flex', gap: '10px', margin: '0 10px'}}>
-            <button 
+          <div className='profile-popup-btns' style={{ display: 'flex', gap: '10px', margin: '0 10px' }}>
+            <button
               autoFocus // eslint-disable-line jsx-a11y/no-autofocus
               onClick={() => setPopupVisible(false)}
             >Cancel</button>

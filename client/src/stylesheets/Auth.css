@@ -220,6 +220,12 @@
     display: block;
   }
 
+  .auth-info {
+    color: red;
+    font-size: 0.9rem;    /* optional: match your form text size */
+    margin-top: 0.25rem;  /* optional: a little spacing */
+  }
+
   .auth-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
