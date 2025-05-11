@@ -25,6 +25,7 @@ export default function Admin() {
   const [feedbackList, setFeedbackList] = useState([]);
   
   const [buildings, setBuildings] = useState([]);
+  const [isLoadingBuildings, setIsLoadingBuildings] = useState(false);
   const [editingBuilding, setEditingBuilding] = useState(null);
   const [addingBuilding, setAddingBuilding] = useState(null);
 
@@ -72,6 +73,7 @@ export default function Admin() {
         });
     }
     if (adminOption === 'buildings') {
+      setIsLoadingBuildings(true);
       axios.get(`${HOST}/api/buildings`, {
         withCredentials: true
       })
@@ -79,7 +81,7 @@ export default function Admin() {
         .catch(err => {
           console.error("Failed to fetch buildings", err);
           setBuildings([]);
-        });
+        }).finally(() => setIsLoadingBuildings(false));
     }
     if (adminOption === 'events') {
       axios.get(`${HOST}/api/admin/event-reservations`, {
@@ -203,6 +205,7 @@ export default function Admin() {
             buildings={buildings} setBuildings={setBuildings}
             setAddingBuilding={setAddingBuilding}
             setEditingBuilding={setEditingBuilding}
+            isLoading={isLoadingBuildings}
           />
         )}
         {adminOption === 'events' && (

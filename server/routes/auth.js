@@ -174,8 +174,10 @@ router.post("/logout", (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-    });
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        path: "/",
+     });
+
     res.json({ message: "Logged out successfully" });
 });
 

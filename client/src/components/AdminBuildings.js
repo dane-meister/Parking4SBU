@@ -5,6 +5,7 @@ export default function AdminBuildings({
   buildings, setBuildings,
   setEditingBuilding,
   setAddingBuilding,
+  isLoading,
 }) {  
   const handleDeleteBuilding = async (bldg_id) => {
     if (!window.confirm("Are you sure you want to delete this lot?")) return;
@@ -23,6 +24,10 @@ export default function AdminBuildings({
     <button className="add-lot-button" onClick={() => setAddingBuilding(true)}>Add a Building</button>
     <h2>Manage Buildings</h2>
     <div className="user-list">
+      {isLoading ? (
+        <p style={{ padding: '1em' }}>Loading buildings...</p>
+      ) : (
+      <>
       {buildings.length === 0 && <p>No buildings found.</p>}
       {buildings.toSorted((a, b) => a.id - b.id)
         .map(building => (
@@ -53,6 +58,7 @@ export default function AdminBuildings({
         </div>
         ))
       }
+      </>)}
     </div>
   </>);
 }
