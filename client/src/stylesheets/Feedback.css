@@ -54,7 +54,7 @@
 }
 
 .feedback-page button {
-  background-color: var(--royal-blue);
+  background-color: var(--gray);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -65,7 +65,7 @@
 }
 
 .feedback-page button:hover {
-  background-color: #014176;
+  background-color: var(--dark-gray);
 }
 
 .feedback-card {
