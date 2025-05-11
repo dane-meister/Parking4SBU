@@ -25,10 +25,11 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     resident_availability,
     resident_capacity,
     resident_zone,
+    general_availability,
+    general_capacity,
     rate,
     time,
     location,
-    lotImgSrc
   } = lotObj;
 
   const rates = lotObj?.Rates ?? []; // Get the rates from the lot object or default to an empty array
@@ -42,8 +43,9 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
   );
 
   // Determine what to display for rate
-  let displayRate = '';
+  let displayRate = 'Permitted Lot';
   let timeRange = '';
+
   if (desiredRateObj) {
     displayRate = `$${desiredRateObj[rateType].toFixed(2)} / ${rateType}`;
     timeRange = formatTimeRange(desiredRateObj.lot_start_time, desiredRateObj.lot_end_time);
@@ -51,6 +53,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     displayRate = 'Free visitor parking';
     timeRange = formatTimeRange(freeRateObj.lot_start_time, freeRateObj.lot_end_time);
   }
+
   
 
   const availableCapacity = 
@@ -61,6 +64,7 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
     ev_charging_availability +
     faculty_availability +
     metered_availability +
+    general_availability +
     resident_availability;
 
     function getRelevantRate(rates, rateType) {
@@ -105,19 +109,11 @@ export default function LotResult({ lotObj, setSelectedLot, distance, rateType }
       className="lot-result hbox" 
       onClick={() => setSelectedLot(lotObj)} // Set the selected lot when the section is clicked
     >
-      {/* Uncomment the following block to display the lot image */}
-      {/* <img 
-        className='result-img' 
-        src={lotImgSrc ?? '/images/lots/placeholder_lot.png'} // Use placeholder image if lotImgSrc is not provided
-        style={lotImgSrc ? {height: '120px'} : {margin: '0px 25px 0px 10px'}} // Adjust styling based on image availability
-        alt='lot'
-      /> */}
-      
       <section className="lot-result-info-container hbox wide tall">
         {/* Left section containing lot details */}
         <div className='lot-result-info vbox'>
           <div className='result-name-row'>{name ?? 'Unknown Lot'}</div> {/* Display lot name or fallback to 'Unknown Lot' */}
-          <div className="result-dist-row">{distance ? formatDistance(distance) : ''}</div> {/* Display distance if available */}
+          <div className="result-dist-row">{(distance !== null && distance !== undefined) ? formatDistance(distance) : ''}</div> {/* Display distance if available */}
           <div className="result-price-time-row">
             <span className='result-price'>{displayRate}</span>
             <span className="result-time">{timeRange}</span>

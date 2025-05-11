@@ -24,8 +24,6 @@ export default function PopularTimes({ lotId, initialSelectedDay }) {
                 if (!response.ok) throw new Error("Failed to fetch popular times data.");
                 const data = await response.json();
                 setPopularData(data);
-                // console.log("popular times: ", data);
-                // console.log("lot id: ", lotId);
             } catch (err) {
                 setError(err.message);
             } finally {

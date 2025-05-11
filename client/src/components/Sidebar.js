@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
+import '../stylesheets/Sidebar.css';
 
 function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType, times, setTimes, initialRateType }) {
   // State for rate type selection (hourly, daily, etc.)
@@ -52,53 +53,77 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
       return passesCoverFilter && matchesEV && matchesDisability;
     });
   }
-  
-  // filter useEffect
-  useEffect(() => {
-    const filtered = applyFilters(baseLots);
-    setLotResults(filtered);
-  }, [
-    filterCovered, 
-    filterUncovered, 
-    filterEVCharging, 
-    filterDisability, 
-    baseLots
-  ]);  
 
   // sorting useEffect
   const [ availableSortMethods, setAvailableMethods ] = useState(['Alphabetical']);
   const [ sortMethod, setSortMethod ] = useState('Alphabetical');
   const [ resortToggle, setResortToggle ] = useState(false);
+
+  function getSortedLots(lots) {
+    switch(sortMethod) {
+      case 'Alphabetical':
+        return [...lots].toSorted((a, b) => a.name.localeCompare(b.name));
+      case 'Distance':
+        return [...lots].toSorted((a, b) => a.distance_miles - b.distance_miles);
+      case 'Price':
+        return [...lots].toSorted((a, b) => {
+          const getMinRate = lot =>
+            lot.Rates?.reduce((min, rate) => {
+              const val = rate?.[rateType];
+              return (typeof val === 'number' && val >= 0)
+                ? Math.min(min, val)
+                : min;
+            }, Infinity) ?? Infinity;
+  
+          return getMinRate(a) - getMinRate(b);
+        });
+      case 'Capacity':
+        return [...lots].toSorted((a, b) => {
+          const getAvailable = lot =>
+            (lot.ada_availability ?? 0) +
+            (lot.commuter_core_availability ?? 0) +
+            (lot.commuter_perimeter_availability ?? 0) +
+            (lot.commuter_satellite_availability ?? 0) +
+            (lot.ev_charging_availability ?? 0) +
+            (lot.faculty_availability ?? 0) +
+            (lot.metered_availability ?? 0) +
+            (lot.general_availability ?? 0) +
+            (lot.resident_availability ?? 0);
+          return getAvailable(b) - getAvailable(a);
+        });
+      default:
+        return lots;
+    }
+  }
+
   useEffect(() => {
-    if(!!selectedBuilding) {
-      setAvailableMethods(['Distance', 'Price', 'Alphabetical']);
-    } else { // if no building selected only alphabetical available
-      setAvailableMethods(['Alphabetical']);
+    const filtered = applyFilters(baseLots);
+    const sorted = getSortedLots(filtered);
+    setLotResults(sorted);
+  }, [
+    baseLots,
+    filterCovered,
+    filterUncovered,
+    filterEVCharging,
+    filterDisability,
+    sortMethod,
+    rateType,
+    resortToggle
+  ]);
+
+  useEffect(() => {
+    if (!!selectedBuilding) {
+      setAvailableMethods(['Distance', 'Price', 'Capacity', 'Alphabetical']);
+    } else {
+      setAvailableMethods(['Alphabetical', 'Capacity', 'Price']);
     }
 
-    let sortedLots;
-    switch(sortMethod){
-      case 'Alphabetical':
-        sortedLots = Array.from(lotResults).toSorted(function(a, b){
-          const [aName, bName] = [a.name.toLowerCase(), b.name.toLowerCase()];
-          if(aName < bName) return -1;
-          if(bName < aName) return 1;
-          return 0;
-        });
-        break;
-      case 'Distance':
-        sortedLots = lotResults.toSorted((a,b) => {
-          return a.distance_miles - b.distance_miles
-        });
-        break;
-      case 'Price':
-        sortedLots = lotResults.toSorted((_a,b) => {
-          /* sort logic here */
-        });
-        break;
+    if (selectedBuilding && sortMethod !== 'Distance') {
+      setSortMethod('Distance');
+      setResortToggle(prev => !prev); // Trigger re-sort
     }
-    setLotResults(sortedLots);
-  }, [resortToggle, selectedBuilding]);
+  }, [selectedBuilding]);
+  
 
   return (
     <section className='sidebar'>
@@ -211,7 +236,10 @@ function LotList({
     <div className='hbox selection' id='building-lot-selection'>
       <span 
         className={'type-hover '+((buildingLotType==='building') ? 'selected' : '')}
-        onClick={() => setBuildingLotType('building')}   
+        onClick={() => {
+          setBuildingLotType('building');
+          setValue(''); // clear input
+        }}   
       >Building</span>
       <span>/</span>
       <span 
@@ -219,6 +247,8 @@ function LotList({
         onClick={() => {
           setBuildingLotType('lot');
           setSelectedBuilding(null);
+          setValue('');                     // clear input
+          setSortMethod('Alphabetical');    // change from nearest buildings to alphabetical on switch
         }}
       >Lot</span>
     </div>
@@ -265,16 +295,20 @@ function LotList({
       <header id='results-header' className='hbox'>
         Results
         <span className='flex' key={1}/>
-        <span>sort by</span>
         <span id='sort-by'>
-          <select value={sortMethod} onChange={handleSortSelect} id='sort-by-select'>
-            {availableSortMethods.map(method => {
-              return <option 
-                key={method} value={method}
-              >{method}</option>
-            })}
+          <label htmlFor="sort-by-select" className="sr-only">Sort by</label>
+          <select 
+            id="sort-by-select" 
+            value={sortMethod} 
+            onChange={handleSortSelect}
+            className="custom-dropdown"
+          >
+            {availableSortMethods.map(method => (
+              <option key={method} value={method}>{method}</option>
+            ))}
           </select>
         </span>
+
       </header>
       <section className='lot-results'>
         {lotResults.map((lot,idx) => {
@@ -282,7 +316,7 @@ function LotList({
             lotObj={lot}
             key={idx}
             setSelectedLot={setSelectedLot}
-            distance={selectedBuilding ? lot.distance_miles : ''}
+            distance={selectedBuilding ? lot.distance_miles : null}
             rateType={rateType}
             times={times}
           />

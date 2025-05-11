@@ -142,7 +142,6 @@ router.post("/login", async (req, res) => {
 
         //ensure user has clicked on magic link
         if (!user.isVerified) {
-            console.log("verified: ", user.isVerified);
             return res.status(403).json({ message: "Please verify your email via the link we sent" });
         }
 
@@ -483,20 +482,16 @@ router.get('/verify', async (req, res) => {
     const { user_id, type } = jwt.verify(token, process.env.JWT_SECRET);
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('VERIFY payload:', payload);
 
       if (type !== 'email-verify') {
-        console.log("error");
+        console.error("error");
         throw new Error();
     }
   
       const user = await User.findByPk(user_id);
-      console.log('VERIFY user before:', user.toJSON());
 
       user.isVerified = true;
       await user.save();
-
-      console.log('VERIFY user after:', (await user.reload()).toJSON());
   
       return res.json({ message: 'Email verified! Please log in.' });
     } catch {
@@ -504,5 +499,54 @@ router.get('/verify', async (req, res) => {
     }
   });
   
+
+
+  router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (user) {
+        const token = jwt.sign(
+          { user_id: user.user_id, type: 'reset-password' },
+          process.env.JWT_SECRET,
+          { expiresIn: '15m' }
+        );
+        const link = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`;
+        console.log("rest link:", link);
+        await mailer.sendMail({
+          to:      email,
+          from:    process.env.SMTP_FROM,
+          subject: 'SBU Parking – Reset your password',
+          text:
+            `Hi ${user.first_name},\n\n` +
+            `Click this link within 15 minutes to reset your password:\n\n${link}\n\n` +
+            `If you didn’t ask for this, just ignore this email.`
+        });
+      }
+      //always respond OK to not reveal registered emails (security thing)
+      res.json({ message: 'If that email is registered, you’ll receive a reset link.' });
+    } catch (err) {
+      console.error('Forgot password error:', err);
+      res.status(500).json({ message: 'Error processing request.' });
+    }
+  });
+
+
+  router.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET);
+      if (payload.type !== 'reset-password') throw new Error('Wrong token');
+      const user = await User.findByPk(payload.user_id);
+      if (!user) throw new Error('No user');
+  
+      user.password = await bcrypt.hash(newPassword, salt_rounds);
+      await user.save();
+      return res.json({ message: 'Password has been reset.' });
+    } catch (err) {
+      console.error('Reset password error:', err);
+      return res.status(400).json({ message: 'Invalid or expired reset link.' });
+    }
+  });
 
 module.exports = router;

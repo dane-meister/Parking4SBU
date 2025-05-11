@@ -20,19 +20,19 @@ export default function LoginPage() {
     setEmail(e.target.value);
     if (error) setError(''); // Clear error on email change
   };
-  
+
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
-  
+
   const handleResendEmail = async () => {
     if (!canResend) return;
-  
+
     setCanResend(false); // block sending again
     try {
       const res = await axios.post(`${HOST}/api/admin/resend-verification`, { email });
       alert(res.data.message || "Verification email sent");
-  
+
       // Optional: show a toast or timer
     } catch (err) {
       console.error(err);
@@ -48,27 +48,24 @@ export default function LoginPage() {
     e.preventDefault(); // Prevent default form submission behavior
     try {
       const { success, user, message } = await login(email, password); // Attempt to log in with provided credentials
-      
+
       if (!success) {
         setError(message); // Set error message if login fails
-        console.log(message); // Log the error message for debugging
         return;
       }
 
       if (!user.isApproved) {
         setError("Your account is not approved yet.");
-        console.log("Your account is not approved yet.");
         return;
       }
 
       if (!user.isVerified) {
         setError("Please verify your email via the link we sent.");
-        console.log("Please verify your email via the link we sent.");
         return;
-     }
+      }
 
-    // All checks passed
-    navigate('/');
+      // All checks passed
+      navigate('/');
     } catch (err) {
       setError("Something went wrong. Please try again."); // Set a generic error message if an exception occurs
       console.error(err); // Log the error for debugging
@@ -81,19 +78,19 @@ export default function LoginPage() {
         <h2 className="auth-title">Welcome Back</h2>
         {/* Display error message if there is one */}
         {error && <p className="auth-error">{error}
-        {error === "Please verify your email via the link we sent" && (
-          <div>
-          <p>Didn’t get it?
-          <span
-            onClick={handleResendEmail}
-            disabled={!canResend}
-            className="auth-link"
-            style={{ cursor: 'pointer' }}
-          >
-            {canResend ? "Resend Email" : "Please wait before tying again..."}
-          </span></p>
-          </div>
-        )}</p>}
+          {error === "Please verify your email via the link we sent" && (
+            <div>
+              <p>Didn’t get it?
+                <span
+                  onClick={handleResendEmail}
+                  disabled={!canResend}
+                  className="auth-link"
+                  style={{ cursor: 'pointer' }}
+                >
+                  {canResend ? "Resend Email" : "Please wait before tying again..."}
+                </span></p>
+            </div>
+          )}</p>}
         <form onSubmit={handleLogin} className="auth-form">
           <div className="form-group">
             <label htmlFor='email'>Email Address</label>
@@ -127,6 +124,9 @@ export default function LoginPage() {
           <span>Don’t have an account?</span>
           {/* Link to the registration page */}
           <Link to="/auth/register" className="auth-link">Register</Link>
+          <div style={{ marginTop: '0.5rem' }}>
+            <Link to="/auth/forgot-password" className="auth-link">Forgot password?</Link>
+          </div>
         </div>
       </div>
     </div>

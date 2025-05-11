@@ -11,8 +11,8 @@ export default function EditRateForm({
     daily: null,
     event_parking_price: null,
     hourly: null,
-    lot_end_time: "23:59:59",
-    lot_start_time: "0:00:00",
+    lot_start_time: "07:00:00",
+    lot_end_time: "16:00:00",
     max_hours: null,
     monthly: null,
     parking_lot_id: null,
@@ -77,8 +77,6 @@ export default function EditRateForm({
       externalOpen={openRates} externalSetOpen={setOpenRates}
       asterisk={formType === 'add' || anyRateModified()} 
     >
-      {/* debugging btn */}
-      {/* <input type='button' onClick={() => console.log('rates:',formData.rates)} value={'See rates'}/> */}
       {Object.values(formData.rates).map(rate => (
         <EditRate 
           rateObj={rate} 
@@ -97,5 +95,5 @@ export default function EditRateForm({
       )}
       <button id='lot-modal-add-rate' type='button' onClick={addRate}>Add a Rate</button>
     </Collapsible>
-  </>)
+  </>);
 }

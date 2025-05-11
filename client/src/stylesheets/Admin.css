@@ -4,6 +4,7 @@
   min-height: calc(100vh - 60px - 60px - 50px);
   /* header + nav + footer spacing */
   font-family: 'Barlow Medium', sans-serif;
+  overflow-x: auto;
 }
 
 .admin h1 {
@@ -58,6 +59,7 @@
   padding: 20px 25px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
+  overflow-wrap: anywhere;
 }
 
 .user-card:hover {
@@ -142,6 +144,7 @@
 .save-button,
 .respond-button,
 .add-lot-button {
+  margin-top: 4px;
   background-color: #990000;
   color: white;
   border: none;
@@ -158,18 +161,18 @@
   background-color: #f8f8f8;
 }
 
-
 .capacity-collapsible {
   height: auto;
 }
 
-.capacity-img, .capacity-img, .rates-img, .location-img, img.rate {
+.capacity-img, .capacity-img, .rates-img, .location-img, img.rate, .other-img{
   height: 20px;
 }
 
 .capacity-collapsible-name,
 .rates-collapsible-name,
 .location-collapsible-name,
+.other-collapsible-name,
 .lot-lbl {
   font-weight: bold;
   font-size: 18px;
@@ -178,6 +181,12 @@
 
 #lot-form-modal input {
   width: 100%;
+}
+
+#lot-form-modal #covered{
+  width: auto;
+  margin-bottom: 0;
+  margin-left: 10px;
 }
 
 #lot-form-modal>div {
@@ -190,7 +199,7 @@
 
 .give-ticket-btn {
   padding: 6px 12px;
-  background-color: #e63946;
+  background-color: var(--red);
   color: white;
   border: none;
   border-radius: 5px;
@@ -200,7 +209,7 @@
 }
 
 .give-ticket-btn:hover {
-  background-color: #d62828;
+  background-color: var(--dark-red);
 }
 
 .ticket-popup-overlay {

@@ -20,7 +20,7 @@ export default function AdminUsers({
             .map(user => (
               <div className="user-card" key={user.user_id}>
                 <div className="user-info">
-                  <strong>{user.first_name} {user.last_name}</strong><br />
+                  <strong style={{fontFamily: 'Barlow Bold, sans-serif'}}>{user.first_name} {user.last_name}</strong><br />
                   ID: {user.user_id}<br />
                   Email: {user.email}<br />
                   Type: {user.user_type}<br />
@@ -102,7 +102,7 @@ export default function AdminUsers({
                 style={{ position: 'relative', paddingBottom: '50px' }}
               >
                 <div className="user-info">
-                  <strong style={{ fontSize: '1.1rem' }}>{user.first_name} {user.last_name}</strong><br />
+                  <strong style={{ fontSize: '1.1rem', fontFamily: 'Barlow Bold, sans-serif'}}>{user.first_name} {user.last_name}</strong><br />
                   <span><b>ID:</b> {user.user_id}</span><br />
                   <span><b>Email:</b> {user.email}</span><br />
                   <span><b>Type:</b> {user.user_type}</span><br />

@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../stylesheets/index.css';
 import '../stylesheets/Admin.css';
-import AdminTabSelector from '../components/AdminTabSelector';
+// import AdminTabSelector from '../components/AdminTabSelector';
 import AdminUsers from '../components/AdminUsers';
 import AdminLots from '../components/AdminLots';
 import AdminEvents from '../components/AdminEvents';
 import AdminFeedback from '../components/AdminFeedback';
 import AdminAnalysis from '../components/AdminAnalysis';
 import LotFormModal from '../components/LotFormModal';
-import Popup from '../components/Popup';
 import TicketForm from '../components/TicketForm';
 import FeedbackFormModal from '../components/FeedbackFormModal';
+import { AdminTabSelector, AdminBuildings, BuildingFormModal } from '../components';
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for API URL
 
 export default function Admin() {
@@ -23,9 +23,18 @@ export default function Admin() {
   const [addingLot, setAddingLot] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [feedbackList, setFeedbackList] = useState([]);
+  
+  const [buildings, setBuildings] = useState([]);
+  const [editingBuilding, setEditingBuilding] = useState(null);
+  const [addingBuilding, setAddingBuilding] = useState(null);
+
   const [eventReservations, setEventReservations] = useState([]);
+
   const [toggleEventRefresh, setToggleEventRefresh] = useState(false);
   const [toggleFeedbackResponseRefresh, setToggleFeedbackResponseRefresh] = useState(false);
+  const [toggleLotRefresh, setToggleLotRefresh] = useState(false);
+  const [toggleBuildingRefresh, setToggleBuildingRefresh] = useState(false);
+
   const [activeFeedback, setActiveFeedback] = useState(null);
   const [activeTicketUser, setActiveTicketUser] = useState(null);
   const [newTicket, setNewTicket] = useState({
@@ -62,6 +71,16 @@ export default function Admin() {
           setLots([]);
         });
     }
+    if (adminOption === 'buildings') {
+      axios.get(`${HOST}/api/buildings`, {
+        withCredentials: true
+      })
+        .then(res => setBuildings(res.data))
+        .catch(err => {
+          console.error("Failed to fetch buildings", err);
+          setBuildings([]);
+        });
+    }
     if (adminOption === 'events') {
       axios.get(`${HOST}/api/admin/event-reservations`, {
         withCredentials: true
@@ -80,7 +99,7 @@ export default function Admin() {
           setFeedbackList([]);
         });
     }
-  }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh]);
+  }, [adminOption, toggleEventRefresh, toggleFeedbackResponseRefresh, toggleLotRefresh, toggleBuildingRefresh]);
 
   // Handle user approval or rejection
   const handleApproval = (userId, approve) => {
@@ -177,6 +196,13 @@ export default function Admin() {
             setEditingLot={setEditingLot}
             handleDeleteLot={handleDeleteLot}
             setAddLotForm={setAddLotForm}
+          />
+        )}
+        {adminOption === 'buildings' && (
+          <AdminBuildings 
+            buildings={buildings} setBuildings={setBuildings}
+            setAddingBuilding={setAddingBuilding}
+            setEditingBuilding={setEditingBuilding}
           />
         )}
         {adminOption === 'events' && (
@@ -283,6 +309,7 @@ export default function Admin() {
           setAddLotForm(false);
         }}
         formType={!!editingLot ? 'edit' : 'add'}
+        toggleLotRefresh={() => setToggleLotRefresh(prev => !prev)}
       />
 
       <FeedbackFormModal
@@ -290,6 +317,17 @@ export default function Admin() {
         onRequestClose={() => setActiveFeedback(null)}
         feedback={activeFeedback}
         refreshFeedbackList={() => setToggleFeedbackResponseRefresh(prev => !prev)}
+      />
+
+      <BuildingFormModal 
+        isOpen={!!editingBuilding || !!addingBuilding}
+        building={editingBuilding}
+        onRequestClose={ () => { 
+          setAddingBuilding(null);
+          setEditingBuilding(null);
+        }}
+        formType={!!editingBuilding ? 'edit' : 'add'}
+        refreshBuildings={() => setToggleBuildingRefresh(prev => !prev)}
       />
 
       {activeTicketUser && (

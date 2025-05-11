@@ -34,8 +34,6 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 				fine: parseFloat(formData.fine)
 			};
 
-			console.log("Issuing ticket with payload:", payload);
-
 			await axios.post(`${HOST}/api/tickets`, payload, { withCredentials: true });
 
 			alert("Ticket successfully issued.");
@@ -78,11 +76,17 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 					<label htmlFor="fine">Fine ($) *</label>
 					<input
 						id="fine"
-						type="number"
-						step="0.01"
+						type="text"
 						name="fine"
 						value={formData.fine}
-						onChange={handleChange}
+						onChange={(e) => {
+							const value = e.target.value;
+							if (/^\d*(\.\d{0,2})?$/.test(value)) {
+								handleChange(e);
+							}
+						}}
+						min={0}
+						placeholder="0.00"
 						required
 					/>
 				</div>
@@ -90,10 +94,15 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 					<label htmlFor="officer_id">Officer ID</label>
 					<input
 						id="officer_id"
-						type="number"
+						type="text"
 						name="officer_id"
 						value={formData.officer_id}
-						onChange={handleChange}
+						onChange={(e) => {
+							const value = e.target.value;
+							if (value === '' || /^\d+$/.test(value)) {
+								handleChange(e);
+							}
+						}}
 					/>
 				</div>
 				<div className="form-buttons">

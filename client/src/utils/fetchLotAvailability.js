@@ -19,8 +19,6 @@ export async function fetchLotAvailability(startISO, endISO) {
       },
       withCredentials: true
     });
-
-    console.log("Availability data:", res.data);
     return res.data;
 
   } catch (err) {

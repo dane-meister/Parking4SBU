@@ -6,6 +6,8 @@ export default function AdminLots({
   handleDeleteLot,
   setAddLotForm
 }) {
+
+  lots = lots.toSorted((lot1, lot2) => lot1.id - lot2.id);
   return (
     <>
       <button className="add-lot-button" onClick={() => setAddLotForm(true)}>Add a Lot</button>
@@ -17,7 +19,7 @@ export default function AdminLots({
           lots.map(lot => (
             <div className="user-card" key={lot.id}>
               <div className="user-info">
-                <strong>{lot.name}</strong><br />
+                <strong style={{fontFamily: 'Barlow Bold, sans-serif'}}>{lot.name}</strong><br />
                 ID: {lot.id}<br />
                 Location: {Array.isArray(lot.location?.coordinates)
                   ? lot.location.coordinates.map(
