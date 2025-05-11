@@ -14,7 +14,7 @@ export default function ResetPasswordPage() {
     const [status, setStatus] = useState('');
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
-    const API = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+    const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
 
         setStatus('Resetting password…');
         try {
-            await axios.post(`${API}/auth/reset-password`, { token, newPassword: newPass });
+            await axios.post(`${API}/api/auth/reset-password`, { token, newPassword: newPass });
             setStatus('Password reset! Redirecting to login…');
             setTimeout(() => navigate('/auth/login'), 3000);
         } catch {
