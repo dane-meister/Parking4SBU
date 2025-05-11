@@ -23,7 +23,7 @@ export default function Admin() {
   const [addingLot, setAddingLot] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [feedbackList, setFeedbackList] = useState([]);
-  
+
   const [buildings, setBuildings] = useState([]);
   const [isLoadingBuildings, setIsLoadingBuildings] = useState(false);
   const [editingBuilding, setEditingBuilding] = useState(null);
@@ -122,6 +122,19 @@ export default function Admin() {
     }
   };
 
+  // Handle user delete
+  const handleDeleteUser = (user_id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    axios.delete(`${HOST}/api/admin/user/${user_id}/remove`, {
+      withCredentials: true
+    })
+      .then(() => {
+        setUsers(prev => prev.filter(u => u.user_id !== user_id));
+      })
+      .catch(err => console.error('Failed to delete user', err));
+  };
+
   // Handle lot deletion
   const handleDeleteLot = (id) => {
     if (!window.confirm("Are you sure you want to delete this lot?")) return;
@@ -189,6 +202,7 @@ export default function Admin() {
             setSearchTerm={setSearchTerm}
             handleApproval={handleApproval}
             setEditingUser={setEditingUser}
+            handleDeleteUser={handleDeleteUser}
             setActiveTicketUser={setActiveTicketUser}
           />
         )}
@@ -201,7 +215,7 @@ export default function Admin() {
           />
         )}
         {adminOption === 'buildings' && (
-          <AdminBuildings 
+          <AdminBuildings
             buildings={buildings} setBuildings={setBuildings}
             setAddingBuilding={setAddingBuilding}
             setEditingBuilding={setEditingBuilding}
@@ -322,10 +336,10 @@ export default function Admin() {
         refreshFeedbackList={() => setToggleFeedbackResponseRefresh(prev => !prev)}
       />
 
-      <BuildingFormModal 
+      <BuildingFormModal
         isOpen={!!editingBuilding || !!addingBuilding}
         building={editingBuilding}
-        onRequestClose={ () => { 
+        onRequestClose={() => {
           setAddingBuilding(null);
           setEditingBuilding(null);
         }}
