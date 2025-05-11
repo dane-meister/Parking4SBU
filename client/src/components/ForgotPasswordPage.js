@@ -8,14 +8,14 @@ export default function ForgotPasswordPage() {
   const [email, setEmail]       = useState('');
   const [status, setStatus]     = useState('');
   const navigate                = useNavigate();
-  const API = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+  const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 
   const handleSubmit = async e => {
     e.preventDefault();
     setStatus('Sending reset link…');
     try {
-      await axios.post(`${API}/auth/forgot-password`, { email });
+      await axios.post(`${API}/api/auth/forgot-password`, { email });
       setStatus('If that email exists, you’ll receive a reset link shortly.');
     } catch {
       setStatus('Error sending reset link. Please try again.');
