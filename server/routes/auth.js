@@ -476,22 +476,27 @@ router.post("/feedback/add", authenticate, async (req, res) => {
 
 
 router.get('/verify', async (req, res) => {
-    console.log("in verify");
     const { token } = req.query;
     try {
     const { user_id, type } = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("user_id:", user_id);
+    console.log("type:", type);
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
 
       if (type !== 'email-verify') {
         console.error("error");
+        throw new Error('Wrong token type');
         throw new Error();
     }
   
       const user = await User.findByPk(user_id);
+      console.log("user:", user);
 
       user.isVerified = true;
+      console.log("user.isVerified:", user.isVerified);
       await user.save();
+      console.log("user saved:", user);
   
       return res.json({ message: 'Email verified! Please log in.' });
     } catch {
