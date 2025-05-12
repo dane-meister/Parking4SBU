@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Feedback, Reservation, ParkingLot, Rate, sequelize, Building } = require("../models");
+const { User, Feedback, Reservation, ParkingLot, Rate, sequelize, Building, Ticket } = require("../models");
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { Op } = require('sequelize');
@@ -693,6 +693,42 @@ router.get('/analytics/capacity-analysis', authenticate, requireAdmin, async (re
   } catch (error) {
     console.error('Error in capacity analysis:', error);
     res.status(500).json({ success: false, error: 'Failed to retrieve capacity data.' });
+  }
+});
+
+router.get('/analytics/user-analysis', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const userTypes = ['faculty', 'resident', 'commuter', 'visitor'];
+
+    const results = await Promise.all(
+      userTypes.map(async (type) => {
+        const users = await User.findAll({ where: { user_type: type } });
+        const userIds = users.map(u => u.user_id);
+
+        const [reservations, tickets] = await Promise.all([
+          Reservation.findAll({ where: { user_id: { [Op.in]: userIds } } }),
+          Ticket.findAll({ where: { user_id: { [Op.in]: userIds } } })
+        ]);
+
+        const reservationRevenue = reservations.reduce((sum, r) => sum + r.total_price, 0);
+        const paidFines = tickets.filter(t => t.status === 'paid');
+        const fineRevenue = paidFines.reduce((sum, t) => sum + parseFloat(t.fine), 0);
+
+        return {
+          userType: type,
+          totalUsers: users.length,
+          totalReservations: reservations.length,
+          totalTickets: tickets.length,
+          finesPaid: paidFines.length,
+          totalRevenue: +(reservationRevenue + fineRevenue).toFixed(2)
+        };
+      })
+    );
+
+    res.json({ success: true, results });
+  } catch (error) {
+    console.error("User analysis failed:", error);
+    res.status(500).json({ success: false, error: 'User analysis fetch failed' });
   }
 });
 
