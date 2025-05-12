@@ -696,6 +696,44 @@ router.get('/analytics/capacity-analysis', authenticate, requireAdmin, async (re
   }
 });
 
+router.get('/analytics/revenue-analysis', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const revenueData = await Reservation.findAll({
+      where: { status: 'confirmed' },
+      attributes: [
+        ['parking_lot_id', 'lotId'],
+        [sequelize.col('ParkingLot.name'), 'lotName'],
+        [sequelize.col('User.user_type'), 'userType'],
+        [sequelize.fn('SUM', sequelize.col('total_price')), 'totalRevenue']
+      ],
+      include: [
+        {
+          model: User,
+          attributes: []
+        },
+        {
+          model: ParkingLot,
+          attributes: []
+        }
+      ],
+      group: ['parking_lot_id', 'User.user_type', 'ParkingLot.name'],
+      raw: true
+    });
+
+    const formatted = revenueData.map(entry => ({
+      lotId: entry.lotId,
+      lot: entry.lotName,
+      userType: entry.userType,
+      revenue: parseFloat(entry.totalRevenue)
+    }));
+
+    res.json({ success: true, results: formatted });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Failed to compute revenue analysis" });
+  }
+});
+
 router.get('/analytics/user-analysis', authenticate, requireAdmin, async (req, res) => {
   try {
     const userTypes = ['faculty', 'resident', 'commuter', 'visitor'];
