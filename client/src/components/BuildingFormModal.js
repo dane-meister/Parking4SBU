@@ -14,9 +14,11 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
     campus: '',
     coordinates: ''
   });
+  const [submitted, setSubmitted] = useState(false);
 
   const originalData = useRef({});
   useEffect(() => {
+    setSubmitted(false);
     // reset errors
     setErrorMsgs({
       name: '',
@@ -106,6 +108,7 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
   const editBuilding = async () => {
     const { name, campus, coordinates} = formData;
     if(formType === 'add'){
+      setSubmitted(true);
       await axios.post(`${HOST}/api/admin/buildings/add`,
         { name, campus, coordinates }, 
         { withCredentials: true }
@@ -116,8 +119,10 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
         })
         .catch((err) => {
           alert(err.message)
+          setSubmitted(false);
         });
     }else{
+      setSubmitted(true);
       await axios.put(`${HOST}/api/admin/buildings/${building.id}/update`,
         { name, campus, coordinates }, 
         { withCredentials: true }
@@ -128,6 +133,7 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
         })
         .catch((err) => {
           alert(err.message)
+          setSubmitted(false);
         });
     }
   };
@@ -299,6 +305,7 @@ export default function BuildingFormModal({ isOpen, onRequestClose, building,  f
         </p>
         <input type='submit' className='edit-lot-btn' 
           value={formType === 'add' ? 'Add Building' : 'Edit Building'} 
+          disabled={submitted}
         />
 
       </section>

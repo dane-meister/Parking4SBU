@@ -15,9 +15,11 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType, to
     capacity: {},
     rates: [],
   });
+  const [submitted, setSubmitted] = useState(false);
 
   const originalData = useRef({});
   useEffect(() => {
+    setSubmitted(false);
     let coords = lot?.location?.coordinates
     if(!!coords) coords = coords.map(coord => coord.join(", "));
 
@@ -292,6 +294,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType, to
   const editAddLot = async () => {
     const { name, coordinates, capacity, rates, covered, resident_zone } = formData;
     if(formType === 'add'){
+      setSubmitted(true);
       await axios.post(`${HOST}/api/admin/lots/add`,
         { 
           name, 
@@ -309,8 +312,10 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType, to
         })
         .catch((err) => {
           alert(err.message)
+          setSubmitted(false);
         });
     }else{
+      setSubmitted(true);
       await axios.put(`${HOST}/api/admin/lots/${lot.id}/update`,
         { 
           name, 
@@ -327,6 +332,7 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType, to
           onRequestClose();
         })
         .catch((err) => {
+          setSubmitted(false);
           alert(err.message)
         });
     }
@@ -419,7 +425,8 @@ export default function LotFormModal({ isOpen, onRequestClose, lot, formType, to
         {`* ${formType === 'edit' ? 'edited' : 'required'} fields`}
       </p>
       <input type='submit' className='edit-lot-btn' 
-        value={formType === 'add'? 'Add Lot' : 'Edit Lot'} 
+        value={formType === 'add'? 'Add Lot' : 'Edit Lot'}
+        disabled={submitted} 
       />
       </section>
       </form>
