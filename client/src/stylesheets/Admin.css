@@ -165,7 +165,12 @@
   height: auto;
 }
 
-.capacity-img, .capacity-img, .rates-img, .location-img, img.rate, .other-img{
+.capacity-img,
+.capacity-img,
+.rates-img,
+.location-img,
+img.rate,
+.other-img {
   height: 20px;
 }
 
@@ -183,7 +188,7 @@
   width: 100%;
 }
 
-#lot-form-modal #covered{
+#lot-form-modal #covered {
   width: auto;
   margin-bottom: 0;
   margin-left: 10px;
@@ -291,13 +296,19 @@
   margin-bottom: 20px;
 }
 
-.capacity-table {
+.capacity-table,
+.revenue-table,
+.user-table {
   width: 100%;
   border-collapse: collapse;
 }
 
 .capacity-table th,
-.capacity-table td {
+.capacity-table td,
+.revenue-table th,
+.revenue-table td,
+.user-table th,
+.user-table td {
   border: 1px solid #ccc;
   padding: 10px;
   text-align: center;
@@ -327,12 +338,14 @@
 
 .table-wrapper {
   overflow-y: scroll;
-  height: 415px;
+  max-height: 415px;
   display: block;
   max-width: 100%;
 }
 
-.capacity-table th { /* Table heading to stay */
+.capacity-table th,
+.revenue-table th,
+.user-table th {
   position: sticky;
   top: 0;
   background-color: #BEBEBE;
