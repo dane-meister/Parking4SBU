@@ -90,7 +90,6 @@
   }
   
   .pay-btn, .appeal-btn {
-    background-color: #444;
     color: white;
     padding: 12px 25px;
     border: none;
@@ -98,8 +97,20 @@
     cursor: pointer;
     font-weight: bold;
   }
+
+  .pay-btn {
+    background-color: var(--red);
+  }
+
+  .pay-btn:hover {
+    background-color: var(--dark-red);
+  }
+
+  .appeal-btn {
+    background-color: var(--medium-gray);
+  }
   
-  .pay-btn:hover, .appeal-btn:hover {
-    background-color: #222;
+  .appeal-btn:hover {
+    background-color: var(--dark-gray);
   }
   

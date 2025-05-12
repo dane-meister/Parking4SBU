@@ -59,7 +59,7 @@ export default function TicketPage() {
 
 			{unpaidCount > 0 && (
 				<div className="unpaid-banner">
-					<span>Your account has <b>{unpaidCount} unpaid</b> ticket{unpaidCount > 1 ? 's' : ''}</span>
+					<span>Your account has <b><u>{unpaidCount} unpaid</u></b> ticket{unpaidCount > 1 ? 's' : ''}</span>
 				</div>
 			)}
 
@@ -76,8 +76,8 @@ export default function TicketPage() {
 							<div className="action-buttons">
 								{ticket.status === 'unpaid' && (
 									<>
-										<button className="pay-btn" onClick={() => handlePay(ticket.id)}>PAY</button>
 										<button className="appeal-btn" onClick={() => handleAppeal(ticket.id)}>APPEAL</button>
+										<button className="pay-btn" onClick={() => handlePay(ticket.id)}>PAY</button>
 									</>
 								)}
 								{ticket.status === 'appealed' && (

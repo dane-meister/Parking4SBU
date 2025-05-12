@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../stylesheets/Auth.css';
-// const HOST = "http://localhost:8000"
+
 const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Base URL for API requests
 
 export default function RegisterPage() {
@@ -14,7 +14,6 @@ export default function RegisterPage() {
   const [isRegistered, setIsRegistered] = useState(false); // Flag to indicate if the user is registered
 
   const [errors, setErrors] = useState({});
-
 
   // Form state to store user input
   const [form, setForm] = useState({

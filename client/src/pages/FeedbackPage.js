@@ -11,11 +11,13 @@ export default function FeedbackPage() {
     const [rating, setRating] = useState(5);
     const [existingFeedback, setExistingFeedback] = useState(null);
     const [refresh, setRefresh] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
 
 
     useEffect(() => {
         const fetchExistingFeedback = async () => {
             try {
+            setSubmitted(false); // Reset submitted state before fetching
             const res = await axios.get(`${HOST}/api/admin/auth/feedback/my`, {
                 withCredentials: true,
             });
@@ -32,6 +34,7 @@ export default function FeedbackPage() {
 
     const handleSubmit = async () => {
         try {
+            setSubmitted(true); // Set submitted state to true
             const res = await axios.post(`${HOST}/api/auth/feedback/add`, {
                 feedback_text: feedback,
                 rating: rating,
@@ -42,6 +45,7 @@ export default function FeedbackPage() {
             setRating(5);
             setRefresh(!refresh); // Trigger a refresh to fetch new feedback
         } catch (error) {
+            setSubmitted(false); // Reset submitted state on error
             console.error("Error submitting feedback:", error.response?.data || error.message);
             alert("Failed to submit feedback."); // Keep as an alert?
         }
@@ -80,7 +84,7 @@ export default function FeedbackPage() {
                     </span>
                 ))}
             </div>
-            <button type="submit" onClick={handleSubmit}>Submit</button>
+            <button type="submit" onClick={handleSubmit} disabled={submitted}>Submit</button>
 
              {existingFeedback?.length > 0 && (
                 <div className="existing-feedback-block">

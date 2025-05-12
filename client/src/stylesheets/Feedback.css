@@ -54,7 +54,7 @@
 }
 
 .feedback-page button {
-  background-color: var(--gray);
+  background-color: var(--medium-gray);
   color: white;
   border: none;
   padding: 12px 20px;
