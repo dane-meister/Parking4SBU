@@ -329,6 +329,16 @@ export default function ProfileForm({ userData }) {
             className="profile-change-password"
             disabled={popupVisible}
             onClick={() => setShowPwdModal(true)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              padding: 0,
+              font: 'inherit',
+              fontSize: '13px',
+              // color: 'var(--primary)',   // or any color you like
+              cursor: 'pointer',
+              outline: 'none'
+            }}
           >
             Change Password
           </button>
