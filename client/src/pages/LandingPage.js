@@ -173,10 +173,10 @@ function LandingPage() {
     }
     return shuffled;
   }
-  
+
   const [shuffledSlogans, setShuffledSlogans] = useState(shuffleArray(slogans));
   const [sloganIndex, setSloganIndex] = useState(0);
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setSloganIndex((prevIndex) => {
@@ -188,7 +188,7 @@ function LandingPage() {
         }
       });
     }, 6000);
-  
+
     return () => clearInterval(interval);
   }, [shuffledSlogans, slogans]);
 
@@ -197,129 +197,129 @@ function LandingPage() {
     <div className="landing-page">
 
       {/* Landing Page Content */}
-      <header 
-      className="hero" style={{
-      backgroundImage: `url(${process.env.PUBLIC_URL}/images/campus-hero.png)`,
-      backgroundPosition: 'center',
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat'
-      }}>
-      <div className="hero__overlay" />
-      <Header />
+      <header
+        className="hero" style={{
+          backgroundImage: `url(${process.env.PUBLIC_URL}/images/campus-hero.png)`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat'
+        }}>
+        <div className="hero__overlay" />
+        <Header />
 
-      <div className="landing-content">
-        <h1 key={sloganIndex} className="slogan">{shuffledSlogans[sloganIndex]}</h1>
+        <div className="landing-content">
+          <h1 key={sloganIndex} className="slogan">{shuffledSlogans[sloganIndex]}</h1>
 
-        {/* Pricing options (Hourly / Daily) */}
-        <div className="pricing-options">
-          <button
-            className={pricingType === "hourly" ? "option selected" : "option"}
-            onClick={() => setPricingType("hourly")}
-          >
-            Hourly
-          </button>
-          <button
-            className={pricingType === "daily" ? "option selected" : "option"}
-            onClick={() => setPricingType("daily")}
-          >
-            Daily
-          </button>
-        </div>
-
-
-        <div className="building-lot-toggle">
-          <span
-            className={`toggle-option ${buildingLotType === "building" ? "selected" : ""}`}
-            onClick={() => setBuildingLotType("building")}
-          >
-            Building
-          </span>
-          <span>/</span>
-          <span
-            className={`toggle-option ${buildingLotType === "lot" ? "selected" : ""}`}
-            onClick={() => setBuildingLotType("lot")}
-          >
-            Lot
-          </span>
-        </div>
-        
-
-        <div className="controls-container">
-
-        <div className="search-container">
-        <Search
-          searchType={buildingLotType}
-          buildings={buildings}
-          parkingLots={parkingLots}
-          value={value}
-          setValue={setValue}
-          setSelectedBuilding={setSelectedBuilding}
-          setLotResults={setLotResults}
-          setBaseLots={setBaseLots}
-          setSelectedLot={setSelectedLot}
-        />
-        </div>
+          {/* Pricing options (Hourly / Daily) */}
+          <div className="pricing-options">
+            <button
+              className={pricingType === "hourly" ? "option selected" : "option"}
+              onClick={() => setPricingType("hourly")}
+            >
+              Hourly
+            </button>
+            <button
+              className={pricingType === "daily" ? "option selected" : "option"}
+              onClick={() => setPricingType("daily")}
+            >
+              Daily
+            </button>
+          </div>
 
 
-        {/* Time selection bar */}
-        <div className="time-selector-container">
-          <div className="time-input">
-            <span className="time-label">Arrive After:</span>
-            <div className="time-row">
-              <span className="time-value">{times.arrival}</span>
-              <button className="edit-button" onClick={() => setEditingMode("arrival")}>
-                <img src="/images/edit-icon1.png" alt="Edit Arrival" className="edit-icon" />
-              </button>
+          <div className="building-lot-toggle">
+            <span
+              className={`toggle-option ${buildingLotType === "building" ? "selected" : ""}`}
+              onClick={() => setBuildingLotType("building")}
+            >
+              Building
+            </span>
+            <span>/</span>
+            <span
+              className={`toggle-option ${buildingLotType === "lot" ? "selected" : ""}`}
+              onClick={() => setBuildingLotType("lot")}
+            >
+              Lot
+            </span>
+          </div>
+
+
+          <div className="controls-container">
+
+            <div className="search-container">
+              <Search
+                searchType={buildingLotType}
+                buildings={buildings}
+                parkingLots={parkingLots}
+                value={value}
+                setValue={setValue}
+                setSelectedBuilding={setSelectedBuilding}
+                setLotResults={setLotResults}
+                setBaseLots={setBaseLots}
+                setSelectedLot={setSelectedLot}
+              />
             </div>
-          </div>
-          <div className="arrow-container">
-            <img src="/images/arrow1.png" alt="Arrow" className="landing-arrow-icon" />
-          </div>
-          <div className="time-input">
-            <span className="time-label">Exit Before:</span>
-            <div className="time-row">
-              <span className="time-value">{times.departure}</span>
-              <button className="edit-button" onClick={() => setEditingMode("departure")}>
-                <img src="/images/edit-icon1.png" alt="Edit Departure" className="edit-icon" />
-              </button>
-            </div>
-          </div>
-          {editingMode && (
-            <TimeSelector
-              mode={editingMode}
-              initialTimes={times}
-              onSelect={handleTimeSelect}
-              onClose={() => setEditingMode(null)}
-            />
-          )}
-        </div>
 
-        <div className="find-parking-btn">
-          <button onClick={handleFindParking} disabled={isSearching}>
-            {isSearching && <span className="spinner" />}
-            {isSearching ? "Searching…" : (
-              <>
-                <img
-                  src="/images/search-icon.webp"
-                  alt="Search Icon"
-                  style={{ width: 16, height: 16 }}
+
+            {/* Time selection bar */}
+            <div className="time-selector-container">
+              <div className="time-input">
+                <span className="time-label">Arrive After:</span>
+                <div className="time-row">
+                  <span className="time-value">{times.arrival}</span>
+                  <button className="edit-button" onClick={() => setEditingMode("arrival")}>
+                    <img src="/images/edit-icon1.png" alt="Edit Arrival" className="edit-icon" />
+                  </button>
+                </div>
+              </div>
+              <div className="arrow-container">
+                <img src="/images/arrow1.png" alt="Arrow" className="landing-arrow-icon" />
+              </div>
+              <div className="time-input">
+                <span className="time-label">Exit Before:</span>
+                <div className="time-row">
+                  <span className="time-value">{times.departure}</span>
+                  <button className="edit-button" onClick={() => setEditingMode("departure")}>
+                    <img src="/images/edit-icon1.png" alt="Edit Departure" className="edit-icon" />
+                  </button>
+                </div>
+              </div>
+              {editingMode && (
+                <TimeSelector
+                  mode={editingMode}
+                  initialTimes={times}
+                  onSelect={handleTimeSelect}
+                  onClose={() => setEditingMode(null)}
                 />
-                Find Parking
-              </>
-            )}
-          </button>
+              )}
+            </div>
+
+            <div className="find-parking-btn">
+              <button onClick={handleFindParking} disabled={isSearching}>
+                {isSearching && <span className="spinner" />}
+                {isSearching ? "Searching…" : (
+                  <>
+                    <img
+                      src="/images/search-icon.webp"
+                      alt="Search Icon"
+                      style={{ width: 16, height: 16 }}
+                    />
+                    Find Parking
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
-        </div>
-      </div>
       </header>
 
-       {/*  FEATURES  */}
-       <section className="features">
+      {/*  FEATURES  */}
+      <section className="features">
         <div className="features-content">
           <h2>Our Core Features</h2>
           <div className="features-grid">
-          <div className="feature-card">
-              <i className="icon-calendar" />  
+            <div className="feature-card">
+              <i className="icon-calendar" />
               <h3>Reserve in Advance</h3>
               <p>Book your spot before you even leave home—never circle the lot again.</p>
             </div>
@@ -342,6 +342,54 @@ function LandingPage() {
         </div>
       </section>
 
+      <div
+        className="Credits"
+        style={{
+          width: '100%',
+          padding: '20px 30px',
+          backgroundColor: '#E5E5E5',
+          color: 'black'
+        }}
+      >
+        <h2 style={{ marginBottom: '20px' }}>Credits</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '30px' }}>
+          <div style={{ minWidth: '200px' }}>
+            <h4>Dane Meister</h4>
+            <ul>
+              <li>Database</li>
+              <li>Concurrency</li>
+              <li>Wayfinding</li>
+              <li>Reservations</li>
+            </ul>
+          </div>
+          <div style={{ minWidth: '200px' }}>
+            <h4>Mike Lieberman</h4>
+            <ul>
+              <li>Admin Page and Routes</li>
+              <li>Search and Filtering</li>
+              <li>Data Collection</li>
+            </ul>
+          </div>
+          <div style={{ minWidth: '200px' }}>
+            <h4>Kalyani Thayil</h4>
+            <ul>
+              <li>Frontend Styling</li>
+              <li>Web Security</li>
+              <li>Map Navigation</li>
+            </ul>
+          </div>
+          <div style={{ minWidth: '200px' }}>
+            <h4>Jaret McManus</h4>
+            <ul>
+              <li>Profile Page</li>
+              <li>Forms</li>
+              <li>Search and Filtering</li>
+              <li>Lots/Building Forms and Routes</li>
+              <li>Frontend Styling</li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
     </div>
   );
