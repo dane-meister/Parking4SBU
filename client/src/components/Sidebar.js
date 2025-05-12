@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Filter, LotResult, LotDetails, Search } from '.'
+import { useLocation } from 'react-router-dom';
 import '../stylesheets/Sidebar.css';
 
 function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selectedBuilding, setSelectedBuilding, initialSearchValue, initialSearchType, times, setTimes, initialRateType }) {
@@ -143,11 +144,12 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
           </div>
         }
 
-        {/* Rate type selection (hourly, daily, etc.) */}
+        {/* Rate type selection (only show when no lot selected) */}
+        {!selectedLot && (
         <div 
           className="hbox selection" 
           id="rate-selection" 
-          style={selectedLot ? {marginRight:'35px'} : {}}
+          // style={{justifyContent: 'flex-start'}}
         >
           <span 
             className={'type-hover '+(rateType==='hourly' ? 'selected' : '')}
@@ -159,6 +161,7 @@ function Sidebar({ selectedLot, setSelectedLot, buildings, parkingLots, selected
             onClick={() => setRateType('daily')}
           >Daily</span>
         </div>
+        )}
       </div>
 
       <hr style={{margin: "0px 15px"}}/>
