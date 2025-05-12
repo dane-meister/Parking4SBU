@@ -161,8 +161,6 @@ export default function LotDetails({ lotObj, rateType }) {
 				</div>
 			</section>
 
-			<hr />
-
 			{/* Rate Info Section */}
 			<section className='lot-rates-section'>
 				<h4 className='lot-rates-title'>Rates</h4>
