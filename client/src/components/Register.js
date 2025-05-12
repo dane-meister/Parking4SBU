@@ -141,6 +141,8 @@ export default function RegisterPage() {
       return;
     }
     try {
+      form.email = form.email.trim(); // Trim whitespace from email
+      form.email = form.email.toLowerCase(); // Convert email to lowercase
       setIsRegistering(true); // Set the registration flag to true
       // Sends a POST request to the registration endpoint
       const response = await axios.post(`${HOST}/api/auth/register`, form, {
@@ -196,7 +198,7 @@ export default function RegisterPage() {
                 id="email"
                 type="email"
                 name="email"
-                value={form.email.toLowerCase()}
+                value={form.email}
                 onChange={handleChange}
                 required
                 autoComplete='email'
