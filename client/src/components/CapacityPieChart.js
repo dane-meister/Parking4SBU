@@ -4,10 +4,6 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 const COLORS = ['#6B000D', '#002244', '#4B4B4B', '#D52027']; // dark red, navy blue, dark gray, bright red
 
 export default function CapacityPieChart({ data = [] }) {
-  if (!Array.isArray(data) || data.length === 0) {
-    return <p>No user category data available.</p>;
-  }
-
   return (
     <PieChart width={400} height={400}>
       <Pie
