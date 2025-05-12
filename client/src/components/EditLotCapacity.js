@@ -151,14 +151,27 @@ export default function EditLotCapacity({
         </label>
       </div>
 
-      <span style={{display: 'inline-block', marginTop: '5px'}}>
-        <strong>Total Capacity: </strong> {formData.capacity.capacity}
-      </span>
-      {formData.capacity.capacity !== getNewCapacity() && (
-        <span style={{display: 'inline-block', marginTop: '5px', marginLeft: '30px'}}>
-          <strong>New Capacity: </strong> {getNewCapacity()}
-        </span>
+      {/* Edit lot shows current capacity, if anything modified, new capacity as well */}
+      {formType === 'edit' && (
+        <>
+          <span style={{display: 'inline-block', marginTop: '5px'}}>
+            <strong>Total Capacity: </strong> {formData.capacity.capacity}
+          </span>
+          {formData.capacity.capacity !== getNewCapacity() && (
+            <span style={{display: 'inline-block', marginTop: '5px', marginLeft: '30px'}}>
+              <strong>New Capacity: </strong> {getNewCapacity()}
+            </span>
+          )}
+        </>
       )}
+
+      {formType === 'add' && (
+        <span style={{display: 'inline-block', marginTop: '5px', marginLeft: '5px'}}>
+          <strong>Capacity: </strong> {getNewCapacity()}
+        </span>  
+      )}
+
+      
       <div className='lot-form-error' ref={capacityErr} />
     </Collapsible>
   </>);
