@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell
 } from 'recharts';
 
-const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000"; // backend API base URL
+const HOST = process.env.REACT_APP_API_URL || "http://localhost:8000";
 const COLORS = ['#6B000D', '#002244', '#4B4B4B', '#D52027']; // dark red, navy, gray, bright red
 
 const COLUMN_KEYS = [
@@ -16,7 +16,7 @@ const COLUMN_KEYS = [
 
 export default function UserAnalysis() {
   const [userData, setUserData] = useState([]);
-  const [selectedMetric, setSelectedMetric] = useState('totalRevenue');
+  const [selectedMetric, setSelectedMetric] = useState(null);
 
   useEffect(() => {
     fetchUserAnalysis();
@@ -36,8 +36,8 @@ export default function UserAnalysis() {
   return (
     <div className="user-analysis">
       <h2>User Analysis</h2>
-      <div className="user-analysis-section">
-        <div className="user-table">
+      <div className="user-analysis-section" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+        <div className="user-table" style={{ flex: 1 }}>
           <div className="table-wrapper">
             <table className="user-table">
               <thead>
@@ -70,37 +70,42 @@ export default function UserAnalysis() {
               </tbody>
             </table>
           </div>
-          <h3 style={{ marginTop: '2rem' }}>
-            {COLUMN_KEYS.find(col => col.key === selectedMetric)?.label} by User Type
-          </h3>
-          <div style={{ width: '100%', height: 300 }}>
-            <ResponsiveContainer>
-              <BarChart
-                data={userData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="userType" />
-                <YAxis allowDecimals={false} />
-                <Tooltip
-                  formatter={(value) =>
-                    typeof value === 'number'
-                      ? selectedMetric === 'totalRevenue'
-                        ? `$${value.toFixed(2)}`
-                        : value
-                      : value
-                  }
-                />
-                <Legend />
-                <Bar
-                  dataKey={selectedMetric}
-                  name={COLUMN_KEYS.find(col => col.key === selectedMetric)?.label}
-                  fill={COLORS[COLUMN_KEYS.findIndex(col => col.key === selectedMetric)] || '#8884d8'}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
         </div>
+        {selectedMetric && (
+          <div className="user-type-chart" style={{ flex: 1 }}>
+            <h3>{COLUMN_KEYS.find(col => col.key === selectedMetric)?.label} by User Type</h3>
+            <div style={{ width: '100%', height: 300 }}>
+              <ResponsiveContainer>
+                <BarChart
+                  data={userData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="userType" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip
+                    formatter={(value) =>
+                      typeof value === 'number'
+                        ? selectedMetric === 'totalRevenue'
+                          ? `$${value.toFixed(2)}`
+                          : value
+                        : value
+                    }
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey={selectedMetric}
+                    name={COLUMN_KEYS.find(col => col.key === selectedMetric)?.label}
+                  >
+                    {userData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
