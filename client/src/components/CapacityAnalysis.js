@@ -38,7 +38,6 @@ export default function CapacityAnalysis() {
       <h2>Capacity Analysis</h2>
       <div className="capacity-analysis-section">
         <div className="capacity-table">
-          <h3>All Lots</h3>
           <div className="table-wrapper">
             <table className="capacity-table">
               <thead>
@@ -68,10 +67,12 @@ export default function CapacityAnalysis() {
             </table>
           </div>
         </div>
-        <div className="user-type-chart">
-          <h3>Occupancy by User Types</h3>
-          <CapacityPieChart data={filteredUserCategoryData} />
-        </div>
+        {selectedLotId && (
+          <div className="user-type-chart">
+            <h3>Occupancy by User Types</h3>
+            <CapacityPieChart data={filteredUserCategoryData} />
+          </div>
+        )}
       </div>
     </div>
   );
