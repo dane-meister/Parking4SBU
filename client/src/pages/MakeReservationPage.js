@@ -80,6 +80,8 @@ function Reservation(){
 		general: ''
 	});
 
+	const [confirmed, setConfirmed] = useState(false); // State to track if the reservation is confirmed
+
 	// Fetch vehicles and auto-select default on mount
 	useEffect(() => {
 		if (!user?.user_id) return; // Exit if user ID is not available
@@ -315,6 +317,7 @@ function Reservation(){
 				event_description: isEventParking ? eventDescription : null,
 				spot_type: selectedSpotType
 			};
+			setConfirmed(true); // Set confirmed to true when reservation is being made
 			const res = await axios.post(`${HOST}/api/reservations`, payload, { withCredentials: true });
 			setReservationSuccess(true);
 			// Immediately fetch latest availability after a successful reservation
@@ -324,6 +327,7 @@ function Reservation(){
 			setAvailability(updatedMatch.hourlyAvailability);
 }
 		} catch (err) {
+			setConfirmed(false); // Reset confirmed state on error
 			console.error("Reservation failed:", err.response?.data || err.message);
 			alert("Failed to create reservation. Please try again.");
 		}
@@ -644,6 +648,7 @@ function Reservation(){
 						<button 
 							onClick={confirmReservation} 
 							className="reservation-confirm-btn"
+							disabled={confirmed} // Disable button if already confirmed
 						>
 							Confirm
 						</button>
