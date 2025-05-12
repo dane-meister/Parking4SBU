@@ -416,7 +416,7 @@ export default function RegisterPage() {
 
         {awaitingApproval && (
           <div className="modal-overlay">
-            <div className="modal-content">
+            <div className="modal-content" style={{ width: '400px', padding: '20px' }}>
               <h3>Registration received!</h3>
               <p>
                 Please wait while our admin reviews your account.
