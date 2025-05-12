@@ -20,7 +20,27 @@
     text-align: center;
     text-align-last: center;
   }
+
+  .selection {
+    display: inline-flex;             
+    padding: 0.25rem;                
+    align-items: center;            
+  }
   
+  .selection .type-hover {
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;          /* clickable area */
+    font-size: 0.95rem;
+    transition: background 0.2s, color 0.2s;
+    color: #4a4a4a;                
+  }
+
+  .selection .type-hover:not(.selected):hover {
+    background: #e0e0e0;
+  }
+
+
+
   #sort-by-select:hover,
   #sort-by-select:focus {
     border-color: #666;
