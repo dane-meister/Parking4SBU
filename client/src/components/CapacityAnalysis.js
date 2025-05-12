@@ -14,13 +14,10 @@ export default function CapacityAnalysis() {
   }, []);
 
   useEffect(() => {
-  console.log("User Category Data:", userCategoryData);
-}, [userCategoryData]);
+  }, [userCategoryData]);
 
-useEffect(() => {
-  console.log("Selected Lot ID:", selectedLotId);
-  console.log("Filtered Data:", filteredUserCategoryData);
-}, [selectedLotId]);
+  useEffect(() => {
+  }, [selectedLotId]);
 
   const fetchCapacityAnalysis = async () => {
     try {
@@ -53,18 +50,20 @@ useEffect(() => {
                 </tr>
               </thead>
               <tbody>
-                {capacityData.map((lot) => (
-                  <tr
-                    key={lot.lotId}
-                    onClick={() => setSelectedLotId(lot.lotId)}
-                    style={{ cursor: 'pointer', backgroundColor: selectedLotId === lot.lotId ? '#f0f0f0' : 'white' }}
-                  >
-                    <td>{lot.lotName}</td>
-                    <td>{lot.capacity}</td>
-                    <td>{lot.currentOccupancy}</td>
-                    <td>{lot.occupancyRate}</td>
-                  </tr>
-                ))}
+                {[...capacityData]
+                  .sort((a, b) => a.lotId - b.lotId)
+                  .map((lot) => (
+                    <tr
+                      key={lot.lotId}
+                      onClick={() => setSelectedLotId(lot.lotId)}
+                      style={{ cursor: 'pointer', backgroundColor: selectedLotId === lot.lotId ? '#f0f0f0' : 'white' }}
+                    >
+                      <td>{lot.lotName}</td>
+                      <td>{lot.capacity}</td>
+                      <td>{lot.currentOccupancy}</td>
+                      <td>{lot.occupancyRate}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -75,6 +74,5 @@ useEffect(() => {
         </div>
       </div>
     </div>
-
   );
 }
