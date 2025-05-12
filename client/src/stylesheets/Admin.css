@@ -156,7 +156,7 @@
 .save-button:hover,
 .respond-button:hover,
 .add-lot-button:hover {
-  background-color: var(--dark-red);
+  background-color: var(--dark-red)!important;
 }
 
 .cancel-button {
