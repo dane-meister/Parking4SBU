@@ -145,12 +145,32 @@
 .respond-button,
 .add-lot-button {
   margin-top: 4px;
-  background-color: #990000;
+  background-color: var(--red);
   color: white;
   border: none;
   padding: 8px 12px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+.save-button:hover,
+.respond-button:hover,
+.add-lot-button:hover {
+  background-color: var(--dark-red);
+}
+
+.cancel-button {
+  margin-top: 4px;
+  background-color: var(--medium-gray);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.cancel-button:hover {
+  background-color: var(--dark-gray);
 }
 
 .feedback-card {

@@ -66,9 +66,12 @@
     border-radius: 50%;
     cursor: pointer;
   }
+  .profile-icon:hover {
+    background-color: var(--light-gray);
+  }
 
   .nav-banner {
-    background-color: #990000; /* Stony Brook Red */
+    background-color: var(--red); /* Stony Brook Red */
     display: flex;
     align-items: center;
     position: fixed;
@@ -189,4 +192,8 @@
     width: 30px;
     height: 30px;
     filter: brightness(0) invert(1);
+  }
+
+  .header-link:hover {
+    text-decoration: underline;
   }
