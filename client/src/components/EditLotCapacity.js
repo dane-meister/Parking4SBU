@@ -166,8 +166,8 @@ export default function EditLotCapacity({
       )}
 
       {formType === 'add' && (
-        <span style={{display: 'inline-block', marginTop: '5px', marginLeft: '5px'}}>
-          <strong>Capacity: </strong> {getNewCapacity()}
+        <span style={{display: 'inline-block', marginTop: '5px'}}>
+          <strong>Total Capacity: </strong> {getNewCapacity()}
         </span>  
       )}
 
