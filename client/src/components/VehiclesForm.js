@@ -167,6 +167,7 @@ function AddVehicle({ userId, setCurrVehiclePage, setSelectedVehicle }){
   const [ model, setModel ] = useState('');
   const [ year, setYear ] = useState('');
   const [ color, setColor ] = useState('');
+  const [ vehicleSubmit, setVehicleSubmit ] = useState(false);
 
   function handleAddVehicleSubmit(event){
     const plateErr = document.getElementById('vehicle-plate-err');
@@ -207,7 +208,7 @@ function AddVehicle({ userId, setCurrVehiclePage, setSelectedVehicle }){
         .some(innerHTML => innerHTML !== '');
     
     if(hadError) return;
-    
+    setVehicleSubmit(true);
     axios.post(`${HOST}/api/auth/${userId}/add-vehicle`, {
       plate, model, make, year, color,
     }, { withCredentials: true })
@@ -219,7 +220,8 @@ function AddVehicle({ userId, setCurrVehiclePage, setSelectedVehicle }){
         console.error(err);
         setSelectedVehicle(null);
         setCurrVehiclePage('my_vehicles');
-      })   
+        setVehicleSubmit(false);
+      }) 
   }
 
   return (<>
@@ -287,7 +289,7 @@ function AddVehicle({ userId, setCurrVehiclePage, setSelectedVehicle }){
       <p
         style={{margin: '0', fontSize: '13px', color: 'var(--gray)'}}
       >* fields are required</p>
-      <input type="submit" className='profile-update-btn' value="Add Vehicle" />
+      <input type="submit" className='profile-update-btn' value="Add Vehicle" disabled={vehicleSubmit}/>
     </form>
   </>);
 }

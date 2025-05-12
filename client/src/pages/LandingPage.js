@@ -161,7 +161,8 @@ function LandingPage() {
     "You study for tests. We study lot availability.",
     "You’ve got tuition, textbooks, and trauma — let’s take parking off that list.",
     "We can’t help with your GPA, but we’ve got the parking thing.",
-    "Avoid parking drama like you avoid campus geese."
+    "Avoid parking drama like you avoid campus geese.",
+    "Trespasser, you shall not park!",
   ]
 
   function shuffleArray(array) {
