@@ -51,66 +51,68 @@ export default function ChangePasswordModal({ onClose }) {
     };
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <h3>Change Password</h3>
-                <div className="auth-form">
-                    <div className="form-group">
-                        <label htmlFor="current-password">Current Password</label>
-                        <input
-                            id="current-password"
-                            type="password"
-                            value={current}
-                            onChange={(e) => setCurrent(e.target.value)}
-                            ref={currentRef}
-                        />
-                    </div>
+        <div className="change-pwd-modal modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>Change Password</h3>
+                </div>
+                    <div className="modal-body">
+                        <div className="form-group">
+                            <label htmlFor="current-password">Current Password</label>
+                            <input
+                                id="current-password"
+                                type="password"
+                                value={current}
+                                onChange={(e) => setCurrent(e.target.value)}
+                                ref={currentRef}
+                            />
+                        </div>
 
-                    <div className="form-group">
-                        <label htmlFor="new-password">New Password</label>
-                        <input
-                            id="new-password"
-                            type="password"
-                            value={newPass}
-                            onChange={(e) => setNewPass(e.target.value)}
-                        />
-                    </div>
+                        <div className="form-group">
+                            <label htmlFor="new-password">New Password</label>
+                            <input
+                                id="new-password"
+                                type="password"
+                                value={newPass}
+                                onChange={(e) => setNewPass(e.target.value)}
+                            />
+                        </div>
 
-                    <div className="form-group">
-                        <label htmlFor="confirm-password">Confirm New Password</label>
-                        <input
-                            id="confirm-password"
-                            type="password"
-                            value={confirm}
-                            onChange={(e) => setConfirm(e.target.value)}
-                        />
-                        {pwdMatchMsg && (
-                            <span
-                                className={`password-match ${pwdMatchMsg === "Passwords match" ? "valid" : "invalid"
-                                    }`}
+                        <div className="form-group">
+                            <label htmlFor="confirm-password">Confirm New Password</label>
+                            <input
+                                id="confirm-password"
+                                type="password"
+                                value={confirm}
+                                onChange={(e) => setConfirm(e.target.value)}
+                            />
+                            {pwdMatchMsg && (
+                                <span
+                                    className={`password-match ${pwdMatchMsg === "Passwords match" ? "valid" : "invalid"
+                                        }`}
+                                >
+                                    {pwdMatchMsg}
+                                </span>
+                            )}
+                        </div>
+
+                        {error && <p className="field-error">{error}</p>}
+                        {status && <p className="auth-info">{status}</p>}
+
+                        <div className="auth-buttons">
+                            <button
+                                type="button"
+                                className="auth-button cancel"
+                                onClick={onClose}
                             >
-                                {pwdMatchMsg}
-                            </span>
-                        )}
-                    </div>
-
-                    {error && <p className="field-error">{error}</p>}
-                    {status && <p className="auth-info">{status}</p>}
-
-                    <div className="auth-buttons">
-                        <button
-                            type="button"
-                            className="auth-button cancel"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </button>
-                        <button onClick={handleSubmit} className="auth-button">
-                            Update Password
-                        </button>
+                                Cancel
+                            </button>
+                            <button onClick={handleSubmit} className="auth-button">
+                                Update Password
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+            );
 }
