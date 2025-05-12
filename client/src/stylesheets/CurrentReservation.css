@@ -56,11 +56,12 @@
   
   .status.upcoming,
   .status-confirmed {
-    background-color: #007bff;  
+    background-color: var(--royal-blue);  
   }
 
   .status.past {
     color: gray;
+    background-color: #dbdee0;
 }
   
   .reservation-details p {
@@ -79,12 +80,12 @@
   }
 
   .status.cancelled {
-    background-color: red;
+    background-color: var(--bright-red);
     color: #fff;
   }
 
   .event-badge {
-    background-color: var(--gray);
+    background-color: var(--dark-gray);
     color: white;
     font-size: 12px;
     font-weight: bold;

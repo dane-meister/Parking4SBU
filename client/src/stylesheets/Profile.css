@@ -73,12 +73,12 @@ html:has(.main-container-profile) {
 }
 
 .sidebar-section li.active {
-	color: #b31b20;
+	color: var(--red);
 	font-weight: bold;
 }
 
 .sign-out {
-	background-color: #b31b20;
+	background-color: var(--bright-red);
 	color: #fff;
 	border: none;
 	padding: 10px 15px;
@@ -158,13 +158,13 @@ html:has(.main-container-profile) {
 }
 
 .account-sidebar .sidebar-btn.active {
-	background-color: #990000;
+	background-color: var(--red);
 	color: #fff;
 	border-radius: 5px;
 }
 
 .account-sidebar .sidebar-btn.active:hover {
-	background-color: #b31b20;
+	background-color: var(--dark-red);
 	/* copied from vehicle btn on hover */
 }
 
@@ -182,7 +182,7 @@ html:has(.main-container-profile) {
 
 .vehicle-card:hover {
 	transform: translateY(-1px);
-	background-color: #eee;
+	background-color: var(--light-gray);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -222,7 +222,7 @@ html:has(.main-container-profile) {
 }
 
 .add-vehicle-btn {
-	background-color: #990000;
+	background-color: var(--red);
 	color: #fff;
 	padding: 10px 20px;
 	border: none;
@@ -232,11 +232,11 @@ html:has(.main-container-profile) {
 }
 
 .add-vehicle-btn:hover {
-	background-color: #b31b20;
+	background-color: var(--dark-red);
 }
 
 #sign-out {
-	color: #c00;
+	color: var(--bright-red);
 	cursor: pointer;
 	font-weight: bold;
 }
@@ -341,7 +341,7 @@ html:has(.main-container-profile) {
 }
 
 #vehicle-card-edit-btn {
-	color: #007bff;
+	color: var(--royal-blue);
 }
 
 #vehicle-card-edit-btn img {

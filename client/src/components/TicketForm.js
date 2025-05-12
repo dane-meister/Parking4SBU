@@ -16,16 +16,39 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 		fine: '',
 		officer_id: '',
 	});
+	const [submitted, setSubmitted] = useState(false);
+	const [errors, setErrors] = useState({});
+
+	const validate = () => {
+		const newErrors = {};
+		if (!formData.violation || formData.violation.trim() === '') {
+			newErrors.violation = "Violation is required.";
+		}
+		if (formData.fine === '') {
+			newErrors.fine = "Fine amount is required.";
+		} else if (isNaN(formData.fine) || Number(formData.fine) < 0) {
+			newErrors.fine = "Fine must be a non-negative number.";
+		}
+		return newErrors;
+	};
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setFormData(prev => ({ ...prev, [name]: value }));
+		setErrors(prev => ({ ...prev, [name]: undefined })); // Clear error on change
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+		const validationErrors = validate();
+		if (Object.keys(validationErrors).length > 0) {
+			setErrors(validationErrors);
+			return;
+		}
+
 		try {
+			setSubmitted(true);
 			const payload = {
 				...formData,
 				user_id: user.user_id,
@@ -37,8 +60,9 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 			await axios.post(`${HOST}/api/tickets`, payload, { withCredentials: true });
 
 			alert("Ticket successfully issued.");
-			onSuccess?.(); // callback to parent
+			onSuccess?.();
 		} catch (err) {
+			setSubmitted(false);
 			console.error("Failed to issue ticket:", err);
 			alert("Failed to issue ticket.");
 		}
@@ -50,7 +74,7 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 			<section style={{overflowY: 'auto', height: '100%'}}>
 				<div>
 					<label htmlFor="plate">Plate</label>
-					<input id="plate" name="plate" value={formData.plate} onChange={handleChange} />
+					<input id="plate" name="plate" placeholder='ABC1234' value={formData.plate} onChange={handleChange} />
 				</div>
 				<div>
 					<label htmlFor="permit">Permit #</label>
@@ -66,7 +90,19 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 				</div>
 				<div>
 					<label htmlFor="violation">Violation *</label>
-					<input id="violation" name="violation" value={formData.violation} onChange={handleChange} required />
+					<input
+						id="violation"
+						name="violation"
+						value={formData.violation}
+						onChange={handleChange}
+						aria-invalid={!!errors.violation}
+						aria-describedby={errors.violation ? "violation-error" : undefined}
+					/>
+					{errors.violation && (
+						<div className="form-error" id="violation-error" style={{ color: 'red', fontSize: '0.9em' }}>
+							{errors.violation}
+						</div>
+					)}
 				</div>
 				<div>
 					<label htmlFor="comments">Comments</label>
@@ -87,8 +123,14 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 						}}
 						min={0}
 						placeholder="0.00"
-						required
+						aria-invalid={!!errors.fine}
+						aria-describedby={errors.fine ? "fine-error" : undefined}
 					/>
+					{errors.fine && (
+						<div className="form-error" id="fine-error" style={{ color: 'red', fontSize: '0.9em' }}>
+							{errors.fine}
+						</div>
+					)}
 				</div>
 				<div>
 					<label htmlFor="officer_id">Officer ID</label>
@@ -106,8 +148,8 @@ export default function TicketForm({ user, onSuccess, onCancel }) {
 					/>
 				</div>
 				<div className="form-buttons">
-					<button type="submit" className="save-button">Submit Ticket</button>
-					<button type="button" onClick={onCancel}>Cancel</button>
+					<button type="button" className="cancel-button" onClick={onCancel}>Cancel</button>
+					<button type="submit" className="save-button" disabled={submitted}>Submit Ticket</button>
 				</div>
 			</section>
 		</form>
