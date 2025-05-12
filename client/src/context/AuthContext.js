@@ -18,6 +18,8 @@ export const AuthProvider = ({ children }) => {
     // Function to handle user login
     const login = async (email, password) => {
         try {
+            email = email.trim(); // Trim whitespace from email
+            email = email.toLowerCase(); // Convert email to lowercase
             // Send login request to the backend
             await axios.post(`${HOST}/api/auth/login`, {
                 email,
