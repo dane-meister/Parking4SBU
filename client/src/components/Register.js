@@ -196,7 +196,7 @@ export default function RegisterPage() {
                 id="email"
                 type="email"
                 name="email"
-                value={form.email}
+                value={form.email.toLowerCase()}
                 onChange={handleChange}
                 required
                 autoComplete='email'
