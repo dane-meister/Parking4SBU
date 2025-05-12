@@ -296,13 +296,17 @@ img.rate,
   margin-bottom: 20px;
 }
 
-.capacity-table, .user-table {
+.capacity-table,
+.revenue-table,
+.user-table {
   width: 100%;
   border-collapse: collapse;
 }
 
 .capacity-table th,
 .capacity-table td,
+.revenue-table th,
+.revenue-table td,
 .user-table th,
 .user-table td {
   border: 1px solid #ccc;
@@ -339,7 +343,9 @@ img.rate,
   max-width: 100%;
 }
 
-.capacity-table th, .user-table th {
+.capacity-table th,
+.revenue-table th,
+.user-table th {
   position: sticky;
   top: 0;
   background-color: #BEBEBE;
